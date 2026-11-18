@@ -1,0 +1,38 @@
+// opentype.js 2.0 ships no types, and its package entry is CommonJS without named exports, so zxfnt
+// imports the ES module build directly. These types cover only the parts that zxfnt uses.
+
+declare module "opentype.js/dist/opentype.mjs" {
+  export class Path {
+    moveTo(x: number, y: number): void;
+    lineTo(x: number, y: number): void;
+    close(): void;
+  }
+
+  export class Glyph {
+    constructor(options: { name: string; unicode?: number; advanceWidth: number; path: Path });
+    name: string;
+    unicode?: number;
+    advanceWidth: number;
+    path: Path;
+  }
+
+  export class Font {
+    constructor(options: {
+      familyName: string;
+      styleName: string;
+      unitsPerEm: number;
+      ascender: number;
+      descender: number;
+      weightClass?: number;
+      glyphs: Glyph[];
+    });
+    glyphs: { length: number };
+    unitsPerEm: number;
+    ascender: number;
+    descender: number;
+    charToGlyph(char: string): Glyph & { path: { commands: { type: string; x?: number; y?: number }[] } };
+    toArrayBuffer(): ArrayBuffer;
+  }
+
+  export function parse(buffer: ArrayBuffer): Font;
+}

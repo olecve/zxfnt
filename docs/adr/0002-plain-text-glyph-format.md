@@ -39,6 +39,7 @@ Every source is converted into a glyph file first. The build reads only these fi
 ```
 # The 8×8 ASCII font
 name: zxfnt
+family: zxfnt
 size: 8x8
 baseline: 7
 

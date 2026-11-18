@@ -11,7 +11,7 @@ Sources:
 Every font can also get characters the original never had, such as letters for languages other than English and extra
 symbols.
 
-This is a hobby project. Status: **planning**. No code yet.
+This is a hobby project. Status: **milestone 1 done**: the font builds into `dist/zxfnt.otf`.
 
 ## How it works
 
@@ -40,7 +40,23 @@ U+0041 A
 
 The builder turns each lit pixel into a square in a vector font.
 
-## Using a font (planned)
+## Building
+
+Needs Node 22.6 or newer.
+
+```sh
+npm install
+npm run build     # fonts/*/glyphs.txt -> dist/<name>.otf and dist/index.html
+npm run serve     # demo page at http://localhost:8080
+npm test          # checks that each .otf has exactly the pixels of its glyph file
+npm run check     # type check
+```
+
+Open the demo page through `npm run serve`. Browsers do not load fonts for pages opened as `file://` URLs.
+
+## Using a font
+
+Copy `dist/zxfnt.otf` next to your page:
 
 ```css
 @font-face {
@@ -54,9 +70,15 @@ body {
 }
 ```
 
+## Fonts
+
+| Font                              | Source         | Glyphs                                                                         |
+| --------------------------------- | -------------- | ------------------------------------------------------------------------------ |
+| [`zxfnt`](fonts/zxfnt/glyphs.txt) | 8×8 ASCII font | 96 ASCII glyphs, plus `^` and `` ` `` (the 96 have `↑` and `£` at those codes) |
+
 ## Milestones
 
-1. Pipeline: ASCII glyph file → `.otf`, plus a demo page.
+1. ~~Pipeline: ASCII glyph file → `.otf`, plus a demo page.~~ Done.
 2. First extra character sets for the font.
 3. Importers: PNG images.
 4. Extras: `.woff2`, block graphics (`▀ ▄ █`), a page with all fonts side by side.
