@@ -70,8 +70,20 @@ Copy `dist/zx-rom.otf` next to your page:
 body {
   font-family: "ZX Spectrum ROM", monospace;
   font-size: 16px; /* multiples of 8px keep pixels sharp */
+  /* macOS thickens glyphs by default, which blurs the pixel edges */
+  -webkit-font-smoothing: antialiased; /* Chrome, Safari, Edge */
+  -moz-osx-font-smoothing: grayscale; /* Firefox */
 }
 ```
+
+Sharp edges need all of these:
+
+- **Font smoothing off on macOS.** Without the two `font-smoothing` lines, macOS makes every glyph slightly bolder, and
+  the edges get grey pixels. These lines have no effect on other systems.
+- **A font size that is a multiple of 8px** (8, 16, 24, 32…). Then each font pixel is a whole number of screen pixels.
+  On a high-density (retina) screen, multiples of 4px are also sharp.
+- **Text that starts on a whole pixel.** On a normal-density screen, text that starts at a fractional position, for
+  example inside a centered box with an odd width, gets grey edges.
 
 ## Fonts
 
