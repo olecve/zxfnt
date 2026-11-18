@@ -24,7 +24,8 @@ This is a hobby project. Status: **milestone 1 done**: the ROM font builds into 
                  extra character sets (compose, copy, generate, draw)
 ```
 
-Every source is first converted into a plain text glyph file, one per font. You can read and edit it in any editor:
+Every source is first converted into plain text glyph files. A font is a directory: `font.txt` has the name and size,
+and each other `.txt` file has glyphs from one source. You can read and edit them in any editor:
 
 ```
 U+0041 A
@@ -46,13 +47,14 @@ Needs Node 22.6 or newer. `.nvmrc` pins the version that the project is tested w
 
 ```sh
 npm install
-npm run build     # fonts/*/glyphs.txt -> dist/<name>.otf and dist/index.html
+npm run build     # fonts/<font>/*.txt -> dist/<name>.otf and dist/index.html
 npm run serve     # demo page at http://localhost:8080
-npm test          # checks that each .otf has exactly the pixels of its glyph file
+npm test          # checks that each .otf has exactly the pixels of its glyph files
 npm run lint      # ESLint
 npm run check     # type check
 npm run format    # formats all files with Prettier
 npm run validate  # format check, lint, type check and tests
+npm run import:rom -- 48.rom  # 48K ROM or 768-byte font file -> fonts/zx-rom/rom.txt
 ```
 
 Open the demo page through `npm run serve`. Browsers do not load fonts for pages opened as `file://` URLs.
@@ -87,15 +89,15 @@ Sharp edges need all of these:
 
 ## Fonts
 
-| Font                                | Source                                | Glyphs                                                                           |
-| ----------------------------------- | ------------------------------------- | -------------------------------------------------------------------------------- |
-| [`zx-rom`](fonts/zx-rom/glyphs.txt) | ZX Spectrum 48K ROM, address `0x3D00` | 96 from the ROM, plus `^` and `` ` `` (the ROM shows `↑` and `£` at those codes) |
+| Font                      | Source                                | Glyphs                                                                                                                                                              |
+| ------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`zx-rom`](fonts/zx-rom/) | ZX Spectrum 48K ROM, address `0x3D00` | 96 from the ROM ([`rom.txt`](fonts/zx-rom/rom.txt)), plus `^` and `` ` `` ([`extra.txt`](fonts/zx-rom/extra.txt)), because the ROM shows `↑` and `£` at those codes |
 
 ## Milestones
 
 1. ~~Pipeline: ROM glyph file → `.otf`, plus a demo page.~~ Done.
 2. First extra character sets for the ROM font.
-3. Importers: raw binary files, then PNG images.
+3. Importers: ~~the ROM and raw 768-byte files~~, then PNG images.
 4. Snapshot ripper (`.sna`, `.z80`); try it on Dizzy.
 5. Extras: `.woff2`, Spectrum block graphics (`▀ ▄ █`), a page with all fonts side by side.
 

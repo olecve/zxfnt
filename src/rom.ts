@@ -1,0 +1,34 @@
+// Reads the 96-character font of the ZX Spectrum ROM, or a raw 768-byte font file, as glyph file text.
+
+const ROM_SIZE = 16384;
+const ROM_FONT_ADDRESS = 0x3d00;
+const FONT_SIZE = 96 * 8;
+const FIRST_CODE = 0x20;
+
+// Spectrum codes that are not ASCII.
+const UNICODE: Record<number, number> = { 0x5e: 0x2191, 0x60: 0x00a3, 0x7f: 0x00a9 };
+
+// The 768 font bytes of a ROM image or of a raw font file.
+export function fontBytes(file: Uint8Array): Uint8Array {
+  if (file.length === ROM_SIZE) return file.subarray(ROM_FONT_ADDRESS, ROM_FONT_ADDRESS + FONT_SIZE);
+  if (file.length === FONT_SIZE) return file;
+  throw new Error(`expected a ${ROM_SIZE}-byte ROM or a ${FONT_SIZE}-byte font, got ${file.length} bytes`);
+}
+
+// Glyph file text for 768 font bytes. Each line of `comment` becomes a "#" line at the top.
+export function glyphText(font: Uint8Array, comment: string): string {
+  const lines = comment.split("\n").map((line) => `# ${line}`);
+  for (let i = 0; i < FONT_SIZE / 8; i++) {
+    const code = FIRST_CODE + i;
+    const codePoint = UNICODE[code] ?? code;
+    const hex = codePoint.toString(16).toUpperCase().padStart(4, "0");
+    const char = codePoint === 0x20 ? "" : ` ${String.fromCodePoint(codePoint)}`;
+    lines.push("");
+    if (codePoint !== code) lines.push(`# ROM code 0x${code.toString(16).toUpperCase()}`);
+    lines.push(`U+${hex}${char}`);
+    for (const byte of font.subarray(i * 8, i * 8 + 8)) {
+      lines.push(byte.toString(2).padStart(8, "0").replace(/0/g, ".").replace(/1/g, "X"));
+    }
+  }
+  return lines.join("\n") + "\n";
+}

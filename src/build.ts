@@ -1,9 +1,9 @@
-// Builds every font in fonts/*/glyphs.txt into dist/<name>.otf, and writes a demo page dist/index.html.
+// Builds every font directory in fonts/ into dist/<name>.otf, and writes a demo page dist/index.html.
 
-import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { buildFont } from "./font.ts";
-import { parseGlyphFont, type GlyphFont } from "./glyphs.ts";
+import { readGlyphFont, type GlyphFont } from "./glyphs.ts";
 
 const FONTS_DIR = "fonts";
 const DIST_DIR = "dist";
@@ -13,8 +13,8 @@ await mkdir(DIST_DIR, { recursive: true });
 
 const built: GlyphFont[] = [];
 for (const dir of dirs.sort()) {
-  const path = join(FONTS_DIR, dir, "glyphs.txt");
-  const source = parseGlyphFont(await readFile(path, "utf8"), path);
+  const path = join(FONTS_DIR, dir);
+  const source = await readGlyphFont(path);
   const bytes = buildFont(source).toArrayBuffer();
   await writeFile(join(DIST_DIR, `${source.name}.otf`), Buffer.from(bytes));
   console.log(`${path} -> ${DIST_DIR}/${source.name}.otf (${source.glyphs.length} glyphs, ${bytes.byteLength} bytes)`);

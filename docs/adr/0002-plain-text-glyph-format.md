@@ -34,8 +34,8 @@ In which form should the project keep glyphs, so that the build has one input fo
 Chosen option: "Own plain text format with `X` and `.`", because it is the only option that shows the glyph shape in a
 text editor, gives a useful diff and has an explicit code point for each glyph.
 
-Every source is converted into a glyph file first. The build reads only these files. First shape of the format
-(milestone 1 can change the details):
+Every source is converted into glyph files first. The build reads only these files. A font is a directory, for example
+`fonts/zx-rom/`. Its `font.txt` has the header:
 
 ```
 # ZX Spectrum 48K ROM font
@@ -43,7 +43,12 @@ name: zx-rom
 family: ZX Spectrum ROM
 size: 8x8
 baseline: 7
+```
 
+Each other `.txt` file in the directory has glyphs from one source, for example `rom.txt` from an importer and
+`extra.txt` drawn by hand:
+
+```
 U+0041 A
 ........
 ..XXXX..
@@ -58,17 +63,21 @@ U+0041 A
 `X` is a lit pixel and `.` is an empty pixel. A glyph starts with its code point. A blank line separates two glyphs. `#`
 starts a comment. `baseline: 7` means rows 0–6 are on or above the baseline, and row 7 has the descenders.
 
+The build merges all glyph files of a font and stops with an error when two files have the same code point. An importer
+can then write its whole file again without touching glyphs that a person drew.
+
 ### Consequences
 
 - Good, because each importer has one task: it writes a glyph file
 - Good, because fonts are text in the repository, and git shows each change
 - Good, because one font can mix sources easily
+- Good, because generated and hand-drawn glyphs are in different files, so a new import cannot overwrite drawn glyphs
 - Bad, because no other tool reads this format
 - Bad, because the format holds only 1-bit glyphs of one size, so colours and other game attributes are lost
 
 ### Confirmation
 
-- The ROM font is in a glyph file, and the build makes a font from it
+- The ROM font is in glyph files, and the build makes a font from them
 - A second source, a raw binary file or a PNG image, goes through an importer into a glyph file, and the build makes a
   font from it
 

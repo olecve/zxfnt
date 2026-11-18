@@ -19,6 +19,7 @@
   },
   "scripts": {
     "build": "node --experimental-strip-types src/build.ts",
+    "import:rom": "node --experimental-strip-types src/import-rom.ts",
     "serve": "node --experimental-strip-types src/serve.ts",
     "check": "tsc -p .",
     "test": "node --experimental-strip-types --test src/*.test.ts",

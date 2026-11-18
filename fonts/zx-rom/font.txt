@@ -1,0 +1,7 @@
+# ZX Spectrum 48K ROM font: 96 characters at address 0x3D00, 8 bytes each.
+# The ROM codes 0x20-0x7F are ASCII, except 0x5E (↑), 0x60 (£) and 0x7F (©).
+# rom.txt has the ROM glyphs. extra.txt has glyphs that the ROM does not have.
+name: zx-rom
+family: ZX Spectrum ROM
+size: 8x8
+baseline: 7
