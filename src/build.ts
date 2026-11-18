@@ -53,6 +53,8 @@ function demoPage(fonts: GlyphFont[]): string {
     <style>
       ${faces}
       body { margin: 0; padding: 32px 16px; background: #d7d7d7; color: #000; font-family: system-ui, sans-serif; }
+      /* macOS thickens glyphs by default, which blurs the pixel edges. */
+      section { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
       section { max-width: 960px; margin: 0 auto 32px; padding: 24px; background: #fff; border: 16px solid #0000d7; }
       h2 { font-size: 24px; margin: 0 0 16px; }
       h2 small { font-size: 16px; }
