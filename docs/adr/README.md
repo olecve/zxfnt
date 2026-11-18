@@ -1,7 +1,7 @@
 # Architecture Decision Records
 
-This directory contains Architecture Decision Records (ADRs) for zxfnt, in the
-[MADR 4.0](https://adr.github.io/madr/) format.
+This directory contains Architecture Decision Records (ADRs) for zxfnt, in the [MADR 4.0](https://adr.github.io/madr/)
+format.
 
 ## Index
 
