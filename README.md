@@ -42,14 +42,17 @@ The builder turns each lit pixel into a square in a vector font.
 
 ## Building
 
-Needs Node 22.6 or newer.
+Needs Node 22.6 or newer. `.nvmrc` pins the version that the project is tested with, so `nvm use` selects it.
 
 ```sh
 npm install
 npm run build     # fonts/*/glyphs.txt -> dist/<name>.otf and dist/index.html
 npm run serve     # demo page at http://localhost:8080
 npm test          # checks that each .otf has exactly the pixels of its glyph file
+npm run lint      # ESLint
 npm run check     # type check
+npm run format    # formats all files with Prettier
+npm run validate  # format check, lint, type check and tests
 ```
 
 Open the demo page through `npm run serve`. Browsers do not load fonts for pages opened as `file://` URLs.
@@ -86,6 +89,7 @@ body {
 ## Tooling
 
 - TypeScript on Node 22, run with `node --experimental-strip-types`.
+- Prettier formats the code. ESLint with typescript-eslint lints it. `npm run validate` runs all checks.
 - [opentype.js](https://github.com/opentypejs/opentype.js) writes the font files.
 
 ## Decisions

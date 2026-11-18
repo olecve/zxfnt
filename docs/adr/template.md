@@ -8,39 +8,39 @@ Proposed
 
 ## Decision Drivers
 
-* 
+-
 
 ## Considered Options
 
-* 
-* 
+-
+-
 
 ## Decision Outcome
 
-Chosen option: "", because 
+Chosen option: "", because
 
 ### Consequences
 
-* Good, because 
-* Bad, because 
+- Good, because
+- Bad, because
 
 ### Confirmation
 
-* 
+-
 
 ## Pros and Cons of the Options
 
 ### Option 1
 
-* Good, because 
-* Neutral, because 
-* Bad, because 
+- Good, because
+- Neutral, because
+- Bad, because
 
 ### Option 2
 
-* Good, because 
-* Bad, because 
+- Good, because
+- Bad, because
 
 ## More Information
 
-* 
+-
