@@ -1,13 +1,13 @@
 // Round trip: builds each font, reads the .otf back, and checks that every glyph outline covers
-// exactly the lit pixels of its glyph file.
+// exactly the lit pixels of its glyph files.
 
 import assert from "node:assert/strict";
-import { readdir, readFile } from "node:fs/promises";
+import { readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { test } from "node:test";
 import { parse } from "opentype.js/dist/opentype.mjs";
 import { buildFont, pixelRects } from "./font.ts";
-import { parseGlyphFont } from "./glyphs.ts";
+import { readGlyphFont } from "./glyphs.ts";
 
 type Command = { type: string; x?: number; y?: number };
 
@@ -56,10 +56,10 @@ void test("pixelRects joins runs across rows", () => {
 
 const fontsDir = "fonts";
 for (const dir of await readdir(fontsDir)) {
-  const path = join(fontsDir, dir, "glyphs.txt");
-  const source = parseGlyphFont(await readFile(path, "utf8"), path);
+  const path = join(fontsDir, dir);
+  const source = await readGlyphFont(path);
 
-  void test(`${path}: the .otf has the same pixels as the glyph file`, () => {
+  void test(`${path}: the .otf has the same pixels as the glyph files`, () => {
     const font = parse(buildFont(source).toArrayBuffer());
     const unit = font.unitsPerEm / source.height;
     assert.equal(font.ascender, source.baseline * unit);

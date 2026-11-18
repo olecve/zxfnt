@@ -1,4 +1,8 @@
 // Parser for the plain text glyph format (docs/adr/0002-plain-text-glyph-format.md).
+// A font is a directory: font.txt has the header, and every other .txt file has glyphs.
+
+import { readdir, readFile } from "node:fs/promises";
+import { join } from "node:path";
 
 export type Glyph = {
   codePoint: number;
@@ -6,36 +10,40 @@ export type Glyph = {
   rows: boolean[][];
 };
 
-export type GlyphFont = {
+export type FontHeader = {
   name: string;
   family: string;
   width: number;
   height: number;
   // Index of the first row below the baseline.
   baseline: number;
-  glyphs: Glyph[];
 };
 
+export type GlyphFont = FontHeader & { glyphs: Glyph[] };
+
+export type SourceFile = { path: string; text: string };
+
+const HEADER_FILE = "font.txt";
 const GLYPH_START = /^U\+([0-9A-F]{4,6})(?:\s|$)/;
 const HEADER = /^([a-z]+):\s*(.*)$/;
 
-export function parseGlyphFont(text: string, source: string): GlyphFont {
-  const lines = text.split(/\r?\n/);
-  const header = new Map<string, string>();
-  const glyphs: Glyph[] = [];
-  const seen = new Set<number>();
-  const fail = (lineIndex: number, message: string): never => {
+const failer =
+  (source: string) =>
+  (lineIndex: number, message: string): never => {
     throw new Error(`${source}:${lineIndex + 1}: ${message}`);
   };
 
-  let i = 0;
-  // The header ends at the first glyph.
-  for (; i < lines.length && !GLYPH_START.test(lines[i]); i++) {
-    const line = lines[i].trim();
-    if (line === "" || line.startsWith("#")) continue;
-    const match = HEADER.exec(line) ?? fail(i, `expected "key: value" or a glyph, got "${line}"`);
+const isSkipped = (line: string) => line === "" || line.startsWith("#");
+
+export function parseHeader({ path, text }: SourceFile): FontHeader {
+  const fail = failer(path);
+  const header = new Map<string, string>();
+  text.split(/\r?\n/).forEach((raw, i) => {
+    const line = raw.trim();
+    if (isSkipped(line)) return;
+    const match = HEADER.exec(line) ?? fail(i, `expected "key: value", got "${line}"`);
     header.set(match[1], match[2].trim());
-  }
+  });
 
   const required = (key: string): string => header.get(key) ?? fail(0, `missing header "${key}"`);
   const size = /^(\d+)x(\d+)$/.exec(required("size")) ?? fail(0, 'size must look like "8x8"');
@@ -45,27 +53,57 @@ export function parseGlyphFont(text: string, source: string): GlyphFont {
   if (!Number.isInteger(baseline) || baseline < 1 || baseline > height) {
     fail(0, `baseline must be a row number from 1 to ${height}`);
   }
+  return { name: required("name"), family: required("family"), width, height, baseline };
+}
 
-  for (; i < lines.length; i++) {
+export function parseGlyphs({ path, text }: SourceFile, width: number, height: number): Glyph[] {
+  const fail = failer(path);
+  const lines = text.split(/\r?\n/);
+  const glyphs: Glyph[] = [];
+  const row = new RegExp(`^[X.]{${width}}$`);
+
+  for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
-    if (line === "" || line.startsWith("#")) continue;
+    if (isSkipped(line)) continue;
     const match = GLYPH_START.exec(line) ?? fail(i, `expected a glyph such as "U+0041 A", got "${line}"`);
-    const codePoint = parseInt(match[1], 16);
-    if (seen.has(codePoint)) fail(i, `duplicate glyph U+${match[1]}`);
-    seen.add(codePoint);
-
     const rows: boolean[][] = [];
     for (let y = 0; y < height; y++) {
       const index = i + 1 + y;
-      const row = (lines[index] ?? "").trim();
-      if (!new RegExp(`^[X.]{${width}}$`).test(row)) {
-        fail(index, `expected ${width} characters of "X" and "." for row ${y} of U+${match[1]}, got "${row}"`);
+      const text = (lines[index] ?? "").trim();
+      if (!row.test(text)) {
+        fail(index, `expected ${width} characters of "X" and "." for row ${y} of U+${match[1]}, got "${text}"`);
       }
-      rows.push([...row].map((c) => c === "X"));
+      rows.push([...text].map((c) => c === "X"));
     }
-    glyphs.push({ codePoint, rows });
+    glyphs.push({ codePoint: parseInt(match[1], 16), rows });
     i += height;
   }
+  return glyphs;
+}
 
-  return { name: required("name"), family: required("family"), width, height, baseline, glyphs };
+// Merges the header with the glyphs of all glyph files, sorted by code point.
+export function parseGlyphFont(header: SourceFile, glyphFiles: SourceFile[]): GlyphFont {
+  const font = parseHeader(header);
+  const seen = new Map<number, string>();
+  const glyphs: Glyph[] = [];
+  for (const file of glyphFiles) {
+    for (const glyph of parseGlyphs(file, font.width, font.height)) {
+      const label = `U+${glyph.codePoint.toString(16).toUpperCase().padStart(4, "0")}`;
+      const other = seen.get(glyph.codePoint);
+      if (other !== undefined) throw new Error(`${file.path}: ${label} is also in ${other}`);
+      seen.set(glyph.codePoint, file.path);
+      glyphs.push(glyph);
+    }
+  }
+  glyphs.sort((a, b) => a.codePoint - b.codePoint);
+  return { ...font, glyphs };
+}
+
+export async function readGlyphFont(dir: string): Promise<GlyphFont> {
+  const read = async (name: string): Promise<SourceFile> => {
+    const path = join(dir, name);
+    return { path, text: await readFile(path, "utf8") };
+  };
+  const names = (await readdir(dir)).filter((name) => name.endsWith(".txt") && name !== HEADER_FILE).sort();
+  return parseGlyphFont(await read(HEADER_FILE), await Promise.all(names.map(read)));
 }

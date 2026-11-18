@@ -33,8 +33,8 @@ In which form should the project keep glyphs, so that the build has one input fo
 Chosen option: "Own plain text format with `X` and `.`", because it is the only option that shows the glyph shape in a
 text editor, gives a useful diff and has an explicit code point for each glyph.
 
-Every source is converted into a glyph file first. The build reads only these files. First shape of the format
-(milestone 1 can change the details):
+Every source is converted into glyph files first. The build reads only these files. A font is a directory, for example
+`fonts/zxfnt/`. Its `font.txt` has the header:
 
 ```
 # The 8×8 ASCII font
@@ -42,7 +42,12 @@ name: zxfnt
 family: zxfnt
 size: 8x8
 baseline: 7
+```
 
+Each other `.txt` file in the directory has glyphs from one source, for example `ascii.txt` with the 96 ASCII glyphs,
+and `extra.txt` drawn by hand:
+
+```
 U+0041 A
 ........
 ..XXXX..
@@ -57,17 +62,21 @@ U+0041 A
 `X` is a lit pixel and `.` is an empty pixel. A glyph starts with its code point. A blank line separates two glyphs. `#`
 starts a comment. `baseline: 7` means rows 0–6 are on or above the baseline, and row 7 has the descenders.
 
+The build merges all glyph files of a font and stops with an error when two files have the same code point. A future
+importer, such as one for PNG images, can then write its whole file again without touching glyphs that a person drew.
+
 ### Consequences
 
 - Good, because a future importer has one task: it writes a glyph file
 - Good, because fonts are text in the repository, and git shows each change
 - Good, because one font can mix sources easily
+- Good, because glyphs from different sources are in different files, so one source cannot overwrite another
 - Bad, because no other tool reads this format
 - Bad, because the format holds only 1-bit glyphs of one size, so colours are lost
 
 ### Confirmation
 
-- The ASCII font is in a glyph file, and the build makes a font from it
+- The ASCII font is in glyph files, and the build makes a font from them
 - Hand-drawn and generated glyphs are in separate glyph files, and the build makes one font from them
 
 ## Pros and Cons of the Options

@@ -24,7 +24,8 @@ This is a hobby project. Status: **milestone 1 done**: the font builds into `dis
                  extra character sets (compose, copy, generate, draw)
 ```
 
-Every source is first converted into a plain text glyph file, one per font. You can read and edit it in any editor:
+Every source is first converted into plain text glyph files. A font is a directory: `font.txt` has the name and size,
+and each other `.txt` file has glyphs from one source. You can read and edit them in any editor:
 
 ```
 U+0041 A
@@ -46,9 +47,9 @@ Needs Node 22.6 or newer. `.nvmrc` pins the version that the project is tested w
 
 ```sh
 npm install
-npm run build     # fonts/*/glyphs.txt -> dist/<name>.otf and dist/index.html
+npm run build     # fonts/<font>/*.txt -> dist/<name>.otf and dist/index.html
 npm run serve     # demo page at http://localhost:8080
-npm test          # checks that each .otf has exactly the pixels of its glyph file
+npm test          # checks that each .otf has exactly the pixels of its glyph files
 npm run lint      # ESLint
 npm run check     # type check
 npm run format    # formats all files with Prettier
@@ -87,9 +88,9 @@ Sharp edges need all of these:
 
 ## Fonts
 
-| Font                              | Source         | Glyphs                                                                         |
-| --------------------------------- | -------------- | ------------------------------------------------------------------------------ |
-| [`zxfnt`](fonts/zxfnt/glyphs.txt) | 8×8 ASCII font | 96 ASCII glyphs, plus `^` and `` ` `` (the 96 have `↑` and `£` at those codes) |
+| Font                    | Source         | Glyphs                                                                                                                                                              |
+| ----------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`zxfnt`](fonts/zxfnt/) | 8×8 ASCII font | 96 ASCII glyphs ([`ascii.txt`](fonts/zxfnt/ascii.txt)), plus `^` and `` ` `` ([`extra.txt`](fonts/zxfnt/extra.txt)), because the 96 have `↑` and `£` at those codes |
 
 ## Milestones
 
