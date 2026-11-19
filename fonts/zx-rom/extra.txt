@@ -1,4 +1,4 @@
-# Drawn by hand: ASCII characters whose ROM codes show other symbols.
+# Drawn by hand for this project: ASCII characters whose ROM codes show other symbols.
 
 U+005E ^
 ........

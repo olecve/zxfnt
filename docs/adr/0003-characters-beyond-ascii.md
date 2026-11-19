@@ -24,6 +24,7 @@ How do we add extra characters to every font without drawing each one by hand fo
 ## Decision Drivers
 
 - Must look like the rest of each font, also in game fonts
+- Every new glyph is made in this project, not copied from another font or ROM
 - Must give every font full coverage of each set it gets
 - Must stay exact to the 8×8 pixel grid
 - No repeated hand work for each font
@@ -40,15 +41,17 @@ How do we add extra characters to every font without drawing each one by hand fo
 Chosen option: "Character lists with compose, copy, generate, draw and borrow", because the tool makes most glyphs, each
 new shape is drawn once, and every glyph stays a real 8×8 bitmap.
 
-Each extra set is a character list that names its code points and the method for each glyph:
+Each extra set is a character list that names its code points and the method for each glyph. Every method starts from
+glyphs of this project: the font itself, the ROM font, shared marks or new drawings. No glyph is copied from another
+font or ROM, such as the fonts of Spectrum clones or other computers.
 
 1. **Compose**: a base letter and a mark make the glyph: `ä = a + ¨`, `å = a + ˚`, `Ё = Е + ¨`. For a capital, the base
    letter is made one row shorter to make space
 2. **Copy**: a letter from another alphabet that looks the same as one in the font, such as `А`, `В` or `Α`, which look
    like Latin `A` and `B`
 3. **Generate**: shapes from simple geometry, such as the 16 Spectrum block graphics (2×2 grids of 4×4 squares)
-4. **Draw**: by hand in the glyph format ([ADR-0002](0002-plain-text-glyph-format.md)), first for the ROM font. Fonts of
-   Spectrum clones from other countries can serve as a reference
+4. **Draw**: by hand in this project, in the glyph format ([ADR-0002](0002-plain-text-glyph-format.md)), first for the
+   ROM font
 5. **Borrow**: a font without its own version of a glyph uses the ROM font glyph. The glyph file records the source, so
    a matching drawing can replace it later
 

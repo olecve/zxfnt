@@ -9,7 +9,8 @@ Sources:
 - fonts found as bitmap images or raw font files
 
 Every font can also get characters the original never had, such as letters for languages other than English and extra
-symbols.
+symbols. These characters are made in this project: composed from the font's own glyphs or drawn by hand. They are not
+copied from other fonts or ROMs.
 
 This is a hobby project. Status: **milestone 1 done**: the ROM font builds into `dist/zx-rom.otf`.
 
