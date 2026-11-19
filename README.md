@@ -9,7 +9,8 @@ Sources:
 - glyphs drawn by hand
 
 Every font can also get characters the original never had, such as letters for languages other than English and extra
-symbols.
+symbols. These characters are drawn by hand in this project, or composed from the font's own glyphs and marks. They are
+not copied from other fonts.
 
 This is a hobby project. Status: **milestone 1 done**: the font builds into `dist/zxfnt.otf`.
 

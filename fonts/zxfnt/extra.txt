@@ -1,4 +1,4 @@
-# Drawn by hand: ASCII characters that ascii.txt does not have.
+# Drawn by hand for this project: ASCII characters that ascii.txt does not have.
 
 U+005E ^
 ........
