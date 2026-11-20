@@ -96,6 +96,19 @@ void test("the diaeresis fits narrow letters, and skips a letter too narrow for 
   assert.deepEqual(result.skipped, ["U+1E97 ẗ: no room for the mark above t"]);
 });
 
+void test("compose skips a mark that would go outside the cell", () => {
+  const edge = (codePoint: number, row: string) => ({
+    codePoint,
+    rows: [0, 0, 1, 1, 1, 1, 1, 0].map((lit) => [...(lit ? row : "........")].map((c) => c === "X")),
+  });
+  const result = compose(list("U+00F5 õ = o ˜\nU+00F1 ñ = n ˜"), [edge(0x6f, ".......X"), edge(0x6e, "X.......")]);
+  assert.deepEqual(result.glyphs, []);
+  assert.deepEqual(result.skipped, [
+    "U+00F5 õ: no room for the mark above o",
+    "U+00F1 ñ: no room for the mark above n",
+  ]);
+});
+
 void test("compose rejects a character that does not match its code point", () => {
   assert.throws(() => compose(list("U+00E4 ö = o ¨"), [A]), /list\.txt:1: ö is not U\+00E4/);
 });
