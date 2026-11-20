@@ -79,6 +79,11 @@ for (const path of await fontDirs()) {
     const shift = (source.height - source.width) / 2;
     assert.equal(font.ascender, (source.baseline - shift) * unit);
     assert.equal(font.descender, (source.baseline - source.height - shift) * unit);
+    const names = font.names.windows;
+    assert.equal(names.fontFamily.en, source.family);
+    assert.equal(names.copyright.en, source.copyright ?? " ");
+    assert.match(names.version.en, /^Version \d+\.\d+\.\d+$/);
+    assert.equal(names.uniqueID.en, `zxfnt: ${source.family} Regular`);
     assert.equal(font.tables.os2.version, 4);
     assert.equal(font.tables.os2.fsSelection, 0b1100_0000, "REGULAR and USE_TYPO_METRICS");
     assert.equal(font.tables.os2.sTypoAscender, font.ascender, "typo metrics match hhea");

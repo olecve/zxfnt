@@ -5,3 +5,4 @@ name: zx-rom
 family: ZX Spectrum ROM
 size: 8x8
 baseline: 7
+copyright: ROM glyphs © 1982 Sinclair Research Ltd, now Amstrad. Other glyphs made for zxfnt.

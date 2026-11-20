@@ -20,6 +20,8 @@ export type FontHeader = {
   baseline: number;
   // Glyph files of other fonts, relative to the font directory.
   include: string[];
+  // Copyright notice of the glyphs, for the font metadata.
+  copyright?: string;
 };
 
 export type GlyphFont = FontHeader & { glyphs: Glyph[] };
@@ -29,7 +31,7 @@ export type SourceFile = { path: string; text: string };
 const HEADER_FILE = "font.txt";
 const GLYPH_START = /^U\+([0-9A-F]{4,6})(?:\s|$)/;
 const HEADER = /^([a-z]+):\s*(.*)$/;
-const HEADER_KEYS = ["name", "family", "size", "baseline", "include"];
+const HEADER_KEYS = ["name", "family", "size", "baseline", "include", "copyright"];
 
 const failer =
   (source: string) =>
@@ -68,7 +70,7 @@ export function parseHeader({ path, text }: SourceFile): FontHeader {
     fail(0, `name must be lowercase letters, digits and hyphens, got "${name}"`);
   const family = required("family");
   if (/["'<>&\\]/.test(family)) fail(0, `family must not contain quotes, <, >, & or \\, got "${family}"`);
-  return { name, family, width, height, baseline, include };
+  return { name, family, width, height, baseline, include, copyright: header.get("copyright") };
 }
 
 export function parseGlyphs({ path, text }: SourceFile, width: number, height: number): Glyph[] {
