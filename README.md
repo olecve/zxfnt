@@ -2,38 +2,74 @@
 
 [![Build](https://github.com/olecve/zxfnt/actions/workflows/build.yml/badge.svg)](https://github.com/olecve/zxfnt/actions/workflows/build.yml)
 
-Turns 8×8 ZX Spectrum fonts into web fonts that you can use on any webpage with `@font-face`.
+ZX Spectrum fonts for the web. Each pixel of an 8×8 Spectrum font becomes a square in a vector font, so the text stays
+sharp at any multiple of 8px.
 
-**Demo page: <https://olecve.github.io/zxfnt/>.** Each run of the
-[build workflow](https://github.com/olecve/zxfnt/actions/workflows/build.yml) also has the fonts as a downloadable
-artifact, `zxfnt-fonts`.
+**Demo: <https://olecve.github.io/zxfnt/>**
 
-Sources:
+## Fonts
 
-- the original ZX Spectrum 48K ROM font
-- fonts taken from games (for example Dizzy)
-- fonts found as bitmap images or raw font files
+| Font                                | Cell | Characters                                                          |
+| ----------------------------------- | ---- | ------------------------------------------------------------------- |
+| [`zx-rom`](fonts/zx-rom/)           | 8×8  | the 48K ROM font, plus Latin, Cyrillic and Georgian letters         |
+| [`zx-rom-tall`](fonts/zx-rom-tall/) | 8×10 | the same, with room above the letters for accents and tall Georgian |
 
-Every font can also get characters the original never had, such as letters for languages other than English and extra
-symbols. These characters are made in this project: composed from the font's own glyphs or drawn by hand. They are not
-copied from other fonts or ROMs.
+The languages are English, Finnish, Swedish, Estonian, German, Russian, Ukrainian, Belarusian, Kazakh and Georgian.
+Typographic punctuation such as `“ ” – … €` is there too.
 
-This is a hobby project. Status: the ROM font builds in an 8×8 and an 8×10 variant, both with accented Latin letters.
-See [Milestones](#milestones) for what comes next.
+Only the 96 ROM characters come from the Spectrum. Every other glyph is drawn in this project or composed from its own
+glyphs, such as `ä` from `a` and `¨`.
 
-## How it works
+## Using a font
 
+Download the fonts from the demo page, or from the `zxfnt-fonts` artifact of a
+[build](https://github.com/olecve/zxfnt/actions/workflows/build.yml), and put them next to your page:
+
+```css
+@font-face {
+  font-family: "ZX Spectrum ROM";
+  src:
+    url("zx-rom.woff2") format("woff2"),
+    url("zx-rom.otf") format("opentype");
+}
+
+body {
+  font-family: "ZX Spectrum ROM", monospace;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  text-decoration-thickness: from-font;
+  text-underline-position: from-font;
+}
 ```
- Spectrum ROM ─────────┐
- raw font file (.ch8) ─┤
- PNG image ────────────┼──► text glyph files ──► build ──► .otf (+ .woff2) + demo page
- game snapshot (.sna) ─┤           ▲
- hand-drawn glyphs ────┘           │
-                 extra character sets (compose, copy, generate, draw)
+
+For sharp pixels:
+
+- Use a font size that is a multiple of 8px. On a retina screen, multiples of 4px work too.
+- Keep the `font-smoothing` lines. Without them, macOS draws the glyphs a little bolder, with grey edges.
+- `from-font` makes underlines and strikeouts one font pixel thick.
+
+Use `zx-rom-tall` ("ZX Spectrum ROM Tall") for text with accents or Georgian. Its letters are the same size, and its
+lines are 1.25 times taller.
+
+## Development
+
+Needs Node 22.6 or newer (`nvm use` picks the version in `.nvmrc`).
+
+```sh
+npm install
+npm run build     # fonts/ -> dist/: .otf, .woff2 and the demo page
+npm run serve     # the demo page at http://localhost:8080
+npm run edit      # the glyph editor at http://localhost:8081
+npm run compose   # makes the composed letters, such as ä, from the lists in sets/
+npm run validate  # format, lint, unused code, types and tests
 ```
 
-Every source is first converted into plain text glyph files. A font is a directory: `font.txt` has the name and size,
-and each other `.txt` file has glyphs from one source. You can read and edit them in any editor:
+A font is a directory of text files. `font.txt` has its name and size, and the other files have the glyphs, one source
+each:
 
 ```
 U+0041 A
@@ -47,107 +83,20 @@ U+0041 A
 ........
 ```
 
-The builder turns each lit pixel into a square in a vector font.
+The editor draws on the same files: a pixel grid with a reference letter behind it, a live preview, and a save that
+changes only that glyph's rows. `npm run import:rom -- 48.rom` reads the font of a 48K ROM or a 768-byte font file.
 
-## Building
+The code is TypeScript. [opentype.js](https://github.com/opentypejs/opentype.js) writes the fonts,
+[wawoff2](https://github.com/fontello/wawoff2) compresses them, and the editor and demo page use Preact and esbuild. The
+decisions behind the project are in [docs/adr](docs/adr/).
 
-Needs Node 22.6 or newer. `.nvmrc` pins the version that the project is tested with, so `nvm use` selects it.
+## Next
 
-```sh
-npm install
-npm run build     # fonts/<font>/*.txt -> dist/<name>.otf and .woff2, and the demo page dist/index.html
-npm run serve     # demo page at http://localhost:8080
-npm test          # checks that each .otf has exactly the pixels of its glyph files, and the .woff2 the same glyphs
-npm run lint      # ESLint
-npm run check     # type check
-npm run format    # formats all files with Prettier
-npm run validate  # format check, lint, unused code check, type check and tests
-npm run import:rom -- 48.rom  # 48K ROM or 768-byte font file -> fonts/zx-rom/rom.txt
-npm run compose   # character lists in sets/ -> fonts/<font>/composed.txt
-```
-
-Open the demo page through `npm run serve`. Browsers do not load fonts for pages opened as `file://` URLs.
-
-## Using a font
-
-Copy `dist/zx-rom.woff2` and `dist/zx-rom.otf` next to your page. Browsers load the `.woff2`, which is about 6 times
-smaller. The `.otf` is a fallback for old browsers, and the file to install on a computer.
-
-```css
-@font-face {
-  font-family: "ZX Spectrum ROM";
-  src:
-    url("zx-rom.woff2") format("woff2"),
-    url("zx-rom.otf") format("opentype");
-}
-
-body {
-  font-family: "ZX Spectrum ROM", monospace;
-  font-size: 16px; /* multiples of 8px keep pixels sharp */
-  /* macOS thickens glyphs by default, which blurs the pixel edges */
-  -webkit-font-smoothing: antialiased; /* Chrome, Safari, Edge */
-  -moz-osx-font-smoothing: grayscale; /* Firefox */
-}
-
-a {
-  /* a sharp underline or strikeout, one font pixel thick, from the font */
-  text-decoration-thickness: from-font;
-  text-underline-position: from-font;
-}
-```
-
-Sharp edges need all of these:
-
-- **Font smoothing off on macOS.** Without the two `font-smoothing` lines, macOS makes every glyph slightly bolder, and
-  the edges get grey pixels. These lines have no effect on other systems.
-- **A font size that is a multiple of 8px** (8, 16, 24, 32…). Then each font pixel is a whole number of screen pixels.
-  On a high-density (retina) screen, multiples of 4px are also sharp.
-- **Text that starts on a whole pixel.** On a normal-density screen, text that starts at a fractional position, for
-  example inside a centered box with an odd width, gets grey edges.
-
-For text with accents, use `zx-rom-tall.otf` ("ZX Spectrum ROM Tall") instead. It has the same glyphs in an 8×10 cell:
-capitals with accents keep their full height, and every accent has an empty row below it. Letters have the same size as
-in `zx-rom.otf`, and lines are 1.25 times taller.
-
-## Fonts
-
-| Font                                | Source                                          | Glyphs                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| ----------------------------------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`zx-rom`](fonts/zx-rom/)           | ZX Spectrum 48K ROM, address `0x3D00`           | 96 from the ROM ([`rom.txt`](fonts/zx-rom/rom.txt)); `ä å õ ö ü š ž Ä Å Õ Ö Ü`, Cyrillic letters that look like Latin ones, and `Ё ё й Ї Ў ў`, composed or copied ([`composed.txt`](fonts/zx-rom/composed.txt)); `^`, `` ` `` and `ß` drawn ([`extra.txt`](fonts/zx-rom/extra.txt)); `Š`, `Ž` and `Й` drawn five rows high ([`short-caps.txt`](fonts/zx-rom/short-caps.txt)); the other Cyrillic letters for Russian, Ukrainian, Belarusian and Kazakh drawn ([`cyrillic.txt`](fonts/zx-rom/cyrillic.txt)); the 33 Georgian letters drawn ([`georgian.txt`](fonts/zx-rom/georgian.txt)); punctuation and symbols for web pages, such as `“ ” – … € °` and the no-break space ([`punctuation.txt`](fonts/zx-rom/punctuation.txt)) |
-| [`zx-rom-tall`](fonts/zx-rom-tall/) | `zx-rom` in an 8×10 cell, for text with accents | includes `rom.txt`, `extra.txt`, `punctuation.txt`, `cyrillic.txt` and `georgian.txt` of `zx-rom`; all accented letters composed at full height ([`composed.txt`](fonts/zx-rom-tall/composed.txt)); Georgian letters with ascenders drawn two rows tall ([`georgian.txt`](fonts/zx-rom-tall/georgian.txt))                                                                                                                                                                                                                                                                                                                                                                                                                       |
-
-## Milestones
-
-1. ~~Pipeline: ROM glyph file → `.otf`, plus a demo page.~~ Done.
-2. First extra character sets for the ROM font: ~~accented Latin letters~~, ~~Cyrillic for Russian, Ukrainian,
-   Belarusian and Kazakh~~, ~~Georgian~~.
-3. Importers: ~~the ROM and raw 768-byte files~~, then PNG images.
-4. Snapshot ripper (`.sna`, `.z80`); try it on Dizzy.
-5. Extras: ~~`.woff2`~~, Spectrum block graphics (`▀ ▄ █`), a page with all fonts side by side.
-
-## Tooling
-
-- TypeScript on Node 22, run with `node --experimental-strip-types`.
-- Prettier formats the code. ESLint with typescript-eslint lints it, and
-  [eslint-plugin-slop](https://github.com/antfu/eslint-plugin-slop) flags patterns that AI tools often write.
-  [Knip](https://knip.dev) finds unused files, exports and dependencies. `npm run validate` runs all checks.
-- [opentype.js](https://github.com/opentypejs/opentype.js) writes the `.otf` files, and
-  [wawoff2](https://github.com/fontello/wawoff2), the WOFF2 code of Google built for WebAssembly, makes the `.woff2`
-  files.
-
-## Decisions
-
-- [ADR 0001: Build tool and language](docs/adr/0001-build-tool-and-language.md)
-- [ADR 0002: Plain text glyph format as the single source](docs/adr/0002-plain-text-glyph-format.md)
-- [ADR 0003: Characters beyond ASCII](docs/adr/0003-characters-beyond-ascii.md)
-- [ADR 0004: Taller variant for accents](docs/adr/0004-taller-variant-for-accents.md)
-- [ADR 0005: Glyph editor](docs/adr/0005-glyph-editor.md)
-- [ADR 0006: Demo page with one view at a time](docs/adr/0006-demo-page.md)
+- Import fonts from PNG images
+- Take fonts from game snapshots (`.sna`, `.z80`), starting with Dizzy
+- Spectrum block graphics (`▀ ▄ █`)
 
 ## License
 
-The code and the glyphs made in this project are under the [MIT License](LICENSE): the glyphs drawn by hand and the
-glyphs that the compose step makes. They are not copied from other fonts.
-
-The glyphs imported from the ZX Spectrum ROM are copyrighted by Amstrad, which allows the ROM to be shared for emulator
-use. Game fonts belong to their publishers. The `copyright` of each font says which glyphs are whose.
+The code and the glyphs made in this project are under the [MIT License](LICENSE). The 96 ROM glyphs are © Amstrad,
+which allows the ROM to be shared for emulator use. Fonts taken from games belong to their publishers.
