@@ -134,7 +134,10 @@ in `zx-rom.otf`, and lines are 1.25 times taller.
 - [ADR 0003: Characters beyond ASCII](docs/adr/0003-characters-beyond-ascii.md)
 - [ADR 0004: Taller variant for accents](docs/adr/0004-taller-variant-for-accents.md)
 
-## Copyright
+## License
 
-The ZX Spectrum ROM is copyrighted by Amstrad, which allows it to be shared for emulator use. Game fonts belong to their
-publishers. This project is for personal, non-commercial use.
+The code and the glyphs made in this project are under the [MIT License](LICENSE): the glyphs drawn by hand and the
+glyphs that the compose step makes. They are not copied from other fonts.
+
+The glyphs imported from the ZX Spectrum ROM are copyrighted by Amstrad, which allows the ROM to be shared for emulator
+use. Game fonts belong to their publishers. The `copyright` of each font says which glyphs are whose.

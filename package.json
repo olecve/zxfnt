@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Builds web fonts from 8x8 ZX Spectrum fonts",
+  "license": "MIT",
   "type": "module",
   "engines": {
     "node": ">=22.6"

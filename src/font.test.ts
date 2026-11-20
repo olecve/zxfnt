@@ -82,6 +82,8 @@ for (const path of await fontDirs()) {
     const names = font.names.windows;
     assert.equal(names.fontFamily.en, source.family);
     assert.equal(names.copyright.en, source.copyright ?? " ");
+    assert.match(names.license.en, /^MIT License/);
+    assert.match(names.licenseURL.en, /\/LICENSE$/);
     assert.match(names.version.en, /^Version \d+\.\d+\.\d+$/);
     assert.equal(names.uniqueID.en, `zxfnt: ${source.family} Regular`);
     assert.equal(font.tables.os2.version, 4);
