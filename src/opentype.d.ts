@@ -24,12 +24,15 @@ declare module "opentype.js/dist/opentype.mjs" {
       ascender: number;
       descender: number;
       weightClass?: number;
+      panose?: number[];
+      tables?: { post?: Record<string, number>; os2?: Record<string, number> };
       glyphs: Glyph[];
     });
     glyphs: { length: number };
     unitsPerEm: number;
     ascender: number;
     descender: number;
+    tables: { post: Record<string, number>; os2: Record<string, number> & { panose: number[] } };
     charToGlyph(char: string): Glyph & { path: { commands: { type: string; x?: number; y?: number }[] } };
     toArrayBuffer(): ArrayBuffer;
   }

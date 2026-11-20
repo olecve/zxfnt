@@ -75,6 +75,9 @@ export function buildFont(source: GlyphFont): Font {
     ascender: fontY(lineShift),
     descender: fontY(source.height + lineShift),
     weightClass: 400,
+    // Every glyph has the same width. PANOSE says the same: Latin text (2), monospaced (9).
+    panose: [2, 0, 0, 9, 0, 0, 0, 0, 0, 0],
+    tables: { post: { isFixedPitch: 1 } },
     glyphs,
   });
 }
