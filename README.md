@@ -18,7 +18,8 @@ Every font can also get characters the original never had, such as letters for l
 symbols. These characters are made in this project: composed from the font's own glyphs or drawn by hand. They are not
 copied from other fonts or ROMs.
 
-This is a hobby project. Status: **milestone 1 done**: the ROM font builds into `dist/zx-rom.otf`.
+This is a hobby project. Status: the ROM font builds in an 8×8 and an 8×10 variant, both with accented Latin letters.
+See [Milestones](#milestones) for what comes next.
 
 ## How it works
 
