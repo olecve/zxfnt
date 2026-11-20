@@ -55,13 +55,13 @@ Needs Node 22.6 or newer. `.nvmrc` pins the version that the project is tested w
 
 ```sh
 npm install
-npm run build     # fonts/<font>/*.txt -> dist/<name>.otf and dist/index.html
+npm run build     # fonts/<font>/*.txt -> dist/<name>.otf, dist/<name>.woff2 and dist/index.html
 npm run serve     # demo page at http://localhost:8080
-npm test          # checks that each .otf has exactly the pixels of its glyph files
+npm test          # checks that each .otf has exactly the pixels of its glyph files, and the .woff2 the same glyphs
 npm run lint      # ESLint
 npm run check     # type check
 npm run format    # formats all files with Prettier
-npm run validate  # format check, lint, type check and tests
+npm run validate  # format check, lint, unused code check, type check and tests
 npm run import:rom -- 48.rom  # 48K ROM or 768-byte font file -> fonts/zx-rom/rom.txt
 npm run compose   # character lists in sets/ -> fonts/<font>/composed.txt
 ```
@@ -70,12 +70,15 @@ Open the demo page through `npm run serve`. Browsers do not load fonts for pages
 
 ## Using a font
 
-Copy `dist/zx-rom.otf` next to your page:
+Copy `dist/zx-rom.woff2` and `dist/zx-rom.otf` next to your page. Browsers load the `.woff2`, which is about 6 times
+smaller. The `.otf` is a fallback for old browsers, and the file to install on a computer.
 
 ```css
 @font-face {
   font-family: "ZX Spectrum ROM";
-  src: url("zx-rom.otf") format("opentype");
+  src:
+    url("zx-rom.woff2") format("woff2"),
+    url("zx-rom.otf") format("opentype");
 }
 
 body {
@@ -119,7 +122,7 @@ in `zx-rom.otf`, and lines are 1.25 times taller.
 2. First extra character sets for the ROM font: ~~accented Latin letters~~, ~~Russian Cyrillic~~.
 3. Importers: ~~the ROM and raw 768-byte files~~, then PNG images.
 4. Snapshot ripper (`.sna`, `.z80`); try it on Dizzy.
-5. Extras: `.woff2`, Spectrum block graphics (`▀ ▄ █`), a page with all fonts side by side.
+5. Extras: ~~`.woff2`~~, Spectrum block graphics (`▀ ▄ █`), a page with all fonts side by side.
 
 ## Tooling
 
@@ -127,7 +130,9 @@ in `zx-rom.otf`, and lines are 1.25 times taller.
 - Prettier formats the code. ESLint with typescript-eslint lints it, and
   [eslint-plugin-slop](https://github.com/antfu/eslint-plugin-slop) flags patterns that AI tools often write.
   [Knip](https://knip.dev) finds unused files, exports and dependencies. `npm run validate` runs all checks.
-- [opentype.js](https://github.com/opentypejs/opentype.js) writes the font files.
+- [opentype.js](https://github.com/opentypejs/opentype.js) writes the `.otf` files, and
+  [wawoff2](https://github.com/fontello/wawoff2), the WOFF2 code of Google built for WebAssembly, makes the `.woff2`
+  files.
 
 ## Decisions
 

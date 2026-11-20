@@ -1,7 +1,9 @@
-// Builds every font directory in fonts/ into dist/<name>.otf, and writes a demo page dist/index.html.
+// Builds every font directory in fonts/ into dist/<name>.otf and dist/<name>.woff2, and writes a demo page
+// dist/index.html.
 
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import { compress } from "wawoff2";
 import { buildFont } from "./font.ts";
 import { fontDirs, readGlyphFont, type GlyphFont } from "./glyphs.ts";
 
@@ -37,9 +39,13 @@ await mkdir(DIST_DIR);
 const built: GlyphFont[] = [];
 for (const path of await fontDirs()) {
   const source = await readGlyphFont(path);
-  const bytes = buildFont(source).toArrayBuffer();
-  await writeFile(join(DIST_DIR, `${source.name}.otf`), Buffer.from(bytes));
-  console.log(`${path} -> ${DIST_DIR}/${source.name}.otf (${source.glyphs.length} glyphs, ${bytes.byteLength} bytes)`);
+  const otf = new Uint8Array(buildFont(source).toArrayBuffer());
+  const woff2 = await compress(otf);
+  await writeFile(join(DIST_DIR, `${source.name}.otf`), otf);
+  await writeFile(join(DIST_DIR, `${source.name}.woff2`), woff2);
+  console.log(
+    `${path} -> ${DIST_DIR}/${source.name}.otf and .woff2 (${source.glyphs.length} glyphs, ${otf.length} and ${woff2.length} bytes)`,
+  );
   built.push(source);
 }
 
@@ -52,7 +58,10 @@ function demoPage(fonts: GlyphFont[]): string {
   const escape = (s: string) =>
     s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   const faces = fonts
-    .map((f) => `@font-face { font-family: "${f.family}"; src: url("${f.name}.otf") format("opentype"); }`)
+    .map(
+      (f) =>
+        `@font-face { font-family: "${f.family}"; src: url("${f.name}.woff2") format("woff2"), url("${f.name}.otf") format("opentype"); }`,
+    )
     .join("\n      ");
   const border = PALETTE.map(
     (colour, i) =>
@@ -89,7 +98,7 @@ function demoPage(fonts: GlyphFont[]): string {
       return `
         <section data-name="${f.name}" data-family="${escape(f.family)}"${i === 0 ? "" : " hidden"}>
           <h2>${escape(f.family)}</h2>
-          <p><a href="${f.name}.otf" download>${f.name}.otf</a> ${f.width}×${f.height} cell, ${f.glyphs.length} glyphs</p>
+          <p><a href="${f.name}.woff2" download>${f.name}.woff2</a> <a href="${f.name}.otf" download>${f.name}.otf</a> ${f.width}×${f.height} cell, ${f.glyphs.length} glyphs</p>
           <h3>Type here</h3>
           <textarea spellcheck="false">10 PRINT "HELLO, WORLD!"\n20 GO TO 10</textarea>
           <h3>Sizes</h3>
