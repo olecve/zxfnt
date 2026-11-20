@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed
+Accepted
 
 ## Context and Problem Statement
 
@@ -67,7 +67,8 @@ font or ROM, such as the fonts of Spectrum clones or other computers.
 ### Confirmation
 
 - The ROM font has all glyphs of the first sets
-- A list for one more language can be added with no change to the code
+- A list for one more language can be added with no change to the code, except a new mark in `src/compose.ts` when the
+  language needs one
 
 ## Pros and Cons of the Options
 
