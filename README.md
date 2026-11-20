@@ -1,6 +1,12 @@
 # zxfnt
 
+[![Build](https://github.com/olecve/zxfnt/actions/workflows/build.yml/badge.svg)](https://github.com/olecve/zxfnt/actions/workflows/build.yml)
+
 Turns 8×8 ZX Spectrum fonts into web fonts that you can use on any webpage with `@font-face`.
+
+**Demo page: <https://olecve.github.io/zxfnt/>.** Each run of the
+[build workflow](https://github.com/olecve/zxfnt/actions/workflows/build.yml) also has the fonts as a downloadable
+artifact, `zxfnt-fonts`.
 
 Sources:
 
