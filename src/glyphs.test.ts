@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { parseHeader, readGlyphFont } from "./glyphs.ts";
+import { parseGlyphs, parseHeader, readGlyphFont } from "./glyphs.ts";
 
 void test("an included glyph file gets empty rows on top in a taller font", async () => {
   const rom = await readGlyphFont("fonts/zx-rom");
@@ -27,4 +27,11 @@ void test("a name or family with unsafe characters is rejected", () => {
   assert.throws(() => parseHeader(header("../x", "X")), /name must be lowercase letters/);
   assert.throws(() => parseHeader(header("x", 'X"</style>')), /family must not contain/);
   assert.equal(parseHeader(header("zx-rom-tall", "ZX Spectrum ROM Tall")).name, "zx-rom-tall");
+});
+
+void test("a code point outside Unicode is rejected", () => {
+  const glyph = (hex: string) => ({ path: "a.txt", text: `U+${hex}\n` + "........\n".repeat(8) });
+  assert.throws(() => parseGlyphs(glyph("110000"), 8, 8), /a\.txt:1: U\+110000 is not a Unicode character/);
+  assert.throws(() => parseGlyphs(glyph("D800"), 8, 8), /is not a Unicode character/);
+  assert.equal(parseGlyphs(glyph("1F600"), 8, 8)[0].codePoint, 0x1f600);
 });
