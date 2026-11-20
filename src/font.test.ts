@@ -101,6 +101,8 @@ describe("buildFont", () => {
       assert.equal(font.tables.post.isFixedPitch, 1, "post table says monospace");
       assert.equal(font.tables.post.underlineThickness, unit, "underline is one pixel thick");
       assert.equal(font.tables.post.underlinePosition, -unit, "underline is on the row below the descenders");
+      assert.equal(font.tables.os2.yStrikeoutSize, unit, "strikeout is one pixel thick");
+      assert.equal(font.tables.os2.yStrikeoutPosition, 3 * unit, "strikeout is on the row of the hyphen");
       assert.deepEqual(font.tables.os2.panose, [2, 0, 0, 9, 0, 0, 0, 0, 0, 0], "PANOSE says monospace");
 
       for (const glyph of source.glyphs) {

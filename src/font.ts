@@ -60,6 +60,10 @@ export function buildFont(source: GlyphFont): Font {
   // that text sits in a line box where the square font puts it. The accents then use the empty bottom rows of the line
   // above.
   const lineShift = (source.height - source.width) / 2;
+  // The strikeout is one pixel thick, on the row of the hyphen, so it stays sharp with text-decoration-thickness:
+  // from-font. A font without a hyphen gets the middle row above the baseline.
+  const hyphen = source.glyphs.find((g) => g.codePoint === 0x2d)?.rows.findIndex((row) => row.includes(true)) ?? -1;
+  const strikeoutRow = hyphen >= 0 ? hyphen : Math.floor(source.baseline / 2);
 
   const notdef = new Path();
   // A hollow box, the usual shape for a missing character.
@@ -104,7 +108,13 @@ export function buildFont(source: GlyphFont): Font {
       post: { isFixedPitch: 1, underlinePosition: -unit, underlineThickness: unit },
       // USE_TYPO_METRICS (bit 7, from OS/2 version 4) makes Windows take the line height and position from the same
       // values as macOS, not from usWinAscent and usWinDescent, which only say where glyphs get clipped.
-      os2: { version: 4, fsSelection: REGULAR | USE_TYPO_METRICS },
+      os2: {
+        version: 4,
+        fsSelection: REGULAR | USE_TYPO_METRICS,
+        yStrikeoutSize: unit,
+        // The position is the top of the stroke.
+        yStrikeoutPosition: fontY(strikeoutRow),
+      },
     },
     glyphs,
   });
