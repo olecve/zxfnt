@@ -95,11 +95,16 @@ Sharp edges need all of these:
 - **Text that starts on a whole pixel.** On a normal-density screen, text that starts at a fractional position, for
   example inside a centered box with an odd width, gets grey edges.
 
+For text with accents, use `zx-rom-tall.otf` ("ZX Spectrum ROM Tall") instead. It has the same glyphs in an 8×10 cell:
+capitals with accents keep their full height, and every accent has an empty row below it. Letters have the same size as
+in `zx-rom.otf`, and lines are 1.25 times taller.
+
 ## Fonts
 
-| Font                      | Source                                | Glyphs                                                                                                                                                                                                              |
-| ------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`zx-rom`](fonts/zx-rom/) | ZX Spectrum 48K ROM, address `0x3D00` | 96 from the ROM ([`rom.txt`](fonts/zx-rom/rom.txt)); `ä å õ ö ü š ž Ä Å Õ Ö Ü` composed ([`composed.txt`](fonts/zx-rom/composed.txt)); `^`, `` ` ``, `ß`, `Š` and `Ž` drawn ([`extra.txt`](fonts/zx-rom/extra.txt)) |
+| Font                                | Source                                          | Glyphs                                                                                                                                                                                                                                                                                        |
+| ----------------------------------- | ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`zx-rom`](fonts/zx-rom/)           | ZX Spectrum 48K ROM, address `0x3D00`           | 96 from the ROM ([`rom.txt`](fonts/zx-rom/rom.txt)); `ä å õ ö ü š ž Ä Å Õ Ö Ü` composed ([`composed.txt`](fonts/zx-rom/composed.txt)); `^`, `` ` `` and `ß` drawn ([`extra.txt`](fonts/zx-rom/extra.txt)); `Š` and `Ž` drawn five rows high ([`short-caps.txt`](fonts/zx-rom/short-caps.txt)) |
+| [`zx-rom-tall`](fonts/zx-rom-tall/) | `zx-rom` in an 8×10 cell, for text with accents | includes `rom.txt` and `extra.txt` of `zx-rom`; all accented letters composed at full height ([`composed.txt`](fonts/zx-rom-tall/composed.txt))                                                                                                                                               |
 
 ## Milestones
 
@@ -120,6 +125,7 @@ Sharp edges need all of these:
 - [ADR 0001: Build tool and language](docs/adr/0001-build-tool-and-language.md)
 - [ADR 0002: Plain text glyph format as the single source](docs/adr/0002-plain-text-glyph-format.md)
 - [ADR 0003: Characters beyond ASCII](docs/adr/0003-characters-beyond-ascii.md)
+- [ADR 0004: Taller variant for accents](docs/adr/0004-taller-variant-for-accents.md)
 
 ## Copyright
 

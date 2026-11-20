@@ -66,6 +66,9 @@ starts a comment. `baseline: 7` means rows 0–6 are on or above the baseline, a
 The build merges all glyph files of a font and stops with an error when two files have the same code point. An importer
 can then write its whole file again without touching glyphs that a person drew.
 
+The header can also `include` glyph files of another font, with paths relative to the font directory. When this font is
+taller, the build adds empty rows on top of the included glyphs ([ADR-0004](0004-taller-variant-for-accents.md)).
+
 ### Consequences
 
 - Good, because each importer has one task: it writes a glyph file
