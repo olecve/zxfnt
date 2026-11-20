@@ -62,6 +62,7 @@ npm run check     # type check
 npm run format    # formats all files with Prettier
 npm run validate  # format check, lint, type check and tests
 npm run import:rom -- 48.rom  # 48K ROM or 768-byte font file -> fonts/zx-rom/rom.txt
+npm run compose   # character lists in sets/ -> fonts/<font>/composed.txt
 ```
 
 Open the demo page through `npm run serve`. Browsers do not load fonts for pages opened as `file://` URLs.
@@ -96,14 +97,14 @@ Sharp edges need all of these:
 
 ## Fonts
 
-| Font                      | Source                                | Glyphs                                                                                                                                                              |
-| ------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`zx-rom`](fonts/zx-rom/) | ZX Spectrum 48K ROM, address `0x3D00` | 96 from the ROM ([`rom.txt`](fonts/zx-rom/rom.txt)), plus `^` and `` ` `` ([`extra.txt`](fonts/zx-rom/extra.txt)), because the ROM shows `↑` and `£` at those codes |
+| Font                      | Source                                | Glyphs                                                                                                                                                                                       |
+| ------------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`zx-rom`](fonts/zx-rom/) | ZX Spectrum 48K ROM, address `0x3D00` | 96 from the ROM ([`rom.txt`](fonts/zx-rom/rom.txt)); `ä å ö ü Ä Å Ö Ü` composed ([`composed.txt`](fonts/zx-rom/composed.txt)); `^` and `` ` `` drawn ([`extra.txt`](fonts/zx-rom/extra.txt)) |
 
 ## Milestones
 
 1. ~~Pipeline: ROM glyph file → `.otf`, plus a demo page.~~ Done.
-2. First extra character sets for the ROM font.
+2. First extra character sets for the ROM font: ~~accented Latin letters~~, then another alphabet.
 3. Importers: ~~the ROM and raw 768-byte files~~, then PNG images.
 4. Snapshot ripper (`.sna`, `.z80`); try it on Dizzy.
 5. Extras: `.woff2`, Spectrum block graphics (`▀ ▄ █`), a page with all fonts side by side.

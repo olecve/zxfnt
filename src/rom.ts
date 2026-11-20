@@ -1,5 +1,7 @@
 // Reads the 96-character font of the ZX Spectrum ROM, or a raw 768-byte font file, as glyph file text.
 
+import { formatGlyph } from "./glyphs.ts";
+
 const ROM_SIZE = 16384;
 const ROM_FONT_ADDRESS = 0x3d00;
 const FONT_SIZE = 96 * 8;
@@ -21,14 +23,12 @@ export function glyphText(font: Uint8Array, comment: string): string {
   for (let i = 0; i < FONT_SIZE / 8; i++) {
     const code = FIRST_CODE + i;
     const codePoint = UNICODE[code] ?? code;
-    const hex = codePoint.toString(16).toUpperCase().padStart(4, "0");
-    const char = codePoint === 0x20 ? "" : ` ${String.fromCodePoint(codePoint)}`;
+    const rows = [...font.subarray(i * 8, i * 8 + 8)].map((byte) =>
+      [...Array(8).keys()].map((x) => (byte & (0x80 >> x)) !== 0),
+    );
     lines.push("");
     if (codePoint !== code) lines.push(`# ROM code 0x${code.toString(16).toUpperCase()}`);
-    lines.push(`U+${hex}${char}`);
-    for (const byte of font.subarray(i * 8, i * 8 + 8)) {
-      lines.push(byte.toString(2).padStart(8, "0").replace(/0/g, ".").replace(/1/g, "X"));
-    }
+    lines.push(formatGlyph({ codePoint, rows }));
   }
   return lines.join("\n") + "\n";
 }

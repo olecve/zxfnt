@@ -99,7 +99,11 @@ The font has the marks as separate glyphs, and the browser puts each mark on its
 ## More Information
 
 - Milestone 2 adds the Finnish and Cyrillic lists to the ROM font.
-- Draw the shared marks (`¨`, `˚`, `˘` and others) as small glyph fragments.
+- The lists are in `sets/`, and `npm run compose` writes each font's `composed.txt`. The marks are small rules in
+  `src/compose.ts`, not glyph fragments, because a mark must fit the width of each letter: the dots of `ä` and `Ä` are a
+  different distance apart. A mark goes on row 0, and a capital loses its highest repeated row to make space.
+- A ring does not fit in one row, so `˚` is a dot in the middle of the letter: `å` and `Å` have one dot, `ä` and `Ä`
+  have two.
 - Milestone 5 adds the Spectrum block graphics with the generate method.
 - Revisit when more than half of the composed glyphs need fixes by hand. Then draw those glyphs instead.
 - Revisit when a language with stacked accents is added. That needs mark attachment or a taller cell, decided in a new
