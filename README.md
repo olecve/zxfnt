@@ -97,9 +97,9 @@ Sharp edges need all of these:
 
 ## Fonts
 
-| Font                      | Source                                | Glyphs                                                                                                                                                                                       |
-| ------------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`zx-rom`](fonts/zx-rom/) | ZX Spectrum 48K ROM, address `0x3D00` | 96 from the ROM ([`rom.txt`](fonts/zx-rom/rom.txt)); `ä å ö ü Ä Å Ö Ü` composed ([`composed.txt`](fonts/zx-rom/composed.txt)); `^` and `` ` `` drawn ([`extra.txt`](fonts/zx-rom/extra.txt)) |
+| Font                      | Source                                | Glyphs                                                                                                                                                                                                              |
+| ------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`zx-rom`](fonts/zx-rom/) | ZX Spectrum 48K ROM, address `0x3D00` | 96 from the ROM ([`rom.txt`](fonts/zx-rom/rom.txt)); `ä å õ ö ü š ž Ä Å Õ Ö Ü` composed ([`composed.txt`](fonts/zx-rom/composed.txt)); `^`, `` ` ``, `ß`, `Š` and `Ž` drawn ([`extra.txt`](fonts/zx-rom/extra.txt)) |
 
 ## Milestones
 
