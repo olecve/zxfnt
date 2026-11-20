@@ -1,6 +1,6 @@
-# Drawn by hand for the 8×8 font only. S and Z have no repeated row to remove, so Š and Ž are five rows high. Ё and Й keep
-# their full height, with a one-row mark on top, as the Santaka-002 clone draws them. The 8×10 font does not include
-# this file and composes all four at full height, with a gap under the mark.
+# Drawn by hand for the 8×8 font only. S and Z have no repeated row to remove, so Š and Ž are five rows high. Ё Й Ї Ў
+# keep their full height with a one-row mark on top, as the Santaka-002 clone draws Ё and Й, and й and ў have a one-row
+# breve. The 8×10 font does not include this file and composes these letters at full height, with a gap under the mark.
 
 U+0160 Š
 ..X..X..
@@ -40,4 +40,44 @@ U+0401 Ё
 .X......
 .X......
 .XXXXXX.
+........
+
+U+0407 Ї
+...X.X..
+..XXXXX.
+....X...
+....X...
+....X...
+....X...
+..XXXXX.
+........
+
+U+040E Ў
+...XX...
+.X....X.
+.X....X.
+.X....X.
+..XXXXX.
+......X.
+..XXXX..
+........
+
+U+045E ў
+..XXX...
+........
+.X...X..
+.X...X..
+.X...X..
+..XXXX..
+.....X..
+..XXX...
+
+U+0439 й
+..XXX...
+........
+.X...X..
+.X..XX..
+.X.X.X..
+.XX..X..
+.X...X..
 ........
