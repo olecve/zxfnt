@@ -287,4 +287,12 @@ function LoadingBorder({ trigger }: { trigger: string }) {
   return <canvas ref={canvas} class="loading" aria-hidden="true" />;
 }
 
+// About 1.4 CSS pixels for each pixel of the font on a phone, rounded to whole device pixels.
+const setFontPixel = () => {
+  const ratio = devicePixelRatio || 1;
+  document.documentElement.style.setProperty("--px", `${Math.max(1, Math.round(1.4 * ratio)) / ratio}px`);
+};
+setFontPixel();
+addEventListener("resize", setFontPixel);
+
 render(<App />, document.getElementById("app")!);
