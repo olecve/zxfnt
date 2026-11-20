@@ -60,8 +60,10 @@ U+0041 A
 ........
 ```
 
-`X` is a lit pixel and `.` is an empty pixel. A glyph starts with its code point. A blank line separates two glyphs. `#`
-starts a comment. `baseline: 7` means rows 0–6 are on or above the baseline, and row 7 has the descenders.
+`X` is a lit pixel and `.` is an empty pixel. A glyph starts with its code point and the character. The build checks
+that the character is the one of the code point. An invisible character, such as the space, has only the code point. A
+blank line separates two glyphs. `#` starts a comment. `baseline: 7` means rows 0–6 are on or above the baseline, and
+row 7 has the descenders.
 
 The build merges all glyph files of a font and stops with an error when two files have the same code point. An importer
 can then write its whole file again without touching glyphs that a person drew.

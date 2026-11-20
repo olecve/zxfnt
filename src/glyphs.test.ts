@@ -36,6 +36,14 @@ describe("parseGlyphs", () => {
     assert.throws(() => parseGlyphs(glyph("D800"), 8, 8), /is not a Unicode character/);
     assert.equal(parseGlyphs(glyph("1F600"), 8, 8)[0].codePoint, 0x1f600);
   });
+
+  it("rejects a character that does not match its code point", () => {
+    const glyph = (start: string) => ({ path: "a.txt", text: `${start}\n` + "........\n".repeat(8) });
+    assert.throws(() => parseGlyphs(glyph("U+0041 B"), 8, 8), /a\.txt:1: B is not U\+0041/);
+    assert.throws(() => parseGlyphs(glyph("U+0041 A B"), 8, 8), /expected a glyph such as/);
+    assert.equal(parseGlyphs(glyph("U+1F600 😀"), 8, 8)[0].codePoint, 0x1f600);
+    assert.equal(parseGlyphs(glyph("U+0020"), 8, 8)[0].codePoint, 0x20);
+  });
 });
 
 describe("parseGlyphFont", () => {
