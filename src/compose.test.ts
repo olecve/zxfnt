@@ -109,6 +109,11 @@ void test("compose skips a mark that would go outside the cell", () => {
   ]);
 });
 
+void test("a list line can name a character above U+FFFF", () => {
+  const { glyphs } = compose(list("U+1D400 𝐀 = A"), [A]);
+  assert.deepEqual(glyphs, [{ codePoint: 0x1d400, rows: A.rows }]);
+});
+
 void test("compose rejects a character that does not match its code point", () => {
   assert.throws(() => compose(list("U+00E4 ö = o ¨"), [A]), /list\.txt:1: ö is not U\+00E4/);
 });

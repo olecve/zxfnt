@@ -47,7 +47,8 @@ const MARKS: Record<string, (minX: number, maxX: number) => Shape[]> = {
   },
 };
 
-const LINE = /^U\+([0-9A-F]{4,6})\s+(\S)\s+=\s+(\S)(?:\s+(\S))?$/;
+// The u flag makes \S match one character, also one above U+FFFF.
+const LINE = /^U\+([0-9A-F]{4,6})\s+(\S)\s+=\s+(\S)(?:\s+(\S))?$/u;
 
 const firstLitRow = (rows: Rows) => rows.findIndex((row) => row.includes(true));
 
