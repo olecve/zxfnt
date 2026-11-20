@@ -1,7 +1,7 @@
 // The demo page: one view at a time of one font, or of all fonts one above the other to compare them.
 
 import { render } from "preact";
-import { useEffect, useState } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
 import { GLYPH_GROUPS, LANGUAGES, type Language } from "../scripts.ts";
 import type { DemoFont } from "./data.ts";
 
@@ -66,95 +66,98 @@ function App() {
   }, [border, bright, fontName]);
 
   return (
-    <main>
-      <header>
-        <h1>zxfnt</h1>
-        <div class="stripes" aria-hidden="true">
-          {[2, 6, 4, 5].map((i) => (
-            <i style={{ background: PALETTE[i] }} />
+    <>
+      <LoadingBorder trigger={lang} />
+      <main>
+        <header>
+          <h1>zxfnt</h1>
+          <div class="stripes" aria-hidden="true">
+            {[2, 6, 4, 5].map((i) => (
+              <i style={{ background: PALETTE[i] }} />
+            ))}
+          </div>
+        </header>
+        <p>
+          ZX Spectrum fonts for the web. <a href="https://github.com/olecve/zxfnt">Source on GitHub</a>.
+        </p>
+        <Toggle
+          label="FONT"
+          value={fontName}
+          onChange={setFontName}
+          options={[...fonts.map((f) => [f.name, `${f.width}×${f.height}`]), [BOTH, "Both"]]}
+        />
+        <Toggle label="VIEW" value={view} onChange={setView} options={VIEWS} />
+        <div class={languageUnused ? "controls unused" : "controls"}>
+          <span>LANGUAGE</span>
+          <select
+            aria-label="Language"
+            value={lang}
+            disabled={languageUnused}
+            onChange={(e) => setLang(e.currentTarget.value)}
+          >
+            {[...languages]
+              // English first, as the default.
+              .sort((a, b) => Number(b.lang === "en") - Number(a.lang === "en") || a.name.localeCompare(b.name, "en"))
+              .map((l) => (
+                <option value={l.lang}>{l.name}</option>
+              ))}
+          </select>
+        </div>
+        <div class="controls border">
+          <span>BORDER</span>
+          {PALETTE.map((colour, i) => (
+            <button
+              type="button"
+              title={`BORDER ${i}: ${COLOUR_NAMES[i]}`}
+              style={{ background: colour, color: i < 5 ? PALETTE[7] : PALETTE[0] }}
+              onClick={() => setBorder(colour)}
+            >
+              {i}
+            </button>
           ))}
         </div>
-      </header>
-      <p>
-        ZX Spectrum fonts for the web. <a href="https://github.com/olecve/zxfnt">Source on GitHub</a>.
-      </p>
-      <Toggle
-        label="FONT"
-        value={fontName}
-        onChange={setFontName}
-        options={[...fonts.map((f) => [f.name, `${f.width}×${f.height}`]), [BOTH, "Both"]]}
-      />
-      <Toggle label="VIEW" value={view} onChange={setView} options={VIEWS} />
-      <div class={languageUnused ? "controls unused" : "controls"}>
-        <span>LANGUAGE</span>
-        <select
-          aria-label="Language"
-          value={lang}
-          disabled={languageUnused}
-          onChange={(e) => setLang(e.currentTarget.value)}
-        >
-          {[...languages]
-            // English first, as the default.
-            .sort((a, b) => Number(b.lang === "en") - Number(a.lang === "en") || a.name.localeCompare(b.name, "en"))
-            .map((l) => (
-              <option value={l.lang}>{l.name}</option>
-            ))}
-        </select>
-      </div>
-      <div class="controls border">
-        <span>BORDER</span>
-        {PALETTE.map((colour, i) => (
-          <button
-            type="button"
-            title={`BORDER ${i}: ${COLOUR_NAMES[i]}`}
-            style={{ background: colour, color: i < 5 ? PALETTE[7] : PALETTE[0] }}
-            onClick={() => setBorder(colour)}
-          >
-            {i}
-          </button>
+        <Toggle
+          label="BRIGHT"
+          value={bright}
+          onChange={setBright}
+          options={[
+            ["0", "0"],
+            ["1", "1"],
+          ]}
+        />
+        {shown.map((font) => (
+          <section style={{ fontFamily: `"${font.family}", monospace` }}>
+            <h2>{font.family}</h2>
+            <p>
+              <a href={`${font.name}.woff2`} download>
+                {font.name}.woff2
+              </a>{" "}
+              <a href={`${font.name}.otf`} download>
+                {font.name}.otf
+              </a>{" "}
+              {font.width}×{font.height} cell, {font.codePoints.length} glyphs
+            </p>
+            {view === "alphabet" && <Alphabet font={font} language={language} onPick={setStatus} />}
+            {view === "type" && (
+              <textarea
+                spellcheck={false}
+                aria-label="Type here"
+                value={typed}
+                onInput={(e) => setTyped(e.currentTarget.value)}
+              />
+            )}
+            {view === "sizes" &&
+              [8, 16, 24, 32].map((px) => (
+                <p lang={lang} style={{ fontSize: `${px}px`, lineHeight: `${px * 1.5}px` }}>
+                  {px}px: {language.sample}
+                </p>
+              ))}
+            {view === "glyphs" && <Glyphs font={font} marked={language} onPick={setStatus} />}
+          </section>
         ))}
-      </div>
-      <Toggle
-        label="BRIGHT"
-        value={bright}
-        onChange={setBright}
-        options={[
-          ["0", "0"],
-          ["1", "1"],
-        ]}
-      />
-      {shown.map((font) => (
-        <section style={{ fontFamily: `"${font.family}", monospace` }}>
-          <h2>{font.family}</h2>
-          <p>
-            <a href={`${font.name}.woff2`} download>
-              {font.name}.woff2
-            </a>{" "}
-            <a href={`${font.name}.otf`} download>
-              {font.name}.otf
-            </a>{" "}
-            {font.width}×{font.height} cell, {font.codePoints.length} glyphs
-          </p>
-          {view === "alphabet" && <Alphabet font={font} language={language} onPick={setStatus} />}
-          {view === "type" && (
-            <textarea
-              spellcheck={false}
-              aria-label="Type here"
-              value={typed}
-              onInput={(e) => setTyped(e.currentTarget.value)}
-            />
-          )}
-          {view === "sizes" &&
-            [8, 16, 24, 32].map((px) => (
-              <p lang={lang} style={{ fontSize: `${px}px`, lineHeight: `${px * 1.5}px` }}>
-                {px}px: {language.sample}
-              </p>
-            ))}
-          {view === "glyphs" && <Glyphs font={font} marked={language} onPick={setStatus} />}
-        </section>
-      ))}
-      <footer>{status}</footer>
-    </main>
+        <footer>{status}</footer>
+      </main>
+    </>
   );
 }
 
@@ -231,6 +234,58 @@ function Glyphs({ font, marked, onPick }: GlyphsProps) {
       )}
     </>
   );
+}
+
+// The stripes of a Spectrum loading from tape, shown in the border for a moment when `trigger` changes: first the wide
+// red and cyan stripes of the pilot tone, then the thin blue and yellow stripes of the data.
+const PILOT_MS = 250;
+const DATA_MS = 400;
+
+function LoadingBorder({ trigger }: { trigger: string }) {
+  const canvas = useRef<HTMLCanvasElement>(null);
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) {
+      first.current = false;
+      return;
+    }
+    const c = canvas.current;
+    if (!c || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    c.width = innerWidth;
+    c.height = innerHeight;
+    const ctx = c.getContext("2d")!;
+    const start = performance.now();
+    let frame = 0;
+    const draw = (now: number) => {
+      const t = now - start;
+      if (t > PILOT_MS + DATA_MS) {
+        ctx.clearRect(0, 0, c.width, c.height);
+        return;
+      }
+      const pilot = t < PILOT_MS;
+      // The pilot stripes roll up the screen. The data stripes are thin and change every frame.
+      let y = pilot ? -((t / 2) % 32) : 0;
+      while (y < c.height) {
+        const height = pilot ? 16 : 2 + Math.floor(Math.random() * 6);
+        ctx.fillStyle = pilot
+          ? Math.floor((y + ((t / 2) % 32)) / 16) % 2
+            ? PALETTE[5]
+            : PALETTE[2]
+          : Math.random() < 0.5
+            ? PALETTE[1]
+            : PALETTE[6];
+        ctx.fillRect(0, y, c.width, height);
+        y += height;
+      }
+      frame = requestAnimationFrame(draw);
+    };
+    frame = requestAnimationFrame(draw);
+    return () => {
+      cancelAnimationFrame(frame);
+      ctx.clearRect(0, 0, c.width, c.height);
+    };
+  }, [trigger]);
+  return <canvas ref={canvas} class="loading" aria-hidden="true" />;
 }
 
 render(<App />, document.getElementById("app")!);
