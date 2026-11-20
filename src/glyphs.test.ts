@@ -1,4 +1,4 @@
-import assert from "node:assert/strict";
+import { deepEqual, equal, throws } from "node:assert/strict";
 import { describe, it } from "node:test";
 import { parseGlyphFont, parseGlyphs, parseHeader, readGlyphFont } from "./glyphs.ts";
 
@@ -8,8 +8,8 @@ describe("parseHeader", () => {
       path: "font.txt",
       text: `name: t\nfamily: T\nsize: 8x8\nbaseline: 7\n${extra}\n`,
     });
-    assert.throws(() => parseHeader(header("inculde: ../a/rom.txt")), /font\.txt:5: unknown key "inculde"/);
-    assert.throws(() => parseHeader(header("name: u")), /font\.txt:5: "name" is set twice/);
+    throws(() => parseHeader(header("inculde: ../a/rom.txt")), /font\.txt:5: unknown key "inculde"/);
+    throws(() => parseHeader(header("name: u")), /font\.txt:5: "name" is set twice/);
   });
 
   it("rejects a name or family with unsafe characters", () => {
@@ -17,13 +17,13 @@ describe("parseHeader", () => {
       path: "font.txt",
       text: `name: ${name}\nfamily: ${family}\nsize: 8x8\nbaseline: 7\n`,
     });
-    assert.throws(() => parseHeader(header("../x", "X")), /font\.txt:1: name must be lowercase letters/);
-    assert.throws(() => parseHeader(header("x", 'X"</style>')), /font\.txt:2: family must not contain/);
-    assert.equal(parseHeader(header("zx-rom-tall", "ZX Spectrum ROM Tall")).name, "zx-rom-tall");
+    throws(() => parseHeader(header("../x", "X")), /font\.txt:1: name must be lowercase letters/);
+    throws(() => parseHeader(header("x", 'X"</style>')), /font\.txt:2: family must not contain/);
+    equal(parseHeader(header("zx-rom-tall", "ZX Spectrum ROM Tall")).name, "zx-rom-tall");
   });
 
   it("reports a missing key without a line number", () => {
-    assert.throws(() => parseHeader({ path: "font.txt", text: "name: t\nsize: 8x8\nbaseline: 7\n" }), {
+    throws(() => parseHeader({ path: "font.txt", text: "name: t\nsize: 8x8\nbaseline: 7\n" }), {
       message: 'font.txt: missing header "family"',
     });
   });
@@ -32,17 +32,17 @@ describe("parseHeader", () => {
 describe("parseGlyphs", () => {
   it("rejects a code point outside Unicode", () => {
     const glyph = (hex: string) => ({ path: "a.txt", text: `U+${hex}\n` + "........\n".repeat(8) });
-    assert.throws(() => parseGlyphs(glyph("110000"), 8, 8), /a\.txt:1: U\+110000 is not a Unicode character/);
-    assert.throws(() => parseGlyphs(glyph("D800"), 8, 8), /is not a Unicode character/);
-    assert.equal(parseGlyphs(glyph("1F600"), 8, 8)[0].codePoint, 0x1f600);
+    throws(() => parseGlyphs(glyph("110000"), 8, 8), /a\.txt:1: U\+110000 is not a Unicode character/);
+    throws(() => parseGlyphs(glyph("D800"), 8, 8), /is not a Unicode character/);
+    equal(parseGlyphs(glyph("1F600"), 8, 8)[0].codePoint, 0x1f600);
   });
 
   it("rejects a character that does not match its code point", () => {
     const glyph = (start: string) => ({ path: "a.txt", text: `${start}\n` + "........\n".repeat(8) });
-    assert.throws(() => parseGlyphs(glyph("U+0041 B"), 8, 8), /a\.txt:1: B is not U\+0041/);
-    assert.throws(() => parseGlyphs(glyph("U+0041 A B"), 8, 8), /expected a glyph such as/);
-    assert.equal(parseGlyphs(glyph("U+1F600 😀"), 8, 8)[0].codePoint, 0x1f600);
-    assert.equal(parseGlyphs(glyph("U+0020"), 8, 8)[0].codePoint, 0x20);
+    throws(() => parseGlyphs(glyph("U+0041 B"), 8, 8), /a\.txt:1: B is not U\+0041/);
+    throws(() => parseGlyphs(glyph("U+0041 A B"), 8, 8), /expected a glyph such as/);
+    equal(parseGlyphs(glyph("U+1F600 😀"), 8, 8)[0].codePoint, 0x1f600);
+    equal(parseGlyphs(glyph("U+0020"), 8, 8)[0].codePoint, 0x20);
   });
 });
 
@@ -50,12 +50,12 @@ describe("parseGlyphFont", () => {
   const header = (size: string) => ({ path: "font.txt", text: `name: t\nfamily: T\nsize: ${size}\nbaseline: 7\n` });
 
   it("rejects a size of zero", () => {
-    assert.throws(() => parseGlyphFont(header("0x8"), []), /font\.txt:3: size must be at least 1x1/);
+    throws(() => parseGlyphFont(header("0x8"), []), /font\.txt:3: size must be at least 1x1/);
   });
 
   it("rejects a code point that two files define", () => {
     const glyph = "U+0041 A\n" + "........\n".repeat(8);
-    assert.throws(
+    throws(
       () =>
         parseGlyphFont(header("8x8"), [
           { path: "a.txt", text: glyph },
@@ -71,7 +71,7 @@ describe("readGlyphFont", () => {
     const rom = await readGlyphFont("fonts/zx-rom");
     const tall = await readGlyphFont("fonts/zx-rom-tall");
     const a = (font: typeof rom) => font.glyphs.find((g) => g.codePoint === 0x41)!.rows;
-    assert.equal(tall.height - rom.height, 2);
-    assert.deepEqual(a(tall), [Array(8).fill(false), Array(8).fill(false), ...a(rom)]);
+    equal(tall.height - rom.height, 2);
+    deepEqual(a(tall), [Array(8).fill(false), Array(8).fill(false), ...a(rom)]);
   });
 });

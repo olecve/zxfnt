@@ -1,4 +1,4 @@
-import assert from "node:assert/strict";
+import { deepEqual, equal, ok, throws } from "node:assert/strict";
 import { describe, it } from "node:test";
 import { parseGlyphFont } from "./glyphs.ts";
 import { fontBytes, glyphText } from "./rom.ts";
@@ -11,11 +11,11 @@ describe("glyphText", () => {
     font.set([0x00, 0x3c, 0x42, 0x42, 0x7e, 0x42, 0x42, 0x00], (0x41 - 0x20) * 8);
     const glyphs = parseGlyphFont(header, [{ path: "rom.txt", text: glyphText(font, "test") }]).glyphs;
     const codePoints = glyphs.map((g) => g.codePoint);
-    assert.equal(glyphs.length, 96);
-    assert.ok(codePoints.includes(0x2191) && codePoints.includes(0xa3) && codePoints.includes(0xa9));
-    assert.ok(!codePoints.includes(0x5e) && !codePoints.includes(0x60) && !codePoints.includes(0x7f));
+    equal(glyphs.length, 96);
+    ok(codePoints.includes(0x2191) && codePoints.includes(0xa3) && codePoints.includes(0xa9));
+    ok(!codePoints.includes(0x5e) && !codePoints.includes(0x60) && !codePoints.includes(0x7f));
     const a = glyphs.find((g) => g.codePoint === 0x41)!;
-    assert.deepEqual(
+    deepEqual(
       a.rows.map((row) => row.map((p) => (p ? "X" : ".")).join("")),
       ["........", "..XXXX..", ".X....X.", ".X....X.", ".XXXXXX.", ".X....X.", ".X....X.", "........"],
     );
@@ -26,8 +26,8 @@ describe("fontBytes", () => {
   it("takes the font from 0x3D00 of a ROM", () => {
     const rom = new Uint8Array(16384);
     rom[0x3d00] = 0xff;
-    assert.equal(fontBytes(rom)[0], 0xff);
-    assert.equal(fontBytes(rom).length, 768);
-    assert.throws(() => fontBytes(new Uint8Array(100)), /100 bytes/);
+    equal(fontBytes(rom)[0], 0xff);
+    equal(fontBytes(rom).length, 768);
+    throws(() => fontBytes(new Uint8Array(100)), /100 bytes/);
   });
 });
