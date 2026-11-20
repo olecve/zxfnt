@@ -15,7 +15,8 @@ sharp at any multiple of 8px.
 | [`zx-rom-tall`](fonts/zx-rom-tall/) | 8×10 | the same, with room above the letters for accents and tall Georgian |
 
 The languages are English, Finnish, Swedish, Estonian, German, Russian, Ukrainian, Belarusian, Kazakh and Georgian.
-Typographic punctuation such as `“ ” – … €` is there too.
+Typographic punctuation such as `“ ” – … €` is there too, and the 16 block graphics of the Spectrum keyboard, such as
+`▛ ▀ ▚ █`.
 
 Only the 96 ROM characters come from the Spectrum. Every other glyph is drawn in this project or composed from its own
 glyphs, such as `ä` from `a` and `¨`.
@@ -94,7 +95,6 @@ decisions behind the project are in [docs/adr](docs/adr/).
 
 - Import fonts from PNG images
 - Take fonts from game snapshots (`.sna`, `.z80`), starting with Dizzy
-- Spectrum block graphics (`▀ ▄ █`)
 
 ## License
 
