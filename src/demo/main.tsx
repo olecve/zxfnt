@@ -236,8 +236,8 @@ function Glyphs({ font, marked, onPick }: GlyphsProps) {
   );
 }
 
-// The stripes of a Spectrum loading from tape, shown in the border for a moment when `trigger` changes: first the wide
-// red and cyan stripes of the pilot tone, then the thin blue and yellow stripes of the data.
+// A Spectrum loading from tape: the wide red and cyan stripes of the pilot tone, then the thin blue and yellow stripes
+// of the data.
 const PILOT_MS = 250;
 const DATA_MS = 400;
 
@@ -263,7 +263,6 @@ function LoadingBorder({ trigger }: { trigger: string }) {
         return;
       }
       const pilot = t < PILOT_MS;
-      // The pilot stripes roll up the screen. The data stripes are thin and change every frame.
       let y = pilot ? -((t / 2) % 32) : 0;
       while (y < c.height) {
         const height = pilot ? 16 : 2 + Math.floor(Math.random() * 6);
