@@ -134,6 +134,8 @@
         padding: 0;
       }
       .alphabet {
+        display: flex;
+        flex-wrap: wrap;
         font-size: 32px;
         line-height: 48px;
       }
@@ -161,6 +163,11 @@
         cursor: default;
       }
       .pick {
+        font: inherit;
+        padding: 0;
+        border: 0;
+        color: inherit;
+        background: none;
         cursor: pointer;
       }
       /* The cell under the pointer flips its BRIGHT, as a Spectrum attribute does. */
@@ -196,6 +203,26 @@
       }
       /* On a phone, one pixel of the font is --px, which the script makes a whole number of device pixels. Every size
          is a whole number of font pixels, so the text is smaller and still sharp. */
+      /* Keyboard focus: one pixel of the font in paper, then one in ink, around the element. It is a shadow, because the
+         buttons already use their outline as a frame. */
+      :focus-visible {
+        position: relative;
+        z-index: 1;
+        box-shadow:
+          0 0 0 2px var(--paper),
+          0 0 0 4px var(--ink);
+      }
+      .glyphs button:focus-visible,
+      .pick:focus-visible,
+      a:focus-visible {
+        outline: none;
+      }
+      .glyphs button.letter:focus-visible {
+        box-shadow:
+          inset 0 -2px var(--ink),
+          0 0 0 2px var(--paper),
+          0 0 0 4px var(--ink);
+      }
       @media (max-width: 600px) {
         body {
           padding: 16px 8px;
