@@ -1,6 +1,6 @@
 import { deepEqual, equal, throws } from "node:assert/strict";
 import { describe, it } from "node:test";
-import { parseGlyphFont, parseGlyphs, parseHeader, readGlyphFont } from "./glyphs.ts";
+import { parseGlyphFont, parseGlyphs, parseHeader, readGlyphFont, setGlyph } from "./glyphs.ts";
 
 describe("parseHeader", () => {
   it("rejects an unknown or repeated key", () => {
@@ -93,6 +93,23 @@ describe("parseGlyphFont", () => {
         ),
       /y\/a\.txt: U\+0041 is also in x\/a\.txt/,
     );
+  });
+});
+
+describe("setGlyph", () => {
+  const rows = (row: string) => Array.from({ length: 2 }, () => [...row].map((c) => c === "X"));
+  const text = "# Drawn by hand.\n\nU+0041 A\n.X\nX.\n\n# B is next.\nU+0042 B\nXX\n..\n";
+
+  it("replaces only the rows of the glyph", () => {
+    equal(
+      setGlyph(text, { codePoint: 0x41, rows: rows("XX") }),
+      "# Drawn by hand.\n\nU+0041 A\nXX\nXX\n\n# B is next.\nU+0042 B\nXX\n..\n",
+    );
+  });
+
+  it("adds a new glyph at the end, after a blank line", () => {
+    equal(setGlyph(text, { codePoint: 0x43, rows: rows(".X") }), text + "\nU+0043 C\n.X\n.X\n");
+    equal(setGlyph("", { codePoint: 0x43, rows: rows(".X") }), "U+0043 C\n.X\n.X\n");
   });
 });
 
