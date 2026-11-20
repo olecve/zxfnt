@@ -2,12 +2,10 @@
 // exactly the lit pixels of its glyph files.
 
 import assert from "node:assert/strict";
-import { readdir } from "node:fs/promises";
-import { join } from "node:path";
 import { test } from "node:test";
 import { parse } from "opentype.js/dist/opentype.mjs";
 import { buildFont, pixelRects } from "./font.ts";
-import { readGlyphFont } from "./glyphs.ts";
+import { fontDirs, readGlyphFont } from "./glyphs.ts";
 
 type Command = { type: string; x?: number; y?: number };
 
@@ -54,9 +52,7 @@ void test("pixelRects joins runs across rows", () => {
   );
 });
 
-const fontsDir = "fonts";
-for (const dir of await readdir(fontsDir)) {
-  const path = join(fontsDir, dir);
+for (const path of await fontDirs()) {
   const source = await readGlyphFont(path);
 
   void test(`${path}: the .otf has the same pixels as the glyph files`, () => {

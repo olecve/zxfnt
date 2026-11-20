@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
-import { readdir, readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { test } from "node:test";
 import { COMPOSED_FILE, compose, composedText } from "./compose.ts";
-import { formatGlyph, parseGlyphs, type Glyph } from "./glyphs.ts";
+import { fontDirs, formatGlyph, parseGlyphs, type Glyph } from "./glyphs.ts";
 
 const glyph = (text: string): Glyph => parseGlyphs({ path: "test", text }, 8, 8)[0];
 const list = (text: string) => ({ path: "list.txt", text });
@@ -100,10 +100,10 @@ void test("compose rejects a character that does not match its code point", () =
   assert.throws(() => compose(list("U+00E4 ö = o ¨"), [A]), /list\.txt:1: ö is not U\+00E4/);
 });
 
-for (const dir of await readdir("fonts")) {
-  void test(`fonts/${dir}/${COMPOSED_FILE} is up to date (run "npm run compose")`, async () => {
-    const { text } = await composedText(join("fonts", dir));
-    const current = await readFile(join("fonts", dir, COMPOSED_FILE), "utf8").catch(() => undefined);
+for (const dir of await fontDirs()) {
+  void test(`${dir}/${COMPOSED_FILE} is up to date (run "npm run compose")`, async () => {
+    const { text } = await composedText(dir);
+    const current = await readFile(join(dir, COMPOSED_FILE), "utf8").catch(() => undefined);
     assert.equal(current, text);
   });
 }

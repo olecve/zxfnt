@@ -1,23 +1,20 @@
 // Builds every font directory in fonts/ into dist/<name>.otf, and writes a demo page dist/index.html.
 
-import { mkdir, readdir, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { buildFont } from "./font.ts";
-import { readGlyphFont, type GlyphFont } from "./glyphs.ts";
+import { fontDirs, readGlyphFont, type GlyphFont } from "./glyphs.ts";
 
-const FONTS_DIR = "fonts";
 const DIST_DIR = "dist";
 
 // The ZX Spectrum palette, colours 0-7 at normal brightness.
 const PALETTE = ["#000000", "#0000d7", "#d70000", "#d700d7", "#00d700", "#00d7d7", "#d7d700", "#d7d7d7"];
 const COLOUR_NAMES = ["black", "blue", "red", "magenta", "green", "cyan", "yellow", "white"];
 
-const dirs = (await readdir(FONTS_DIR, { withFileTypes: true })).filter((d) => d.isDirectory()).map((d) => d.name);
 await mkdir(DIST_DIR, { recursive: true });
 
 const built: GlyphFont[] = [];
-for (const dir of dirs.sort()) {
-  const path = join(FONTS_DIR, dir);
+for (const path of await fontDirs()) {
   const source = await readGlyphFont(path);
   const bytes = buildFont(source).toArrayBuffer();
   await writeFile(join(DIST_DIR, `${source.name}.otf`), Buffer.from(bytes));
