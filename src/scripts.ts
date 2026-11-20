@@ -1,4 +1,4 @@
-// Character groups and sample sentences, shared by the demo page and the glyph editor. This module runs in Node and
+// Character groups and languages, shared by the demo page and the glyph editor. This module runs in Node and
 // in the browser, so it imports nothing.
 
 /** Groups of the glyph table, in this order. A glyph goes into the first group that matches it. */
@@ -10,19 +10,74 @@ export const GLYPH_GROUPS: [string, (codePoint: number) => boolean][] = [
   ["Punctuation and symbols", () => true],
 ];
 
-/**
- * Pangrams and other sentences that use the special letters of a language. A font shows the ones it has all characters
- * for.
- */
-export const SAMPLES: [lang: string, name: string, text: string][] = [
-  ["en", "English", "The quick brown fox jumps over the lazy dog."],
-  ["fi", "Finnish", "Törkylempijävongahdus."],
-  ["sv", "Swedish", "Flygande bäckasiner söka hwila på mjuka tuvor."],
-  ["et", "Estonian", "Põdur Zagrebi tšellomängija-följetonist Ciqo külmetas kehvas garaažis."],
-  ["de", "German", "Falsches Üben von Xylophonmusik quält jeden größeren Zwerg."],
-  ["ru", "Russian", "Съешь же ещё этих мягких французских булок, да выпей чаю."],
-  ["uk", "Ukrainian", "Чуєш їх, доцю, га? Кумедна ж ти, прощайся без ґольфів!"],
-  ["be", "Belarusian", "У Іўі худы жвавы чорт у зялёнай камізэльцы пабег пад’есці фаршу з юшкай."],
-  ["kk", "Kazakh", "Алтын күн аспаны, алтын дән даласы, ерліктің дастаны – еліме қарашы!"],
-  ["ka", "Georgian", "ჩემი ხატია სამშობლო, სახატე მთელი ქვეყანა."],
+export type Language = {
+  lang: string;
+  name: string;
+  /** The capital letters in the order of the alphabet. Empty for a script without capitals. */
+  upper: string;
+  /** The small letters in the order of the alphabet. */
+  lower: string;
+  /** A pangram or another sentence that uses the special letters of the language. */
+  sample: string;
+};
+
+const cased = (lang: string, name: string, upper: string, sample: string, extra = ""): Language => ({
+  lang,
+  name,
+  upper,
+  lower: upper.toLowerCase() + extra,
+  sample,
+});
+
+/** The languages of the demo page. A font shows the ones it has all letters for. */
+export const LANGUAGES: Language[] = [
+  cased("en", "English", "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "The quick brown fox jumps over the lazy dog."),
+  cased("fi", "Finnish", "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ", "Törkylempijävongahdus."),
+  cased("sv", "Swedish", "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ", "Flygande bäckasiner söka hwila på mjuka tuvor."),
+  cased(
+    "et",
+    "Estonian",
+    "ABCDEFGHIJKLMNOPQRSŠZŽTUVWÕÄÖÜXY",
+    "Põdur Zagrebi tšellomängija-följetonist Ciqo külmetas kehvas garaažis.",
+  ),
+  // ß has no capital in the font.
+  cased(
+    "de",
+    "German",
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ",
+    "Falsches Üben von Xylophonmusik quält jeden größeren Zwerg.",
+    "ß",
+  ),
+  cased(
+    "ru",
+    "Russian",
+    "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ",
+    "Съешь же ещё этих мягких французских булок, да выпей чаю.",
+  ),
+  cased(
+    "uk",
+    "Ukrainian",
+    "АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ",
+    "Чуєш їх, доцю, га? Кумедна ж ти, прощайся без ґольфів!",
+  ),
+  cased(
+    "be",
+    "Belarusian",
+    "АБВГДЕЁЖЗІЙКЛМНОПРСТУЎФХЦЧШЫЬЭЮЯ",
+    "У Іўі худы жвавы чорт у зялёнай камізэльцы пабег пад’есці фаршу з юшкай.",
+  ),
+  cased(
+    "kk",
+    "Kazakh",
+    "АӘБВГҒДЕЁЖЗИЙКҚЛМНҢОӨПРСТУҰҮФХҺЦЧШЩЪЫІЬЭЮЯ",
+    "Алтын күн аспаны, алтын дән даласы, ерліктің дастаны – еліме қарашы!",
+  ),
+  // Georgian has no capitals in everyday text, so it lists only the small letters.
+  {
+    lang: "ka",
+    name: "Georgian",
+    upper: "",
+    lower: "აბგდევზთიკლმნოპჟრსტუფქღყშჩცძწჭხჯჰ",
+    sample: "ჩემი ხატია სამშობლო, სახატე მთელი ქვეყანა.",
+  },
 ];

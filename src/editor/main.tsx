@@ -313,7 +313,7 @@ function App() {
 
 type GlyphListProps = { font: EditorFont; current: number; onOpen: (cp: number) => void };
 
-/** The glyphs of the font in the groups of the demo page, then the letters of the samples that it does not have. */
+/** The glyphs of the font in the groups of the demo page, then the letters of the languages that it does not have. */
 function GlyphList({ font, current, onOpen }: GlyphListProps) {
   const groups = new Map<string, [number, string][]>(GLYPH_GROUPS.map(([name]) => [name, []]));
   for (const g of font.glyphs) {
@@ -322,7 +322,7 @@ function GlyphList({ font, current, onOpen }: GlyphListProps) {
     groups.get(groupName(g.codePoint))!.push([g.codePoint, kind]);
   }
   groups.set(
-    "Missing from the samples",
+    "Missing from the languages",
     missingCodePoints(font).map((cp) => [cp, "missing"]),
   );
   return (

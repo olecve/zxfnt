@@ -30,7 +30,7 @@
     "compose": "node --experimental-strip-types src/compose-fonts.ts",
     "serve": "node --experimental-strip-types src/serve.ts",
     "edit": "node --experimental-strip-types src/edit.ts",
-    "check": "tsc -p . && tsc -p src/editor",
+    "check": "tsc -p . && tsc -p src/editor && tsc -p src/demo",
     "test": "node --experimental-strip-types --test src/*.test.ts",
     "lint": "eslint .",
     "format": "prettier --write .",

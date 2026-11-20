@@ -1,6 +1,6 @@
 // Glyph data helpers of the editor, without any UI.
 
-import { GLYPH_GROUPS, SAMPLES } from "../scripts.ts";
+import { GLYPH_GROUPS, LANGUAGES } from "../scripts.ts";
 import type { EditorFont, EditorGlyph } from "./api.ts";
 
 export type Rows = boolean[][];
@@ -26,11 +26,13 @@ export function xHeightRow(f: EditorFont): number {
   return top >= 0 ? top : f.baseline - 5;
 }
 
-/** The letters of the sample sentences that the font does not have. */
+/** The letters of the languages, from their alphabets and sample sentences, that the font does not have. */
 export function missingCodePoints(f: EditorFont): number[] {
   const have = new Set(f.glyphs.map((g) => g.codePoint));
   const wanted = new Set(
-    SAMPLES.flatMap(([, , text]) => [...text].filter((c) => /\p{L}/u.test(c)).map((c) => c.codePointAt(0)!)),
+    LANGUAGES.flatMap((l) =>
+      [...(l.upper + l.lower + l.sample)].filter((c) => /\p{L}/u.test(c)).map((c) => c.codePointAt(0)!),
+    ),
   );
   return [...wanted].filter((cp) => !have.has(cp)).sort((a, b) => a - b);
 }
@@ -41,13 +43,13 @@ export function missingCodePoints(f: EditorFont): number[] {
  */
 export function sampleFor(cp: number): string {
   const char = String.fromCodePoint(cp);
-  const withChar = SAMPLES.find(([, , text]) => text.includes(char));
-  if (withChar) return withChar[2];
+  const withChar = LANGUAGES.find((l) => l.sample.includes(char));
+  if (withChar) return withChar.sample;
   const group = groupName(cp);
-  const sameScript = SAMPLES.find(([, , text]) =>
-    [...text].some((c) => /\p{L}/u.test(c) && groupName(c.codePointAt(0)!) === group),
+  const sameScript = LANGUAGES.find((l) =>
+    [...l.sample].some((c) => /\p{L}/u.test(c) && groupName(c.codePointAt(0)!) === group),
   );
-  return `${char}${char}${char} ${sameScript?.[2] ?? "The quick brown fox"}`;
+  return `${char}${char}${char} ${sameScript?.sample ?? "The quick brown fox"}`;
 }
 
 /** Splits text into lines of at most `width` characters, at spaces where possible. */

@@ -10,5 +10,5 @@
     "types": ["node"]
   },
   "include": ["src"],
-  "exclude": ["src/editor"]
+  "exclude": ["src/editor", "src/demo"]
 }
