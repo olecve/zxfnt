@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { readGlyphFont } from "./glyphs.ts";
+import { parseHeader, readGlyphFont } from "./glyphs.ts";
 
 void test("an included glyph file gets empty rows on top in a taller font", async () => {
   const rom = await readGlyphFont("fonts/zx-rom");
@@ -8,4 +8,13 @@ void test("an included glyph file gets empty rows on top in a taller font", asyn
   const a = (font: typeof rom) => font.glyphs.find((g) => g.codePoint === 0x41)!.rows;
   assert.equal(tall.height - rom.height, 2);
   assert.deepEqual(a(tall), [Array(8).fill(false), Array(8).fill(false), ...a(rom)]);
+});
+
+void test("a header with an unknown or repeated key is rejected", () => {
+  const header = (extra: string) => ({
+    path: "font.txt",
+    text: `name: t\nfamily: T\nsize: 8x8\nbaseline: 7\n${extra}\n`,
+  });
+  assert.throws(() => parseHeader(header("inculde: ../a/rom.txt")), /font\.txt:5: unknown key "inculde"/);
+  assert.throws(() => parseHeader(header("name: u")), /font\.txt:5: "name" is set twice/);
 });
