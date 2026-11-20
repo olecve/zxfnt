@@ -20,7 +20,8 @@ const BOTH = "both";
 const READY = "0 OK, 0:1";
 
 const fonts = JSON.parse(document.getElementById("fonts")!.textContent) as DemoFont[];
-const label = (cp: number) => `U+${cp.toString(16).toUpperCase().padStart(4, "0")}`;
+// What the status line shows for a glyph that is pointed at or tapped.
+const codeText = (cp: number) => `U+${cp.toString(16).toUpperCase().padStart(4, "0")} ${String.fromCodePoint(cp)}`;
 const covers = (f: DemoFont, l: Language) => {
   const has = new Set(f.codePoints);
   return [...(l.upper + l.lower + l.sample)].every((c) => has.has(c.codePointAt(0)!));
@@ -59,6 +60,7 @@ function App() {
     const colours = bright === "1" ? BRIGHT_PALETTE : PALETTE;
     document.documentElement.style.setProperty("--border", border);
     document.documentElement.style.setProperty("--paper", colours[7]);
+    document.documentElement.style.setProperty("--paper-flipped", (bright === "1" ? PALETTE : BRIGHT_PALETTE)[7]);
     document.documentElement.style.setProperty("--link", colours[1]);
     document.documentElement.style.setProperty("--font", `"${shown[0].family}", monospace`);
   }, [border, bright, fontName]);
@@ -133,7 +135,7 @@ function App() {
             </a>{" "}
             {font.width}×{font.height} cell, {font.codePoints.length} glyphs
           </p>
-          {view === "alphabet" && <Alphabet font={font} language={language} />}
+          {view === "alphabet" && <Alphabet font={font} language={language} onPick={setStatus} />}
           {view === "type" && (
             <textarea
               spellcheck={false}
@@ -171,12 +173,23 @@ function Toggle({ label, value, onChange, options }: ToggleProps) {
   );
 }
 
-function Alphabet({ font, language }: { font: DemoFont; language: Language }) {
+type AlphabetProps = { font: DemoFont; language: Language; onPick: (status: string) => void };
+
+function Alphabet({ font, language, onPick }: AlphabetProps) {
   if (!covers(font, language)) return <p>This font does not have all letters of {language.name}.</p>;
+  const letters = (text: string) =>
+    [...text].map((char) => {
+      const show = () => onPick(codeText(char.codePointAt(0)!));
+      return (
+        <span class="pick" onMouseEnter={show} onClick={show}>
+          {char}
+        </span>
+      );
+    });
   return (
     <div lang={language.lang}>
-      {language.upper !== "" && <p class="alphabet">{language.upper}</p>}
-      <p class="alphabet">{language.lower}</p>
+      {language.upper !== "" && <p class="alphabet">{letters(language.upper)}</p>}
+      <p class="alphabet">{letters(language.lower)}</p>
       <p>{language.sample}</p>
     </div>
   );
@@ -190,7 +203,7 @@ function Glyphs({ font, marked, onPick }: GlyphsProps) {
   const letters = new Set([...(marked.upper + marked.lower)].map((c) => c.codePointAt(0)));
   const groups = GLYPH_GROUPS.map((): number[] => []);
   for (const cp of font.codePoints) groups[GLYPH_GROUPS.findIndex(([, matches]) => matches(cp))].push(cp);
-  const show = (cp: number) => onPick(`${label(cp)} ${String.fromCodePoint(cp)}`);
+  const show = (cp: number) => onPick(codeText(cp));
   return (
     <>
       {groups.map((group, i) =>
