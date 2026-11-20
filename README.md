@@ -85,6 +85,12 @@ body {
   -webkit-font-smoothing: antialiased; /* Chrome, Safari, Edge */
   -moz-osx-font-smoothing: grayscale; /* Firefox */
 }
+
+a {
+  /* a sharp underline, one font pixel thick, from the font */
+  text-decoration-thickness: from-font;
+  text-underline-position: from-font;
+}
 ```
 
 Sharp edges need all of these:

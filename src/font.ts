@@ -77,7 +77,11 @@ export function buildFont(source: GlyphFont): Font {
     weightClass: 400,
     // Every glyph has the same width. PANOSE says the same: Latin text (2), monospaced (9).
     panose: [2, 0, 0, 9, 0, 0, 0, 0, 0, 0],
-    tables: { post: { isFixedPitch: 1 } },
+    tables: {
+      // The underline is one pixel thick, on the row below the descenders, so it stays sharp. Browsers use it with
+      // text-decoration-thickness: from-font and text-underline-position: from-font.
+      post: { isFixedPitch: 1, underlinePosition: -unit, underlineThickness: unit },
+    },
     glyphs,
   });
 }

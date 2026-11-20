@@ -80,6 +80,8 @@ for (const path of await fontDirs()) {
     assert.equal(font.ascender, (source.baseline - shift) * unit);
     assert.equal(font.descender, (source.baseline - source.height - shift) * unit);
     assert.equal(font.tables.post.isFixedPitch, 1, "post table says monospace");
+    assert.equal(font.tables.post.underlineThickness, unit, "underline is one pixel thick");
+    assert.equal(font.tables.post.underlinePosition, -unit, "underline is on the row below the descenders");
     assert.deepEqual(font.tables.os2.panose, [2, 0, 0, 9, 0, 0, 0, 0, 0, 0], "PANOSE says monospace");
 
     for (const glyph of source.glyphs) {
