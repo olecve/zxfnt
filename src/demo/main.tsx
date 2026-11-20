@@ -1,7 +1,9 @@
 import { render } from "preact";
 import { useEffect, useRef, useState } from "preact/hooks";
+import { blockText } from "../blocks.ts";
 import { GLYPH_GROUPS, LANGUAGES, type Language } from "../scripts.ts";
 import type { DemoFont } from "./data.ts";
+import { PICTURE } from "./picture.ts";
 
 // The ZX Spectrum palette, colours 0-7 at normal brightness.
 const PALETTE = ["#000000", "#0000d7", "#d70000", "#d700d7", "#00d700", "#00d7d7", "#d7d700", "#d7d7d7"];
@@ -13,6 +15,7 @@ const VIEWS = [
   ["type", "Type here"],
   ["sizes", "Sizes"],
   ["glyphs", "All glyphs"],
+  ["graphics", "Graphics"],
 ];
 const BOTH = "both";
 const READY = "0 OK, 0:1";
@@ -74,8 +77,8 @@ function App() {
   const [border, setBorder] = useState(PALETTE[1]);
   const [bright, setBright] = useState("0");
   const [status, setStatus] = useState(READY);
-  // Typing does not use the language, so the control is dimmed in that view.
-  const languageUnused = view === "type";
+  // Typing and the picture do not use the language, so the control is dimmed in these views.
+  const languageUnused = view === "type" || view === "graphics";
   const [typed, setTyped] = useState('10 PRINT "HELLO, WORLD!"\n20 GO TO 10');
   const shown = fontName === BOTH ? fonts : fonts.filter((f) => f.name === fontName);
   const language = languages.find((l) => l.lang === lang)!;
@@ -183,6 +186,7 @@ function App() {
                 </p>
               ))}
             {view === "glyphs" && <Glyphs font={font} marked={language} onPick={setStatus} />}
+            {view === "graphics" && <Picture font={font} colours={bright === "1" ? BRIGHT_PALETTE : PALETTE} />}
           </section>
         ))}
         <footer>
@@ -274,6 +278,40 @@ function Glyphs({ font, marked, onPick }: GlyphsProps) {
         ),
       )}
     </>
+  );
+}
+
+const STRIPES: Record<string, number> = { R: 2, Y: 6, G: 4, C: 5 };
+const pictureLines = blockText(PICTURE.map((row) => [...row].map((p) => p !== ".")));
+
+function Picture({ font, colours }: { font: DemoFont; colours: string[] }) {
+  // Neighbouring cells of one colour share a span.
+  const runs = (y: number) => {
+    const spans: { colour?: string; text: string }[] = [];
+    [...pictureLines[y]].forEach((char, x) => {
+      const stripe = STRIPES[PICTURE[2 * y][2 * x]] as number | undefined;
+      const colour = stripe === undefined ? undefined : colours[stripe];
+      const last = spans.at(-1);
+      if (last && last.colour === colour) last.text += char;
+      else spans.push({ colour, text: char });
+    });
+    return spans;
+  };
+  // A line exactly as tall as the cell joins the blocks of one line to the next.
+  return (
+    <p
+      class="picture"
+      role="img"
+      aria-label="A ZX Spectrum 48K, drawn with block graphics"
+      style={{ lineHeight: font.height / font.width }}
+    >
+      {pictureLines.map((_, y) => (
+        <>
+          {runs(y).map(({ colour, text }) => (colour ? <span style={{ color: colour }}>{text}</span> : text))}
+          {"\n"}
+        </>
+      ))}
+    </p>
   );
 }
 

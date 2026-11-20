@@ -1,7 +1,7 @@
 // The ROM does not store the block graphics of codes 128-143: it builds each one from the four bits of its code when it
 // prints it. So they are generated here too, for the cell of each font, and not imported.
 
-import type { Glyph } from "./glyphs.ts";
+// The demo page runs blockText in the browser, so this module imports nothing.
 
 // The Unicode block element for each set of lit quarters: bit 0 top left, 1 top right, 2 bottom left, 3 bottom right.
 // Nothing lit is the space, which every font already has.
@@ -24,7 +24,7 @@ const BLOCKS: Record<number, number> = {
 };
 
 /** The quarters fill the whole cell, so that blocks of the next cell or line join them without a gap. */
-export function blockGlyphs(width: number, height: number): Glyph[] {
+export function blockGlyphs(width: number, height: number): { codePoint: number; rows: boolean[][] }[] {
   return Object.entries(BLOCKS).map(([bits, codePoint]) => {
     const lit = (x: number, y: number) => (Number(bits) >> ((y < height / 2 ? 0 : 2) + (x < width / 2 ? 0 : 1))) & 1;
     const rows = Array.from({ length: height }, (_, y) => Array.from({ length: width }, (_, x) => lit(x, y) === 1));

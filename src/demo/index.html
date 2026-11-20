@@ -70,6 +70,10 @@
         white-space: pre;
         line-height: 1;
       }
+      .picture {
+        white-space: pre;
+        overflow-x: auto;
+      }
       h2 {
         background: var(--ink);
         color: var(--paper);
@@ -217,8 +221,6 @@
         margin-top: 24px;
         background: var(--paper);
       }
-      /* On a phone, one pixel of the font is --px, which the script makes a whole number of device pixels. Every size
-         is a whole number of font pixels, so the text is smaller and still sharp. */
       /* Keyboard focus: one pixel of the font in paper, then one in ink, around the element. It is a shadow, because the
          buttons already use their outline as a frame. */
       :focus-visible {
@@ -239,6 +241,8 @@
           0 0 0 2px var(--paper),
           0 0 0 4px var(--ink);
       }
+      /* On a phone, one pixel of the font is --px, which the script makes a whole number of device pixels. Every size
+         is a whole number of font pixels, so the text is smaller and still sharp. */
       @media (max-width: 600px) {
         body {
           padding: 16px 8px;
@@ -272,6 +276,11 @@
         textarea {
           height: calc(48 * var(--px));
           padding: calc(8 * var(--px));
+        }
+        /* --px is a fraction of a CSS pixel, and Chrome rounds line positions to its layout units, so blocks at that
+           size drift apart with thin lines between them. A whole CSS pixel keeps them joined. */
+        .picture {
+          font-size: 8px;
         }
       }
     </style>
