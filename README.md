@@ -141,6 +141,7 @@ in `zx-rom.otf`, and lines are 1.25 times taller.
 - [ADR 0002: Plain text glyph format as the single source](docs/adr/0002-plain-text-glyph-format.md)
 - [ADR 0003: Characters beyond ASCII](docs/adr/0003-characters-beyond-ascii.md)
 - [ADR 0004: Taller variant for accents](docs/adr/0004-taller-variant-for-accents.md)
+- [ADR 0005: Glyph editor](docs/adr/0005-glyph-editor.md)
 
 ## License
 

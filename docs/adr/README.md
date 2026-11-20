@@ -11,6 +11,7 @@ format.
 | [0002](0002-plain-text-glyph-format.md)    | Plain Text Glyph Format As The Single Source | Accepted | 2026-11-18 |
 | [0003](0003-characters-beyond-ascii.md)    | Characters Beyond ASCII                      | Accepted | 2026-11-18 |
 | [0004](0004-taller-variant-for-accents.md) | Taller Variant For Accents                   | Accepted | 2026-11-20 |
+| [0005](0005-glyph-editor.md)               | Glyph Editor                                 | Proposed | 2026-11-20 |
 
 ## Creating a New ADR
 
