@@ -1,6 +1,6 @@
 // Builds every font directory in fonts/ into dist/<name>.otf, and writes a demo page dist/index.html.
 
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { buildFont } from "./font.ts";
 import { fontDirs, readGlyphFont, type GlyphFont } from "./glyphs.ts";
@@ -11,7 +11,9 @@ const DIST_DIR = "dist";
 const PALETTE = ["#000000", "#0000d7", "#d70000", "#d700d7", "#00d700", "#00d7d7", "#d7d700", "#d7d7d7"];
 const COLOUR_NAMES = ["black", "blue", "red", "magenta", "green", "cyan", "yellow", "white"];
 
-await mkdir(DIST_DIR, { recursive: true });
+// Start from an empty dist/, so that a renamed or removed font does not stay there and get published.
+await rm(DIST_DIR, { recursive: true, force: true });
+await mkdir(DIST_DIR);
 
 const built: GlyphFont[] = [];
 for (const path of await fontDirs()) {
