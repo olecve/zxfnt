@@ -1,5 +1,3 @@
-// Turns a glyph font into an OpenType font: each lit pixel becomes a square.
-
 import { readFileSync } from "node:fs";
 import { Font, Glyph, Path } from "opentype.js/dist/opentype.mjs";
 import type { GlyphFont } from "./glyphs.ts";
@@ -22,10 +20,7 @@ const USE_TYPO_METRICS = 1 << 7;
 
 type Rect = { x0: number; x1: number; y0: number; y1: number };
 
-/**
- * Joins lit pixels into rectangles: first runs along each row, then equal runs in the rows below.
- * Fewer, larger rectangles make a smaller font than one square for each pixel.
- */
+/** Fewer, larger rectangles make a smaller font than one square for each pixel. */
 export function pixelRects(rows: boolean[][]): Rect[] {
   const done: Rect[] = [];
   let open = new Map<string, Rect>();

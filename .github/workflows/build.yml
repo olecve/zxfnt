@@ -1,6 +1,3 @@
-# Checks and builds the fonts on every push and pull request. The fonts and the demo page are a build artifact.
-# A push to main also publishes the demo page to GitHub Pages.
-
 name: Build
 
 on:

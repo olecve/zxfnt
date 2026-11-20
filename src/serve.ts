@@ -1,4 +1,4 @@
-// Serves dist/ on http://localhost:8080. Browsers do not load fonts for pages opened as file:// URLs.
+// Browsers do not load fonts for pages opened as file:// URLs.
 
 import { readFile } from "node:fs/promises";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";

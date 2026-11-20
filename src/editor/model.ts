@@ -1,5 +1,3 @@
-// Glyph data helpers of the editor, without any UI.
-
 import { GLYPH_GROUPS, LANGUAGES } from "../scripts.ts";
 import type { EditorFont, EditorGlyph } from "./api.ts";
 
@@ -15,7 +13,6 @@ export const glyphOf = (f: EditorFont, cp: number): EditorGlyph | undefined => f
 export const fileOf = (f: EditorFont, path: string) => f.files.find((file) => file.path === path);
 export const groupName = (cp: number) => GLYPH_GROUPS.find(([, matches]) => matches(cp))![0];
 
-/** The rows moved by dx columns and dy rows. Pixels that move out of the cell are lost. */
 export const shifted = (rows: Rows, dx: number, dy: number): Rows =>
   rows.map((row, y) => row.map((_, x) => rows[y - dy]?.[x - dx] ?? false));
 
@@ -26,7 +23,6 @@ export function xHeightRow(f: EditorFont): number {
   return top >= 0 ? top : f.baseline - 5;
 }
 
-/** The letters of the languages, from their alphabets and sample sentences, that the font does not have. */
 export function missingCodePoints(f: EditorFont): number[] {
   const have = new Set(f.glyphs.map((g) => g.codePoint));
   const wanted = new Set(
@@ -37,10 +33,7 @@ export function missingCodePoints(f: EditorFont): number[] {
   return [...wanted].filter((cp) => !have.has(cp)).sort((a, b) => a - b);
 }
 
-/**
- * A sample sentence with the character. When no sample has it, the sample of its script with the character in front, so
- * that it stands among letters of its own script.
- */
+/** A character that no sample has goes in front of a sample of its script, so that it stands among its own letters. */
 export function sampleFor(cp: number): string {
   const char = String.fromCodePoint(cp);
   const withChar = LANGUAGES.find((l) => l.sample.includes(char));
@@ -52,7 +45,6 @@ export function sampleFor(cp: number): string {
   return `${char}${char}${char} ${sameScript?.sample ?? "The quick brown fox"}`;
 }
 
-/** Splits text into lines of at most `width` characters, at spaces where possible. */
 export function wrap(text: string, width: number): string[] {
   const lines: string[] = [];
   let current = "";
@@ -68,7 +60,6 @@ export function wrap(text: string, width: number): string[] {
   return [...lines, current];
 }
 
-/** Where a save goes, and what the editor tells about the glyph's source. */
 export function saveTarget(f: EditorFont, cp: number): { file: string; canSave: boolean; note: string } {
   const glyph = glyphOf(f, cp);
   const suggested = `${groupName(cp).toLowerCase().replace(/\W+/g, "-")}.txt`;

@@ -1,6 +1,3 @@
-// Round trip: builds each font, reads the .otf back, and checks that every glyph outline covers
-// exactly the lit pixels of its glyph files.
-
 import { deepEqual, equal, fail, match } from "node:assert/strict";
 import { describe, it } from "node:test";
 import { parse } from "opentype.js/dist/opentype.mjs";

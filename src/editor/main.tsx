@@ -1,5 +1,3 @@
-// The browser side of the glyph editor (docs/adr/0005-glyph-editor.md).
-
 import { render } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import { GLYPH_GROUPS } from "../scripts.ts";
@@ -53,7 +51,6 @@ function App() {
       .then(setFonts);
   }, []);
 
-  // A new font or glyph starts with its save file and sample text.
   const open = (f: EditorFont, cp: number, ask = true) => {
     if (
       ask &&
@@ -107,7 +104,7 @@ function App() {
     setStatus({ text: `Saved ${label(edit.codePoint)} to ${font.dir}/${target}`, error: false });
   };
 
-  // The drawing in the glyph format, as in a glyph file, for example to paste into a message.
+  // In the glyph format, so that a drawing can be pasted into a message and back.
   const copy = async () => {
     if (!edit) return;
     const char = edit.codePoint === 0x20 ? "" : ` ${String.fromCodePoint(edit.codePoint)}`;
@@ -115,7 +112,6 @@ function App() {
     setStatus({ text: `Copied ${label(edit.codePoint)}`, error: false });
   };
 
-  // A drawing in the glyph format from the clipboard. The U+ line is optional, and the rows must fit the font.
   const paste = async () => {
     if (!font || !edit) return;
     const lines = (await navigator.clipboard.readText()).split(/\r?\n/).map((l) => l.trim());
@@ -313,7 +309,6 @@ function App() {
 
 type GlyphListProps = { font: EditorFont; current: number; onOpen: (cp: number) => void };
 
-/** The glyphs of the font in the groups of the demo page, then the letters of the languages that it does not have. */
 function GlyphList({ font, current, onOpen }: GlyphListProps) {
   const groups = new Map<string, [number, string][]>(GLYPH_GROUPS.map(([name]) => [name, []]));
   for (const g of font.glyphs) {

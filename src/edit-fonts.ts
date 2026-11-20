@@ -1,5 +1,4 @@
-// Reads and writes glyphs for the glyph editor (docs/adr/0005-glyph-editor.md). A save goes through the same parser and
-// writer as the build, and the fonts must still read without errors after it.
+// A save goes through the same parser and writer as the build, and every font must still read without errors after it.
 
 import { readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { basename, join } from "node:path";
@@ -45,7 +44,6 @@ export async function editorFonts(): Promise<EditorFont[]> {
   return fonts;
 }
 
-/** Writes one glyph into a file of its font, checks that every font still reads, and composes again. */
 export async function saveGlyph(request: SaveRequest): Promise<void> {
   const font = (await editorFonts()).find((f) => f.name === request.font);
   if (!font) throw new Error(`no font "${request.font}"`);

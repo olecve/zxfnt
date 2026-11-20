@@ -1,5 +1,4 @@
-// Makes extra glyphs from character lists (docs/adr/0003-characters-beyond-ascii.md).
-// A list line such as "U+00E4 ä = a ¨" makes ä from the font's own a and a diaeresis.
+// A list line such as "U+00E4 ä = a ¨" makes ä from the font's own a and a diaeresis (docs/adr/0003-characters-beyond-ascii.md).
 
 import { readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -10,7 +9,6 @@ type Rows = boolean[][];
 // A capital that starts above this row loses a repeated row, so that a mark fits above it.
 const MARK_ROWS = 2;
 
-// A mark shape: its rows of "X" and ".", the column of its left edge, and whether it may touch the letter.
 type Shape = { x: number; rows: string[]; onLetter?: boolean };
 
 // Each mark gives its shapes for a letter with lit columns minX..maxX, best first. A shape goes above the letter with
@@ -33,9 +31,7 @@ const MARKS: Record<string, (minX: number, maxX: number) => Shape[]> = {
       { x: left, rows: [odd ? "X" : "XX"] },
     ];
   },
-  // A wave four pixels wide.
   "˜": (minX, maxX) => [{ x: Math.floor((minX + maxX) / 2) - 1, rows: [".X.X", "X.X."], onLetter: true }],
-  // A small v: three pixels wide above an odd width, four above an even width.
   ˇ: (minX, maxX) => {
     const odd = (minX + maxX) % 2 === 0;
     const left = Math.floor((minX + maxX) / 2);
@@ -45,8 +41,7 @@ const MARKS: Record<string, (minX: number, maxX: number) => Shape[]> = {
         : { x: left - 1, rows: ["X..X", ".XX."], onLetter: true },
     ];
   },
-  // A small u, one pixel inside each side of the letter. Above a narrow letter it is as wide as the letter, so that it
-  // is never as narrow as the caron.
+  // Above a narrow letter the breve is as wide as the letter, so that it is never as narrow as the caron.
   "˘": (minX, maxX) => {
     const width = maxX - minX + 1;
     const [x, inner] = width - 2 >= 4 ? [minX + 1, width - 4] : [minX, width - 2];
@@ -80,8 +75,6 @@ function draw(rows: Rows, shape: Shape, y: number): Rows {
   return result;
 }
 
-// The row for the top of the shape: with an empty row above the letter, else directly on it when the shape allows it.
-// Undefined when the shape does not fit, also when it is wider than the cell on either side.
 function markRow(rows: Rows, shape: Shape): number | undefined {
   if (shape.x < 0 || shape.x + Math.max(...shape.rows.map((r) => r.length)) > rows[0].length) return undefined;
   const top = firstLitRow(rows);
@@ -91,7 +84,6 @@ function markRow(rows: Rows, shape: Shape): number | undefined {
   return undefined;
 }
 
-// Returns the letter with the mark, or undefined when no shape of the mark fits.
 function addMark(base: Rows, mark: string): Rows | string | undefined {
   const shapes = MARKS[mark];
   if (!shapes) return `unknown mark "${mark}"`;
@@ -105,7 +97,7 @@ function addMark(base: Rows, mark: string): Rows | string | undefined {
   return undefined;
 }
 
-/** Composes each glyph of the list that the font does not have yet. Glyphs whose base letter is missing are skipped. */
+/** A glyph that the font already has is kept, so that a drawn glyph wins over the list. */
 export function compose(list: SourceFile, glyphs: Glyph[]): { glyphs: Glyph[]; skipped: string[] } {
   const byChar = new Map(glyphs.map((g) => [String.fromCodePoint(g.codePoint), g]));
   const result: Glyph[] = [];
@@ -138,7 +130,6 @@ export function compose(list: SourceFile, glyphs: Glyph[]): { glyphs: Glyph[]; s
 export const COMPOSED_FILE = "composed.txt";
 const SETS_DIR = "sets";
 
-/** The text of composed.txt for a font directory, from every list in sets/. Undefined when the font gets no glyphs. */
 export async function composedText(dir: string): Promise<{ text: string | undefined; skipped: string[] }> {
   const font = await readGlyphFont(dir, [COMPOSED_FILE]);
   const names = (await readdir(SETS_DIR)).filter((name) => name.endsWith(".txt")).sort();
@@ -157,7 +148,7 @@ export async function composedText(dir: string): Promise<{ text: string | undefi
   return { text: `${header}\n${lines.join("\n")}\n`, skipped };
 }
 
-/** Writes composed.txt of every font, or removes it when the font gets no glyphs. Returns what it did, line by line. */
+/** A font that gets no composed glyphs loses its composed.txt, so that no stale glyphs stay in it. */
 export async function composeAll(): Promise<string[]> {
   const log: string[] = [];
   for (const dir of await fontDirs()) {

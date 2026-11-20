@@ -1,5 +1,3 @@
-// The demo page: one view at a time of one font, or of all fonts one above the other to compare them.
-
 import { render } from "preact";
 import { useEffect, useRef, useState } from "preact/hooks";
 import { GLYPH_GROUPS, LANGUAGES, type Language } from "../scripts.ts";
@@ -20,7 +18,6 @@ const BOTH = "both";
 const READY = "0 OK, 0:1";
 
 const fonts = JSON.parse(document.getElementById("fonts")!.textContent) as DemoFont[];
-// What the status line shows for a glyph that is pointed at or tapped.
 const codeText = (cp: number) => `U+${cp.toString(16).toUpperCase().padStart(4, "0")} ${String.fromCodePoint(cp)}`;
 // Copies the character. Without clipboard access, the status line only shows its code.
 const copy = (cp: number, onPick: (status: string) => void) =>
@@ -53,7 +50,6 @@ const ALPHABET_ORDER = new Map(
     i,
   ]),
 );
-// Letters in alphabet order, then the other glyphs in code point order.
 const byAlphabet = (a: number, b: number) =>
   (ALPHABET_ORDER.get(a) ?? Infinity) - (ALPHABET_ORDER.get(b) ?? Infinity) || a - b;
 const choice = (options: string[], wanted: string | undefined) =>

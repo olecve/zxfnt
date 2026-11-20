@@ -1,6 +1,4 @@
-// Parser for the plain text glyph format (docs/adr/0002-plain-text-glyph-format.md).
-// A font is a directory: font.txt has the header, and every other .txt file has glyphs. The header can also include
-// glyph files of another font, which get empty rows on top when this font is taller.
+// The glyph format: docs/adr/0002-plain-text-glyph-format.md.
 
 import { readdir, readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
@@ -20,7 +18,6 @@ export type FontHeader = {
   baseline: number;
   /** Glyph files of other fonts, relative to the font directory. */
   include: string[];
-  /** Copyright notice of the glyphs, for the font metadata. */
   copyright?: string;
 };
 
@@ -114,7 +111,7 @@ export function parseGlyphs({ path, text }: SourceFile, width: number, height: n
 
 export const codePointLabel = (codePoint: number) => `U+${codePoint.toString(16).toUpperCase().padStart(4, "0")}`;
 
-/** The glyph format text of one glyph, without a blank line around it. */
+/** Without a blank line around it. */
 export function formatGlyph({ codePoint, rows }: Glyph): string {
   const char = codePoint === 0x20 ? "" : ` ${String.fromCodePoint(codePoint)}`;
   return [`${codePointLabel(codePoint)}${char}`, ...rows.map((row) => row.map((p) => (p ? "X" : ".")).join(""))].join(
@@ -122,10 +119,7 @@ export function formatGlyph({ codePoint, rows }: Glyph): string {
   );
 }
 
-/**
- * The text of a glyph file with `glyph` in it. Its rows replace the rows of the glyph with the same code point, or it is
- * added at the end. Comments and the other glyphs stay as they are.
- */
+/** Changes only the rows of the glyph, or adds it at the end, so that comments and the other glyphs stay as they are. */
 export function setGlyph(text: string, glyph: Glyph): string {
   const lines = text.split("\n");
   const rows = formatGlyph(glyph).split("\n").slice(1);
@@ -144,8 +138,8 @@ export function setGlyph(text: string, glyph: Glyph): string {
 }
 
 /**
- * Merges the header with the glyphs of all glyph files, sorted by code point. `included` are glyphs of other fonts,
- * already the size of this font. A glyph of the font's own files replaces an included glyph with the same code point.
+ * `included` are glyphs of other fonts, already the size of this font. A glyph of the font's own files replaces an
+ * included glyph with the same code point.
  */
 export function parseGlyphFont(
   header: SourceFile,
@@ -182,7 +176,6 @@ export async function fontDirs(): Promise<string[]> {
     .sort();
 }
 
-/** Reads a font directory. Glyph files named in `skip` are left out. */
 export async function readGlyphFont(dir: string, skip: string[] = []): Promise<GlyphFont> {
   const read = async (name: string): Promise<SourceFile> => {
     const path = join(dir, name);
@@ -197,7 +190,7 @@ export async function readGlyphFont(dir: string, skip: string[] = []): Promise<G
   return parseGlyphFont(header, await Promise.all(names.map(read)), included);
 }
 
-/** Reads a glyph file of another font and adds empty rows on top, so that its glyphs are as tall as `font`. */
+/** Empty rows on top make the glyphs of a smaller font as tall as `font`, with the same baseline. */
 export async function readIncluded(path: string, font: FontHeader): Promise<{ path: string; glyphs: Glyph[] }> {
   const fontFile = join(dirname(path), HEADER_FILE);
   const other = parseHeader({ path: fontFile, text: await readFile(fontFile, "utf8") });

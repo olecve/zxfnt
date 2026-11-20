@@ -1,7 +1,5 @@
-// The data that the glyph editor server sends and receives (docs/adr/0005-glyph-editor.md). This module runs in Node and
-// in the browser, so it imports nothing.
+// This module runs in Node and in the browser, so it imports nothing.
 
-/** A glyph file of a font, as the editor sees it. */
 export type EditorFile = {
   path: string;
   /** False for generated files, such as rom.txt and composed.txt. */
@@ -10,7 +8,6 @@ export type EditorFile = {
   included: boolean;
 };
 
-/** A glyph with its rows of "X" and ".", and the path of the file that it comes from. */
 export type EditorGlyph = { codePoint: number; rows: string[]; file: string };
 
 export type EditorFont = {
@@ -24,5 +21,5 @@ export type EditorFont = {
   glyphs: EditorGlyph[];
 };
 
-/** The body of a save: the glyph's rows go into `file`, a file name in the font's directory. */
+/** `file` is a file name in the font's directory, not a path. */
 export type SaveRequest = { font: string; file: string; codePoint: number; rows: string[] };
