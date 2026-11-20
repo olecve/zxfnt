@@ -28,7 +28,8 @@ for (const dir of dirs.sort()) {
 await writeFile(join(DIST_DIR, "index.html"), demoPage(built));
 console.log(`${DIST_DIR}/index.html`);
 
-// A page that looks like a Spectrum screen: a border, paper and ink, all text in the first font.
+// A page that looks like a Spectrum screen: a border, paper and ink. The FONT buttons show one font at a time, and all
+// text of the page is in that font.
 function demoPage(fonts: GlyphFont[]): string {
   const escape = (s: string) =>
     s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -39,11 +40,18 @@ function demoPage(fonts: GlyphFont[]): string {
     (colour, i) =>
       `<button type="button" style="background: ${colour}" title="BORDER ${i}: ${COLOUR_NAMES[i]}" data-colour="${colour}">${i}</button>`,
   ).join("");
+  const fontButtons = fonts
+    .map((f, i) => `<button type="button" data-font="${f.name}" aria-pressed="${i === 0}">${escape(f.family)}</button>`)
+    .join("");
   const sections = fonts
-    .map((f) => {
+    .map((f, i) => {
       const sizes = [8, 16, 24, 32]
         .map((px) => `<p style="font-size: ${px}px">${px}px: The quick brown fox jumps over the lazy dog.</p>`)
         .join("\n          ");
+      const beyondAscii = f.glyphs
+        .filter((g) => g.codePoint > 0x7f)
+        .map((g) => String.fromCodePoint(g.codePoint))
+        .join("");
       const cells = f.glyphs
         .map((g) => {
           const char = String.fromCodePoint(g.codePoint);
@@ -52,10 +60,11 @@ function demoPage(fonts: GlyphFont[]): string {
         })
         .join("");
       return `
-        <section style="font-family: '${f.family}', monospace">
+        <section data-name="${f.name}" data-family="${escape(f.family)}"${i === 0 ? "" : " hidden"}>
           <h2>${escape(f.family)}</h2>
-          <p><a href="${f.name}.otf" download>${f.name}.otf</a> ${f.glyphs.length} glyphs</p>
+          <p><a href="${f.name}.otf" download>${f.name}.otf</a> ${f.width}×${f.height} cell, ${f.glyphs.length} glyphs</p>
           ${sizes}
+          <p style="font-size: 32px">${escape(beyondAscii)}</p>
           <h3>All glyphs</h3>
           <div class="glyphs">${cells}</div>
           <h3>Type here</h3>
@@ -63,7 +72,7 @@ function demoPage(fonts: GlyphFont[]): string {
         </section>`;
     })
     .join("\n");
-  const uiFont = fonts[0] ? `'${fonts[0].family}', ` : "";
+  const uiFont = fonts[0] ? `"${fonts[0].family}", ` : "";
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -72,13 +81,19 @@ function demoPage(fonts: GlyphFont[]): string {
     <title>zxfnt</title>
     <style>
       ${faces}
-      :root { --border: ${PALETTE[1]}; --paper: ${PALETTE[7]}; --ink: ${PALETTE[0]}; --link: ${PALETTE[1]}; }
+      :root {
+        --border: ${PALETTE[1]};
+        --paper: ${PALETTE[7]};
+        --ink: ${PALETTE[0]};
+        --link: ${PALETTE[1]};
+        --font: ${uiFont}monospace;
+      }
       * { box-sizing: border-box; }
       html { background: var(--border); transition: background 0.2s steps(1); }
       body {
         margin: 0;
         padding: 32px 16px;
-        font-family: ${uiFont}monospace;
+        font-family: var(--font);
         font-size: 16px;
         line-height: 24px;
         color: var(--ink);
@@ -103,7 +118,20 @@ function demoPage(fonts: GlyphFont[]): string {
       a { color: var(--link); }
       .stripes { display: flex; height: 32px; }
       .stripes i { width: 16px; transform: skewX(-30deg); }
-      .border { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+      .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
+      .controls span { width: 7ch; }
+      .controls button {
+        font: inherit;
+        height: 32px;
+        padding: 0 8px;
+        border: 0;
+        outline: 2px solid var(--ink);
+        outline-offset: -2px;
+        color: var(--ink);
+        background: var(--paper);
+        cursor: pointer;
+      }
+      .controls button[aria-pressed="true"] { color: var(--paper); background: var(--ink); }
       .border button {
         font: inherit;
         width: 32px;
@@ -150,7 +178,8 @@ function demoPage(fonts: GlyphFont[]): string {
         </div>
       </header>
       <p>ZX Spectrum fonts for the web. <a href="https://github.com/olecve/zxfnt">Source on GitHub</a>.</p>
-      <div class="border"><span>BORDER</span>${border}</div>
+      <div class="controls"><span>FONT</span>${fontButtons}</div>
+      <div class="controls border"><span>BORDER</span>${border}</div>
 ${sections}
       <footer>0 OK, 0:1</footer>
     </main>
@@ -160,6 +189,22 @@ ${sections}
           document.documentElement.style.setProperty("--border", button.dataset.colour),
         );
       }
+
+      // Shows the section of one font and sets the font of the whole page. The URL hash keeps the choice.
+      const showFont = (name) => {
+        const section = document.querySelector("section[data-name=" + JSON.stringify(name) + "]");
+        if (!section) return;
+        for (const s of document.querySelectorAll("section")) s.hidden = s !== section;
+        for (const b of document.querySelectorAll("[data-font]")) b.setAttribute("aria-pressed", b.dataset.font === name);
+        document.documentElement.style.setProperty("--font", JSON.stringify(section.dataset.family) + ", monospace");
+      };
+      for (const button of document.querySelectorAll("[data-font]")) {
+        button.addEventListener("click", () => {
+          showFont(button.dataset.font);
+          history.replaceState(null, "", "#" + button.dataset.font);
+        });
+      }
+      showFont(location.hash.slice(1));
     </script>
   </body>
 </html>
