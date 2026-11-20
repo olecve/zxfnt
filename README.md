@@ -124,8 +124,9 @@ in `zx-rom.otf`, and lines are 1.25 times taller.
 ## Tooling
 
 - TypeScript on Node 22, run with `node --experimental-strip-types`.
-- Prettier formats the code. ESLint with typescript-eslint lints it. [Knip](https://knip.dev) finds unused files,
-  exports and dependencies. `npm run validate` runs all checks.
+- Prettier formats the code. ESLint with typescript-eslint lints it, and
+  [eslint-plugin-slop](https://github.com/antfu/eslint-plugin-slop) flags patterns that AI tools often write.
+  [Knip](https://knip.dev) finds unused files, exports and dependencies. `npm run validate` runs all checks.
 - [opentype.js](https://github.com/opentypejs/opentype.js) writes the font files.
 
 ## Decisions
