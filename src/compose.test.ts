@@ -110,6 +110,26 @@ describe("compose", () => {
     deepEqual(result.skipped, ["U+00F5 õ: no room for the mark above o", "U+00F1 ñ: no room for the mark above n"]);
   });
 
+  it("puts a breve on the letter, wider than a caron", () => {
+    const i = glyph(`U+0438 и
+........
+........
+.X...X..
+.X..XX..
+.X.X.X..
+.XX..X..
+.X...X..
+........`);
+    const { glyphs } = compose(list("U+0439 й = и ˘\nU+01D0 ǐ = и ˇ"), [i]);
+    deepEqual(
+      glyphs.map((g) => formatGlyph(g).split("\n").slice(1, 3)),
+      [
+        [".X...X..", "..XXX..."],
+        ["..X.X...", "...X...."],
+      ],
+    );
+  });
+
   it("accepts a list line with a character above U+FFFF", () => {
     const { glyphs } = compose(list("U+1D400 𝐀 = A"), [A]);
     deepEqual(glyphs, [{ codePoint: 0x1d400, rows: A.rows }]);

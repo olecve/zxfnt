@@ -45,6 +45,13 @@ const MARKS: Record<string, (minX: number, maxX: number) => Shape[]> = {
         : { x: left - 1, rows: ["X..X", ".XX."], onLetter: true },
     ];
   },
+  // A small u, one pixel inside each side of the letter. Above a narrow letter it is as wide as the letter, so that it
+  // is never as narrow as the caron.
+  "˘": (minX, maxX) => {
+    const width = maxX - minX + 1;
+    const [x, inner] = width - 2 >= 4 ? [minX + 1, width - 4] : [minX, width - 2];
+    return [{ x, rows: ["X" + ".".repeat(inner) + "X", "." + "X".repeat(inner) + "."], onLetter: true }];
+  },
 };
 
 // The u flag makes \S match one character, also one above U+FFFF.

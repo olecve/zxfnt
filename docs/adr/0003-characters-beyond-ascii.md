@@ -102,12 +102,16 @@ The font has the marks as separate glyphs, and the browser puts each mark on its
 - The lists are in `sets/`, and `npm run compose` writes each font's `composed.txt`. The marks are small rules in
   `src/compose.ts`, not glyph fragments, because a mark must fit the width of each letter: the dots of `ä` and `Ä` are a
   different distance apart. Marks use rows 0 and 1, and a capital loses its highest repeated row to make space.
-- A one-row mark (`¨`, `˚`) has an empty row below it. A two-row mark (`˜`, `ˇ`) sits directly on the letter, because a
-  slanted or pointed shape needs two rows.
+- A one-row mark (`¨`, `˚`) has an empty row below it. A two-row mark (`˜`, `ˇ`, `˘`) sits directly on the letter,
+  because a slanted, pointed or curved shape needs two rows. The breve of `й` is wider than the caron of `š`, so that
+  the two stay different.
 - A ring does not fit in one row, so `˚` is a dot in the middle of the letter: `å` and `Å` have one dot, `ä` and `Ä`
   have two.
-- A capital without a repeated row, such as `S` or `Z`, gets no composed glyph. The ROM font has `Š` and `Ž` drawn by
-  hand.
+- A capital without a repeated row, such as `S`, `Z` or `И`, gets no composed glyph. The ROM font has `Š`, `Ž` and `Й`
+  drawn by hand.
+- Russian has 19 capitals and 24 lowercase letters that are not a copy of a Latin letter and have no mark. These are
+  drawn for the ROM font. Lowercase letters such as `к`, `м` and `т` are small capitals, not copies of Latin `k`, `m`
+  and `t`.
 - Milestone 5 adds the Spectrum block graphics with the generate method.
 - Revisit when more than half of the composed glyphs need fixes by hand. Then draw those glyphs instead.
 - Revisit when a language with stacked accents is added. That needs mark attachment or a taller cell, decided in a new
