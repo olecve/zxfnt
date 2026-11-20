@@ -5,13 +5,13 @@ format.
 
 ## Index
 
-| ADR                                        | Title                                        | Status   | Date       |
-| ------------------------------------------ | -------------------------------------------- | -------- | ---------- |
-| [0001](0001-build-tool-and-language.md)    | Build Tool And Language                      | Accepted | 2026-11-18 |
-| [0002](0002-plain-text-glyph-format.md)    | Plain Text Glyph Format As The Single Source | Accepted | 2026-11-18 |
-| [0003](0003-characters-beyond-ascii.md)    | Characters Beyond ASCII                      | Accepted | 2026-11-18 |
-| [0004](0004-taller-variant-for-accents.md) | Taller Variant For Accents                   | Accepted | 2026-11-20 |
-| [0005](0005-glyph-editor.md)               | Glyph Editor                                 | Proposed | 2026-11-20 |
+| ADR                                        | Title                                        | Status                                 | Date       |
+| ------------------------------------------ | -------------------------------------------- | -------------------------------------- | ---------- |
+| [0001](0001-build-tool-and-language.md)    | Build Tool And Language                      | Accepted                               | 2026-11-18 |
+| [0002](0002-plain-text-glyph-format.md)    | Plain Text Glyph Format As The Single Source | Accepted, partially superseded by 0005 | 2026-11-18 |
+| [0003](0003-characters-beyond-ascii.md)    | Characters Beyond ASCII                      | Accepted                               | 2026-11-18 |
+| [0004](0004-taller-variant-for-accents.md) | Taller Variant For Accents                   | Accepted                               | 2026-11-20 |
+| [0005](0005-glyph-editor.md)               | Glyph Editor                                 | Accepted                               | 2026-11-20 |
 
 ## Creating a New ADR
 
