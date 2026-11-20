@@ -1,5 +1,6 @@
-# Drawn by hand for this project: S, Z and И have no repeated row to remove, so these are drawn five rows high to fit
-# the 8×8 cell. A taller font does not include this file and composes Š, Ž and Й instead.
+# Drawn by hand for the 8×8 font only. S and Z have no repeated row to remove, so Š and Ž are five rows high. Ё and Й keep
+# their full height, with a one-row mark on top, as the Santaka-002 clone draws them. The 8×10 font does not include
+# this file and composes all four at full height, with a gap under the mark.
 
 U+0160 Š
 ..X..X..
@@ -22,11 +23,21 @@ U+017D Ž
 ........
 
 U+0419 Й
-..X..X..
 ...XX...
 .X....X.
 .X...XX.
 .X..X.X.
 .X.X..X.
 .XX...X.
+.X....X.
+........
+
+U+0401 Ё
+..X..X..
+.XXXXXX.
+.X......
+.XXXXX..
+.X......
+.X......
+.XXXXXX.
 ........
