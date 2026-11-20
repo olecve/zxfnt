@@ -1,0 +1,9 @@
+# Punctuation that looks the same as a character of the font. Each line copies a glyph: U+2019 ’ = ' makes the right
+# single quote from the apostrophe, whose shape it already has in the ROM font.
+
+U+2019 ’ = '
+# Soft hyphen: invisible in most editors. Browsers show it as a hyphen at a line break.
+U+00AD ­ = -
+U+2010 ‐ = -
+U+2011 ‑ = -
+U+2212 − = -

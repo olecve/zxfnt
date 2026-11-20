@@ -4,5 +4,5 @@ name: zx-rom-tall
 family: ZX Spectrum ROM Tall
 size: 8x10
 baseline: 9
-include: ../zx-rom/rom.txt ../zx-rom/extra.txt
+include: ../zx-rom/rom.txt ../zx-rom/extra.txt ../zx-rom/punctuation.txt
 copyright: ROM glyphs © 1982 Sinclair Research Ltd, now Amstrad. Other glyphs made for zxfnt.
