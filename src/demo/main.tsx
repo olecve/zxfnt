@@ -250,7 +250,9 @@ function LoadingBorder({ trigger }: { trigger: string }) {
       return;
     }
     const c = canvas.current;
-    if (!c || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!c) return;
+    // With reduced motion the stripes stand still: the pilot does not roll, and the data is the same in every frame.
+    const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
     c.width = innerWidth;
     c.height = innerHeight;
     const ctx = c.getContext("2d")!;
@@ -263,14 +265,17 @@ function LoadingBorder({ trigger }: { trigger: string }) {
         return;
       }
       const pilot = t < PILOT_MS;
-      let y = pilot ? -((t / 2) % 32) : 0;
+      const roll = still ? 0 : (t / 2) % 32;
+      let seed = 1;
+      const random = still ? () => (seed = (seed * 16807) % 2147483647) / 2147483647 : Math.random;
+      let y = pilot ? -roll : 0;
       while (y < c.height) {
-        const height = pilot ? 16 : 2 + Math.floor(Math.random() * 6);
+        const height = pilot ? 16 : 2 + Math.floor(random() * 6);
         ctx.fillStyle = pilot
-          ? Math.floor((y + ((t / 2) % 32)) / 16) % 2
+          ? Math.floor((y + roll) / 16) % 2
             ? PALETTE[5]
             : PALETTE[2]
-          : Math.random() < 0.5
+          : random() < 0.5
             ? PALETTE[1]
             : PALETTE[6];
         ctx.fillRect(0, y, c.width, height);
