@@ -12,7 +12,7 @@ format.
 | [0003](0003-characters-beyond-ascii.md)    | Characters Beyond ASCII                      | Accepted                               | 2026-11-18 |
 | [0004](0004-taller-variant-for-accents.md) | Taller Variant For Accents                   | Accepted                               | 2026-11-20 |
 | [0005](0005-glyph-editor.md)               | Glyph Editor                                 | Accepted                               | 2026-11-20 |
-| [0006](0006-demo-page.md)                  | Demo Page With One View At A Time            | Proposed                               | 2026-11-20 |
+| [0006](0006-demo-page.md)                  | Demo Page With One View At A Time            | Accepted                               | 2026-11-20 |
 
 ## Creating a New ADR
 

@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed
+Accepted
 
 ## Context and Problem Statement
 
@@ -69,7 +69,7 @@ line, as a pointed one does on a desktop.
 
 - CI builds the page, and GitHub Pages serves it
 - The page works in Chrome on a desktop, on a 2× screen and in phone emulation, with no script errors
-- The page is checked in Safari and on a real phone
+- The page works in Safari and on a real phone
 
 ## Pros and Cons of the Options
 
