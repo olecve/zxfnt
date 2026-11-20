@@ -137,6 +137,16 @@
         background: none;
         cursor: pointer;
       }
+      /* 2px is one pixel of the font at 16px, so the underline stays sharp. */
+      .glyphs button.letter {
+        box-shadow: inset 0 -2px var(--ink);
+      }
+      .controls.unused {
+        opacity: 0.35;
+      }
+      .controls.unused select {
+        cursor: default;
+      }
       .glyphs button:hover,
       .glyphs button[aria-pressed="true"] {
         color: var(--paper);
