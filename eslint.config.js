@@ -14,6 +14,15 @@ export default defineConfig(
       parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname },
     },
   },
+  {
+    rules: {
+      // node:test awaits its own tests and reports their failures.
+      "@typescript-eslint/no-floating-promises": [
+        "error",
+        { allowForKnownSafeCalls: [{ from: "package", package: "node:test", name: ["describe", "it"] }] },
+      ],
+    },
+  },
   // The default inspection compares with git history, which the shallow CI checkout does not have.
   createSlopConfig({ cwd: import.meta.dirname, inspection: "full" }),
   // Plain JavaScript files, such as this config, are not in tsconfig.json.
