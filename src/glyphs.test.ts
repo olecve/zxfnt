@@ -18,3 +18,13 @@ void test("a header with an unknown or repeated key is rejected", () => {
   assert.throws(() => parseHeader(header("inculde: ../a/rom.txt")), /font\.txt:5: unknown key "inculde"/);
   assert.throws(() => parseHeader(header("name: u")), /font\.txt:5: "name" is set twice/);
 });
+
+void test("a name or family with unsafe characters is rejected", () => {
+  const header = (name: string, family: string) => ({
+    path: "font.txt",
+    text: `name: ${name}\nfamily: ${family}\nsize: 8x8\nbaseline: 7\n`,
+  });
+  assert.throws(() => parseHeader(header("../x", "X")), /name must be lowercase letters/);
+  assert.throws(() => parseHeader(header("x", 'X"</style>')), /family must not contain/);
+  assert.equal(parseHeader(header("zx-rom-tall", "ZX Spectrum ROM Tall")).name, "zx-rom-tall");
+});

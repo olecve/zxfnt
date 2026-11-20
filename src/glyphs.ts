@@ -62,7 +62,13 @@ export function parseHeader({ path, text }: SourceFile): FontHeader {
     fail(0, `baseline must be a row number from 1 to ${height}`);
   }
   const include = (header.get("include") ?? "").split(/\s+/).filter(Boolean);
-  return { name: required("name"), family: required("family"), width, height, baseline, include };
+  // The name becomes a file name and the family goes into CSS and HTML, so both are limited to safe characters.
+  const name = required("name");
+  if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(name))
+    fail(0, `name must be lowercase letters, digits and hyphens, got "${name}"`);
+  const family = required("family");
+  if (/["'<>&\\]/.test(family)) fail(0, `family must not contain quotes, <, >, & or \\, got "${family}"`);
+  return { name, family, width, height, baseline, include };
 }
 
 export function parseGlyphs({ path, text }: SourceFile, width: number, height: number): Glyph[] {
