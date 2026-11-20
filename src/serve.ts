@@ -25,4 +25,7 @@ async function serve(req: IncomingMessage, res: ServerResponse): Promise<void> {
 }
 
 // serve() catches its own errors, so its promise never rejects.
-createServer((req, res) => void serve(req, res)).listen(PORT, () => console.log(`http://localhost:${PORT}`));
+// Only this computer can open the page, not other devices on the network.
+createServer((req, res) => void serve(req, res)).listen(PORT, "127.0.0.1", () =>
+  console.log(`http://localhost:${PORT}`),
+);
