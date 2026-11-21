@@ -22,11 +22,40 @@ const READY = "OK";
 const fonts = JSON.parse(document.getElementById("fonts")!.textContent) as DemoFont[];
 // What the status line shows for a glyph that is pointed at or tapped.
 const codeText = (cp: number) => `U+${cp.toString(16).toUpperCase().padStart(4, "0")} ${String.fromCodePoint(cp)}`;
+// Copies the character. Without clipboard access, the status line only shows its code.
+const copy = (cp: number, onPick: (status: string) => void) =>
+  navigator.clipboard.writeText(String.fromCodePoint(cp)).then(
+    () => onPick(`Copied ${codeText(cp)}`),
+    () => onPick(codeText(cp)),
+  );
 const covers = (f: DemoFont, l: Language) => {
   const has = new Set(f.codePoints);
   return [...(l.upper + l.lower + l.sample)].every((c) => has.has(c.codePointAt(0)!));
 };
 const languages = LANGUAGES.filter((l) => fonts.some((f) => covers(f, l)));
+
+// The letters of all alphabets in one order: each letter that a language adds goes right after the letter that it
+// follows in that language, so Ґ comes after Г and Ә after А. Capitals come before small letters.
+const merge = (alphabets: string[]) => {
+  const order: string[] = [];
+  for (const alphabet of alphabets) {
+    [...alphabet].forEach((letter, i) => {
+      if (order.includes(letter)) return;
+      const after = i === 0 ? -1 : order.indexOf([...alphabet][i - 1]);
+      order.splice(after + 1, 0, letter);
+    });
+  }
+  return order;
+};
+const ALPHABET_ORDER = new Map(
+  [...merge(LANGUAGES.map((l) => l.upper)), ...merge(LANGUAGES.map((l) => l.lower))].map((c, i) => [
+    c.codePointAt(0)!,
+    i,
+  ]),
+);
+// Letters in alphabet order, then the other glyphs in code point order.
+const byAlphabet = (a: number, b: number) =>
+  (ALPHABET_ORDER.get(a) ?? Infinity) - (ALPHABET_ORDER.get(b) ?? Infinity) || a - b;
 const choice = (options: string[], wanted: string | undefined) =>
   wanted !== undefined && options.includes(wanted) ? wanted : options[0];
 
@@ -177,9 +206,9 @@ function Alphabet({ font, language, onPick }: AlphabetProps) {
   if (!covers(font, language)) return <p>This font does not have all letters of {language.name}.</p>;
   const letters = (text: string) =>
     [...text].map((char) => {
-      const show = () => onPick(codeText(char.codePointAt(0)!));
+      const cp = char.codePointAt(0)!;
       return (
-        <span class="pick" onMouseEnter={show} onClick={show}>
+        <span class="pick" onMouseEnter={() => onPick(codeText(cp))} onClick={() => void copy(cp, onPick)}>
           {char}
         </span>
       );
@@ -201,6 +230,8 @@ function Glyphs({ font, marked, onPick }: GlyphsProps) {
   const letters = new Set([...(marked.upper + marked.lower)].map((c) => c.codePointAt(0)));
   const groups = GLYPH_GROUPS.map((): number[] => []);
   for (const cp of font.codePoints) groups[GLYPH_GROUPS.findIndex(([, matches]) => matches(cp))].push(cp);
+  // ASCII keeps its code order: digits and signs between the letters.
+  for (const group of groups.slice(1)) group.sort(byAlphabet);
   const show = (cp: number) => onPick(codeText(cp));
   return (
     <>
@@ -217,7 +248,7 @@ function Glyphs({ font, marked, onPick }: GlyphsProps) {
                   onMouseEnter={() => show(cp)}
                   onClick={() => {
                     setPicked(cp);
-                    show(cp);
+                    void copy(cp, onPick);
                   }}
                 >
                   {String.fromCodePoint(cp)}
