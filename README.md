@@ -61,6 +61,7 @@ npm run lint      # ESLint
 npm run check     # type check
 npm run format    # formats all files with Prettier
 npm run validate  # format check, lint, type check and tests
+npm run compose   # character lists in sets/ -> fonts/<font>/composed.txt
 ```
 
 Open the demo page through `npm run serve`. Browsers do not load fonts for pages opened as `file://` URLs.
@@ -95,14 +96,14 @@ Sharp edges need all of these:
 
 ## Fonts
 
-| Font                    | Source         | Glyphs                                                                                                                                                              |
-| ----------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`zxfnt`](fonts/zxfnt/) | 8×8 ASCII font | 96 ASCII glyphs ([`ascii.txt`](fonts/zxfnt/ascii.txt)), plus `^` and `` ` `` ([`extra.txt`](fonts/zxfnt/extra.txt)), because the 96 have `↑` and `£` at those codes |
+| Font                    | Source         | Glyphs                                                                                                                                                                                        |
+| ----------------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`zxfnt`](fonts/zxfnt/) | 8×8 ASCII font | 96 ASCII glyphs ([`ascii.txt`](fonts/zxfnt/ascii.txt)); `ä å ö ü Ä Å Ö Ü` composed ([`composed.txt`](fonts/zxfnt/composed.txt)); `^` and `` ` `` drawn ([`extra.txt`](fonts/zxfnt/extra.txt)) |
 
 ## Milestones
 
 1. ~~Pipeline: ASCII glyph file → `.otf`, plus a demo page.~~ Done.
-2. First extra character sets for the font.
+2. First extra character sets for the font: ~~accented Latin letters~~, then another alphabet.
 3. Importers: PNG images.
 4. Extras: `.woff2`, block graphics (`▀ ▄ █`), a page with all fonts side by side.
 

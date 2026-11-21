@@ -1,0 +1,11 @@
+# Accented Latin letters. Each line makes a glyph from a letter of the font and a mark:
+# U+00E4 ä = a ¨ makes ä from a and a diaeresis. src/compose.ts draws the marks.
+
+U+00E4 ä = a ¨
+U+00E5 å = a ˚
+U+00F6 ö = o ¨
+U+00FC ü = u ¨
+U+00C4 Ä = A ¨
+U+00C5 Å = A ˚
+U+00D6 Ö = O ¨
+U+00DC Ü = U ¨

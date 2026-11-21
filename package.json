@@ -19,6 +19,7 @@
   },
   "scripts": {
     "build": "node --experimental-strip-types src/build.ts",
+    "compose": "node --experimental-strip-types src/compose-fonts.ts",
     "serve": "node --experimental-strip-types src/serve.ts",
     "check": "tsc -p .",
     "test": "node --experimental-strip-types --test src/*.test.ts",

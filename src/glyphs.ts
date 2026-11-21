@@ -81,6 +81,16 @@ export function parseGlyphs({ path, text }: SourceFile, width: number, height: n
   return glyphs;
 }
 
+export const codePointLabel = (codePoint: number) => `U+${codePoint.toString(16).toUpperCase().padStart(4, "0")}`;
+
+// The glyph format text of one glyph, without a blank line around it.
+export function formatGlyph({ codePoint, rows }: Glyph): string {
+  const char = codePoint === 0x20 ? "" : ` ${String.fromCodePoint(codePoint)}`;
+  return [`${codePointLabel(codePoint)}${char}`, ...rows.map((row) => row.map((p) => (p ? "X" : ".")).join(""))].join(
+    "\n",
+  );
+}
+
 // Merges the header with the glyphs of all glyph files, sorted by code point.
 export function parseGlyphFont(header: SourceFile, glyphFiles: SourceFile[]): GlyphFont {
   const font = parseHeader(header);
@@ -88,9 +98,8 @@ export function parseGlyphFont(header: SourceFile, glyphFiles: SourceFile[]): Gl
   const glyphs: Glyph[] = [];
   for (const file of glyphFiles) {
     for (const glyph of parseGlyphs(file, font.width, font.height)) {
-      const label = `U+${glyph.codePoint.toString(16).toUpperCase().padStart(4, "0")}`;
       const other = seen.get(glyph.codePoint);
-      if (other !== undefined) throw new Error(`${file.path}: ${label} is also in ${other}`);
+      if (other !== undefined) throw new Error(`${file.path}: ${codePointLabel(glyph.codePoint)} is also in ${other}`);
       seen.set(glyph.codePoint, file.path);
       glyphs.push(glyph);
     }
@@ -99,11 +108,14 @@ export function parseGlyphFont(header: SourceFile, glyphFiles: SourceFile[]): Gl
   return { ...font, glyphs };
 }
 
-export async function readGlyphFont(dir: string): Promise<GlyphFont> {
+// Reads a font directory. Glyph files named in `skip` are left out.
+export async function readGlyphFont(dir: string, skip: string[] = []): Promise<GlyphFont> {
   const read = async (name: string): Promise<SourceFile> => {
     const path = join(dir, name);
     return { path, text: await readFile(path, "utf8") };
   };
-  const names = (await readdir(dir)).filter((name) => name.endsWith(".txt") && name !== HEADER_FILE).sort();
+  const names = (await readdir(dir))
+    .filter((name) => name.endsWith(".txt") && name !== HEADER_FILE && !skip.includes(name))
+    .sort();
   return parseGlyphFont(await read(HEADER_FILE), await Promise.all(names.map(read)));
 }
