@@ -86,7 +86,7 @@ body {
 }
 
 a {
-  /* a sharp underline, one font pixel thick, from the font */
+  /* a sharp underline or strikeout, one font pixel thick, from the font */
   text-decoration-thickness: from-font;
   text-underline-position: from-font;
 }
