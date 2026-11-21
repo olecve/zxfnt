@@ -3,6 +3,7 @@ import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { compress } from "wawoff2";
 import { blockText } from "./blocks.ts";
+import { boldFont } from "./bold.ts";
 import type { DemoFont } from "./demo/data.ts";
 import { buildFont } from "./font.ts";
 import { fontDirs, readGlyphFont, type GlyphFont } from "./glyphs.ts";
@@ -14,24 +15,27 @@ await rm(DIST_DIR, { recursive: true, force: true });
 await mkdir(DIST_DIR);
 
 const built: GlyphFont[] = [];
+const faces: string[] = [];
 for (const path of await fontDirs()) {
   const source = await readGlyphFont(path);
-  const otf = new Uint8Array(buildFont(source).toArrayBuffer());
-  const woff2 = await compress(otf);
-  await writeFile(join(DIST_DIR, `${source.name}.otf`), otf);
-  await writeFile(join(DIST_DIR, `${source.name}.woff2`), woff2);
-  console.log(
-    `${path} -> ${DIST_DIR}/${source.name}.otf and .woff2 (${source.glyphs.length} glyphs, ${otf.length} and ${woff2.length} bytes)`,
-  );
+  for (const [font, weight] of [
+    [source, 400],
+    [boldFont(source), 700],
+  ] as const) {
+    const otf = new Uint8Array(buildFont(font, weight).toArrayBuffer());
+    const woff2 = await compress(otf);
+    await writeFile(join(DIST_DIR, `${font.name}.otf`), otf);
+    await writeFile(join(DIST_DIR, `${font.name}.woff2`), woff2);
+    console.log(
+      `${path} -> ${DIST_DIR}/${font.name}.otf and .woff2 (${font.glyphs.length} glyphs, ${otf.length} and ${woff2.length} bytes)`,
+    );
+    faces.push(
+      `@font-face { font-family: "${font.family}"; font-weight: ${weight}; src: url("${font.name}.woff2") format("woff2"), url("${font.name}.otf") format("opentype"); }`,
+    );
+  }
   built.push(source);
 }
 
-const faces = built
-  .map(
-    (f) =>
-      `@font-face { font-family: "${f.family}"; src: url("${f.name}.woff2") format("woff2"), url("${f.name}.otf") format("opentype"); }`,
-  )
-  .join("\n      ");
 const data: DemoFont[] = built.map((f) => ({
   name: f.name,
   family: f.family,
@@ -48,7 +52,7 @@ const banner = { family: square.family, lines: blockText(bannerRows) };
 const template = await readFile("src/demo/index.html", "utf8");
 // "<" in the JSON could end the script element early.
 const page = template
-  .replace("/* FONT FACES */", faces)
+  .replace("/* FONT FACES */", faces.join("\n      "))
   .replace("/* FONTS */", JSON.stringify(data).replace(/</g, "\\u003c"))
   .replace("/* BANNER */", JSON.stringify(banner).replace(/</g, "\\u003c"));
 await writeFile(join(DIST_DIR, "index.html"), page);

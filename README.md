@@ -18,6 +18,9 @@ The languages are English, Finnish, Swedish, Estonian, German, Russian, Ukrainia
 Typographic punctuation such as `“ ” – … €` is there too, and the 16 block graphics of the Spectrum keyboard, such as
 `▛ ▀ ▚ █`.
 
+Each font also comes in bold, made the way Spectrum programs made bold text: each letter printed again one pixel to the
+right.
+
 Only the 96 ROM characters come from the Spectrum. Every other glyph is drawn in this project or composed from its own
 glyphs, such as `ä` from `a` and `¨`.
 
@@ -32,6 +35,14 @@ Download the fonts from the demo page, or from the `zxfnt-fonts` artifact of a
   src:
     url("zx-rom.woff2") format("woff2"),
     url("zx-rom.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "ZX Spectrum ROM";
+  font-weight: bold;
+  src:
+    url("zx-rom-bold.woff2") format("woff2"),
+    url("zx-rom-bold.otf") format("opentype");
 }
 
 body {
@@ -52,6 +63,7 @@ For sharp pixels:
 - Use a font size that is a multiple of 8px. On a retina screen, multiples of 4px work too.
 - Keep the `font-smoothing` lines. Without them, macOS draws the glyphs a little bolder, with grey edges.
 - `from-font` makes underlines and strikeouts one font pixel thick.
+- Keep the bold `@font-face`. Without it, the browser makes bold text itself, and its edges are blurred.
 
 Use `zx-rom-tall` ("ZX Spectrum ROM Tall") for text with accents or Georgian. Its letters are the same size, and its
 lines are 1.25 times taller.

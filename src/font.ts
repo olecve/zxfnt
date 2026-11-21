@@ -15,6 +15,7 @@ const LICENSE =
 const LICENSE_URL = `${PROJECT_URL}/blob/main/LICENSE`;
 
 // fsSelection bits of the OS/2 table.
+const BOLD = 1 << 5;
 const REGULAR = 1 << 6;
 const USE_TYPO_METRICS = 1 << 7;
 
@@ -46,7 +47,7 @@ export function pixelRects(rows: boolean[][]): Rect[] {
   return [...done, ...open.values()];
 }
 
-export function buildFont(source: GlyphFont): Font {
+export function buildFont(source: GlyphFont, weight: 400 | 700 = 400): Font {
   const unit = PIXEL_UNITS;
   const advanceWidth = source.width * unit;
   // Pixel rows count down from the top. Font units count up from the baseline.
@@ -83,7 +84,7 @@ export function buildFont(source: GlyphFont): Font {
 
   return new Font({
     familyName: source.family,
-    styleName: "Regular",
+    styleName: weight === 700 ? "Bold" : "Regular",
     version: `Version ${version}`,
     copyright: source.copyright,
     description: `An ${source.width}×${source.height} bitmap font, made into outlines by zxfnt: each pixel is a square.`,
@@ -94,7 +95,7 @@ export function buildFont(source: GlyphFont): Font {
     unitsPerEm: source.width * PIXEL_UNITS,
     ascender: fontY(lineShift),
     descender: fontY(source.height + lineShift),
-    weightClass: 400,
+    weightClass: weight,
     // Every glyph has the same width. PANOSE says the same: Latin text (2), monospaced (9).
     panose: [2, 0, 0, 9, 0, 0, 0, 0, 0, 0],
     tables: {
@@ -105,7 +106,7 @@ export function buildFont(source: GlyphFont): Font {
       // values as macOS, not from usWinAscent and usWinDescent, which only say where glyphs get clipped.
       os2: {
         version: 4,
-        fsSelection: REGULAR | USE_TYPO_METRICS,
+        fsSelection: (weight === 700 ? BOLD : REGULAR) | USE_TYPO_METRICS,
         yStrikeoutSize: unit,
         // The position is the top of the stroke.
         yStrikeoutPosition: fontY(strikeoutRow),
