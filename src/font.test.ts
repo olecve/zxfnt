@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { parse } from "opentype.js/dist/opentype.mjs";
 import { buildFont, pixelRects } from "./font.ts";
-import { fontDirs, readGlyphFont } from "./glyphs.ts";
+import { fontDirs, parseGlyphFont, readGlyphFont } from "./glyphs.ts";
 
 type Command = { type: string; x?: number; y?: number };
 
@@ -50,6 +50,24 @@ void test("pixelRects joins runs across rows", () => {
       { x0: 1, x1: 2, y0: 2, y1: 3 },
     ],
   );
+});
+
+void test("a font that is not 8 pixels wide has whole font units for every pixel edge", () => {
+  const header = { path: "font.txt", text: "name: six\nfamily: Six\nsize: 6x8\nbaseline: 7\n" };
+  const glyph = { path: "a.txt", text: "U+0041 A\n" + ".XXXX.\n".repeat(8) };
+  const font = parse(buildFont(parseGlyphFont(header, [glyph])).toArrayBuffer());
+  assert.equal(font.unitsPerEm, 6 * 128);
+  assert.equal(font.charToGlyph("A").advanceWidth, 6 * 128);
+  const xs = font.charToGlyph("A").path.commands.flatMap((c) => (c.x === undefined ? [] : [c.x]));
+  assert.deepEqual(
+    [...new Set(xs)].sort((a, b) => a - b),
+    [128, 640],
+  );
+});
+
+void test("a size of zero is rejected", () => {
+  const header = { path: "font.txt", text: "name: z\nfamily: Z\nsize: 0x8\nbaseline: 7\n" };
+  assert.throws(() => parseGlyphFont(header, []), /size must be at least 1x1/);
 });
 
 for (const path of await fontDirs()) {

@@ -3,9 +3,10 @@
 import { Font, Glyph, Path } from "opentype.js/dist/opentype.mjs";
 import type { GlyphFont } from "./glyphs.ts";
 
-// A pixel is 1/width of the em: 128 units in an 8-pixel-wide font. A taller font, such as 8×10, then has the same
-// pixel size, so the same font sizes stay sharp, and its extra rows only add line height.
-const UNITS_PER_EM = 1024;
+// A pixel is 128 font units, and the em is as wide as the font, so a pixel is 1/width of the font size. Pixel edges are
+// then whole units for any width. A taller font, such as 8×10, has the same pixel size, so the same font sizes stay
+// sharp, and its extra rows only add line height.
+const PIXEL_UNITS = 128;
 
 type Rect = { x0: number; x1: number; y0: number; y1: number };
 
@@ -37,7 +38,7 @@ export function pixelRects(rows: boolean[][]): Rect[] {
 }
 
 export function buildFont(source: GlyphFont): Font {
-  const unit = UNITS_PER_EM / source.width;
+  const unit = PIXEL_UNITS;
   const advanceWidth = source.width * unit;
   // Pixel rows count down from the top. Font units count up from the baseline.
   const fontY = (row: number) => (source.baseline - row) * unit;
@@ -70,7 +71,7 @@ export function buildFont(source: GlyphFont): Font {
   return new Font({
     familyName: source.family,
     styleName: "Regular",
-    unitsPerEm: UNITS_PER_EM,
+    unitsPerEm: source.width * PIXEL_UNITS,
     ascender: fontY(lineShift),
     descender: fontY(source.height + lineShift),
     weightClass: 400,

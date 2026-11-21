@@ -52,6 +52,7 @@ export function parseHeader({ path, text }: SourceFile): FontHeader {
   const size = /^(\d+)x(\d+)$/.exec(required("size")) ?? fail(0, 'size must look like "8x8"');
   const width = Number(size[1]);
   const height = Number(size[2]);
+  if (width < 1 || height < 1) fail(0, "size must be at least 1x1");
   const baseline = Number(required("baseline"));
   if (!Number.isInteger(baseline) || baseline < 1 || baseline > height) {
     fail(0, `baseline must be a row number from 1 to ${height}`);
