@@ -121,6 +121,17 @@ export function parseGlyphFont(
   return { ...font, glyphs };
 }
 
+const FONTS_DIR = "fonts";
+
+// The font directories in fonts/, sorted. Files such as .DS_Store are left out.
+export async function fontDirs(): Promise<string[]> {
+  const entries = await readdir(FONTS_DIR, { withFileTypes: true });
+  return entries
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => join(FONTS_DIR, entry.name))
+    .sort();
+}
+
 // Reads a font directory. Glyph files named in `skip` are left out.
 export async function readGlyphFont(dir: string, skip: string[] = []): Promise<GlyphFont> {
   const read = async (name: string): Promise<SourceFile> => {
