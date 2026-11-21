@@ -1,5 +1,4 @@
-// The canvases of the editor: the drawing grid, and text drawn in a font's own pixels. The reference letter is drawn only
-// on the canvas as a guide, and is never saved.
+// The reference letter is drawn only on the canvas as a guide, and is never saved.
 
 import { useEffect, useRef } from "preact/hooks";
 import type { EditorFont } from "./api.ts";
@@ -91,11 +90,9 @@ type PixelTextProps = {
   font: EditorFont;
   lines: string[];
   scale: number;
-  /** The rows of a character, or undefined when the font does not have it. */
   rowsOf: (cp: number) => Rows | undefined;
 };
 
-/** Text in the font's own pixels, one cell after another. A character the font does not have is a grey box. */
 export function PixelText({ font, lines, scale, rowsOf }: PixelTextProps) {
   const canvas = useRef<HTMLCanvasElement>(null);
   useEffect(() => {

@@ -1,5 +1,4 @@
-// The glyph editor (docs/adr/0005-glyph-editor.md) on http://localhost:8081. It reads and writes the glyph files in
-// fonts/, so it runs only on this computer.
+// The glyph editor (docs/adr/0005-glyph-editor.md) writes the glyph files in fonts/, so it listens only on this computer.
 
 import { build } from "esbuild";
 import { readFile } from "node:fs/promises";

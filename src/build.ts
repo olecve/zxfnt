@@ -1,6 +1,3 @@
-// Builds every font directory in fonts/ into dist/<name>.otf and dist/<name>.woff2, and the demo page into
-// dist/index.html and dist/demo.js.
-
 import { build } from "esbuild";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";

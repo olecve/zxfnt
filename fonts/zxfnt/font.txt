@@ -1,4 +1,3 @@
-# ascii.txt has the 96 ASCII glyphs. extra.txt has ASCII glyphs that ascii.txt does not have.
 name: zxfnt
 family: zxfnt
 size: 8x8

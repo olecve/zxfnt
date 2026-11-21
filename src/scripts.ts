@@ -1,7 +1,6 @@
-// Character groups and languages, shared by the demo page and the glyph editor. This module runs in Node and
-// in the browser, so it imports nothing.
+// This module runs in Node and in the browser, so it imports nothing.
 
-/** Groups of the glyph table, in this order. A glyph goes into the first group that matches it. */
+/** A glyph goes into the first group that matches it. */
 export const GLYPH_GROUPS: [string, (codePoint: number) => boolean][] = [
   ["ASCII", (c) => c <= 0x7e],
   ["Latin", (c) => /\p{Script=Latin}/u.test(String.fromCodePoint(c))],
@@ -29,7 +28,6 @@ const cased = (lang: string, name: string, upper: string, sample: string, extra 
   sample,
 });
 
-/** The languages of the demo page. A font shows the ones it has all letters for. */
 export const LANGUAGES: Language[] = [
   cased("en", "English", "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "The quick brown fox jumps over the lazy dog."),
   cased("fi", "Finnish", "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ", "Törkylempijävongahdus."),
