@@ -1,5 +1,6 @@
 // Turns a glyph font into an OpenType font: each lit pixel becomes a square.
 
+import { readFileSync } from "node:fs";
 import { Font, Glyph, Path } from "opentype.js/dist/opentype.mjs";
 import type { GlyphFont } from "./glyphs.ts";
 
@@ -7,6 +8,11 @@ import type { GlyphFont } from "./glyphs.ts";
 // then whole units for any width. A taller font, such as 8×10, has the same pixel size, so the same font sizes stay
 // sharp, and its extra rows only add line height.
 const PIXEL_UNITS = 128;
+
+const { version } = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")) as {
+  version: string;
+};
+const PROJECT_URL = "https://github.com/olecve/zxfnt";
 
 // fsSelection bits of the OS/2 table.
 const REGULAR = 1 << 6;
@@ -75,6 +81,11 @@ export function buildFont(source: GlyphFont): Font {
   return new Font({
     familyName: source.family,
     styleName: "Regular",
+    version: `Version ${version}`,
+    copyright: source.copyright,
+    description: `An ${source.width}×${source.height} bitmap font, made into outlines by zxfnt: each pixel is a square.`,
+    manufacturer: "zxfnt",
+    manufacturerURL: PROJECT_URL,
     unitsPerEm: source.width * PIXEL_UNITS,
     ascender: fontY(lineShift),
     descender: fontY(source.height + lineShift),

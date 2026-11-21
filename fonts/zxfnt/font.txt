@@ -3,3 +3,4 @@ name: zxfnt
 family: zxfnt
 size: 8x8
 baseline: 7
+copyright: The 96 glyphs of the ASCII range (with £, ↑ and ©) and the letters copied or composed from them: © 1982 Sinclair Research Ltd, now Amstrad. Other glyphs made for zxfnt.

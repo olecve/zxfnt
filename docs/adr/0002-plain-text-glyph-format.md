@@ -66,7 +66,8 @@ The build merges all glyph files of a font and stops with an error when two file
 importer, such as one for PNG images, can then write its whole file again without touching glyphs that a person drew.
 
 The header can also `include` glyph files of another font, with paths relative to the font directory. When this font is
-taller, the build adds empty rows on top of the included glyphs ([ADR-0004](0004-taller-variant-for-accents.md)).
+taller, the build adds empty rows on top of the included glyphs ([ADR-0004](0004-taller-variant-for-accents.md)). An
+optional `copyright` goes into the metadata of the font file. Other keys are an error, so a typo does not go unnoticed.
 
 ### Consequences
 

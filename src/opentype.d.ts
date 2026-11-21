@@ -20,6 +20,11 @@ declare module "opentype.js/dist/opentype.mjs" {
     constructor(options: {
       familyName: string;
       styleName: string;
+      version?: string;
+      copyright?: string;
+      description?: string;
+      manufacturer?: string;
+      manufacturerURL?: string;
       unitsPerEm: number;
       ascender: number;
       descender: number;
@@ -29,6 +34,7 @@ declare module "opentype.js/dist/opentype.mjs" {
       glyphs: Glyph[];
     });
     glyphs: { length: number };
+    names: { windows: Record<string, { en: string }> };
     unitsPerEm: number;
     ascender: number;
     descender: number;
