@@ -8,6 +8,10 @@ import type { GlyphFont } from "./glyphs.ts";
 // sharp, and its extra rows only add line height.
 const PIXEL_UNITS = 128;
 
+// fsSelection bits of the OS/2 table.
+const REGULAR = 1 << 6;
+const USE_TYPO_METRICS = 1 << 7;
+
 type Rect = { x0: number; x1: number; y0: number; y1: number };
 
 // Joins lit pixels into rectangles: first runs along each row, then equal runs in the rows below.
@@ -81,6 +85,9 @@ export function buildFont(source: GlyphFont): Font {
       // The underline is one pixel thick, on the row below the descenders, so it stays sharp. Browsers use it with
       // text-decoration-thickness: from-font and text-underline-position: from-font.
       post: { isFixedPitch: 1, underlinePosition: -unit, underlineThickness: unit },
+      // USE_TYPO_METRICS (bit 7, from OS/2 version 4) makes Windows take the line height and position from the same
+      // values as macOS, not from usWinAscent and usWinDescent, which only say where glyphs get clipped.
+      os2: { version: 4, fsSelection: REGULAR | USE_TYPO_METRICS },
     },
     glyphs,
   });

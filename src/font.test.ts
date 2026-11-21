@@ -79,6 +79,10 @@ for (const path of await fontDirs()) {
     const shift = (source.height - source.width) / 2;
     assert.equal(font.ascender, (source.baseline - shift) * unit);
     assert.equal(font.descender, (source.baseline - source.height - shift) * unit);
+    assert.equal(font.tables.os2.version, 4);
+    assert.equal(font.tables.os2.fsSelection, 0b1100_0000, "REGULAR and USE_TYPO_METRICS");
+    assert.equal(font.tables.os2.sTypoAscender, font.ascender, "typo metrics match hhea");
+    assert.equal(font.tables.os2.sTypoDescender, font.descender, "typo metrics match hhea");
     assert.equal(font.tables.post.isFixedPitch, 1, "post table says monospace");
     assert.equal(font.tables.post.underlineThickness, unit, "underline is one pixel thick");
     assert.equal(font.tables.post.underlinePosition, -unit, "underline is on the row below the descenders");
