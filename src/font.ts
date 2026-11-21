@@ -4,9 +4,8 @@ import { readFileSync } from "node:fs";
 import { Font, Glyph, Path } from "opentype.js/dist/opentype.mjs";
 import type { GlyphFont } from "./glyphs.ts";
 
-// A pixel is 128 font units, and the em is as wide as the font, so a pixel is 1/width of the font size. Pixel edges are
-// then whole units for any width. A taller font, such as 8×10, has the same pixel size, so the same font sizes stay
-// sharp, and its extra rows only add line height.
+// The em is as wide as the font, so a pixel is 1/width of the font size and its edges are whole units. A taller font,
+// such as 8×10, has the same pixel size: the same font sizes stay sharp, and its extra rows only add line height.
 const PIXEL_UNITS = 128;
 
 const { version } = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")) as {
@@ -23,8 +22,10 @@ const USE_TYPO_METRICS = 1 << 7;
 
 type Rect = { x0: number; x1: number; y0: number; y1: number };
 
-// Joins lit pixels into rectangles: first runs along each row, then equal runs in the rows below.
-// Fewer, larger rectangles make a smaller font than one square for each pixel.
+/**
+ * Joins lit pixels into rectangles: first runs along each row, then equal runs in the rows below.
+ * Fewer, larger rectangles make a smaller font than one square for each pixel.
+ */
 export function pixelRects(rows: boolean[][]): Rect[] {
   const done: Rect[] = [];
   let open = new Map<string, Rect>();

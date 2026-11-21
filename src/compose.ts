@@ -98,7 +98,7 @@ function addMark(base: Rows, mark: string): Rows | string | undefined {
   return undefined;
 }
 
-// Composes each glyph of the list that the font does not have yet. Glyphs whose base letter is missing are skipped.
+/** Composes each glyph of the list that the font does not have yet. Glyphs whose base letter is missing are skipped. */
 export function compose(list: SourceFile, glyphs: Glyph[]): { glyphs: Glyph[]; skipped: string[] } {
   const byChar = new Map(glyphs.map((g) => [String.fromCodePoint(g.codePoint), g]));
   const result: Glyph[] = [];
@@ -131,7 +131,7 @@ export function compose(list: SourceFile, glyphs: Glyph[]): { glyphs: Glyph[]; s
 export const COMPOSED_FILE = "composed.txt";
 const SETS_DIR = "sets";
 
-// The text of composed.txt for a font directory, from every list in sets/. Undefined when the font gets no glyphs.
+/** The text of composed.txt for a font directory, from every list in sets/. Undefined when the font gets no glyphs. */
 export async function composedText(dir: string): Promise<{ text: string | undefined; skipped: string[] }> {
   const font = await readGlyphFont(dir, [COMPOSED_FILE]);
   const names = (await readdir(SETS_DIR)).filter((name) => name.endsWith(".txt")).sort();

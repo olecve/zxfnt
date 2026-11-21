@@ -7,7 +7,7 @@ import { dirname, join } from "node:path";
 
 export type Glyph = {
   codePoint: number;
-  // rows[y][x] is true for a lit pixel. Row 0 is the top row.
+  /** rows[y][x] is true for a lit pixel. Row 0 is the top row. */
   rows: boolean[][];
 };
 
@@ -16,11 +16,11 @@ export type FontHeader = {
   family: string;
   width: number;
   height: number;
-  // Index of the first row below the baseline.
+  /** Index of the first row below the baseline. */
   baseline: number;
-  // Glyph files of other fonts, relative to the font directory.
+  /** Glyph files of other fonts, relative to the font directory. */
   include: string[];
-  // Copyright notice of the glyphs, for the font metadata.
+  /** Copyright notice of the glyphs, for the font metadata. */
   copyright?: string;
 };
 
@@ -104,7 +104,7 @@ export function parseGlyphs({ path, text }: SourceFile, width: number, height: n
 
 export const codePointLabel = (codePoint: number) => `U+${codePoint.toString(16).toUpperCase().padStart(4, "0")}`;
 
-// The glyph format text of one glyph, without a blank line around it.
+/** The glyph format text of one glyph, without a blank line around it. */
 export function formatGlyph({ codePoint, rows }: Glyph): string {
   const char = codePoint === 0x20 ? "" : ` ${String.fromCodePoint(codePoint)}`;
   return [`${codePointLabel(codePoint)}${char}`, ...rows.map((row) => row.map((p) => (p ? "X" : ".")).join(""))].join(
@@ -112,8 +112,10 @@ export function formatGlyph({ codePoint, rows }: Glyph): string {
   );
 }
 
-// Merges the header with the glyphs of all glyph files, sorted by code point. `included` are glyphs of other fonts,
-// already the size of this font.
+/**
+ * Merges the header with the glyphs of all glyph files, sorted by code point. `included` are glyphs of other fonts,
+ * already the size of this font.
+ */
 export function parseGlyphFont(
   header: SourceFile,
   glyphFiles: SourceFile[],
@@ -140,7 +142,7 @@ export function parseGlyphFont(
 
 const FONTS_DIR = "fonts";
 
-// The font directories in fonts/, sorted. Files such as .DS_Store are left out.
+/** The font directories in fonts/, sorted. Files such as .DS_Store are left out. */
 export async function fontDirs(): Promise<string[]> {
   const entries = await readdir(FONTS_DIR, { withFileTypes: true });
   return entries
@@ -149,7 +151,7 @@ export async function fontDirs(): Promise<string[]> {
     .sort();
 }
 
-// Reads a font directory. Glyph files named in `skip` are left out.
+/** Reads a font directory. Glyph files named in `skip` are left out. */
 export async function readGlyphFont(dir: string, skip: string[] = []): Promise<GlyphFont> {
   const read = async (name: string): Promise<SourceFile> => {
     const path = join(dir, name);
