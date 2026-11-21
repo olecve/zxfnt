@@ -1,0 +1,26 @@
+# Russian letters that have the same shape as a letter of the font, or that are a letter with a mark. The other
+# Russian letters are drawn in fonts/zxfnt/cyrillic.txt. A line without a mark copies the letter.
+
+U+0410 А = A
+U+0412 В = B
+U+0415 Е = E
+U+0417 З = 3
+U+041A К = K
+U+041C М = M
+U+041D Н = H
+U+041E О = O
+U+0420 Р = P
+U+0421 С = C
+U+0422 Т = T
+U+0425 Х = X
+U+0430 а = a
+U+0435 е = e
+U+043E о = o
+U+0440 р = p
+U+0441 с = c
+U+0443 у = y
+U+0445 х = x
+U+0401 Ё = E ¨
+U+0451 ё = e ¨
+U+0419 Й = И ˘
+U+0439 й = и ˘

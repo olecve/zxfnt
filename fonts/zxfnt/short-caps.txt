@@ -1,5 +1,5 @@
-# Drawn by hand for this project: S and Z have no repeated row to remove, so these are drawn five rows high to fit
-# the 8×8 cell. A taller font does not include this file and composes Š and Ž instead.
+# Drawn by hand for this project: S, Z and И have no repeated row to remove, so these are drawn five rows high to fit
+# the 8×8 cell. A taller font does not include this file and composes Š, Ž and Й instead.
 
 U+0160 Š
 ..X..X..
@@ -19,4 +19,14 @@ U+017D Ž
 ...XX...
 ..X.....
 .XXXXXX.
+........
+
+U+0419 Й
+..X..X..
+...XX...
+.X....X.
+.X...XX.
+.X..X.X.
+.X.X..X.
+.XX...X.
 ........
