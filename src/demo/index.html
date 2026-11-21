@@ -186,12 +186,36 @@
         margin-top: 24px;
         background: var(--paper);
       }
+      /* On a phone, one pixel of the font is --px, which the script makes a whole number of device pixels. Every size
+         is a whole number of font pixels, so the text is smaller and still sharp. */
       @media (max-width: 600px) {
         body {
           padding: 16px 8px;
+          font-size: calc(8 * var(--px));
+          line-height: calc(12 * var(--px));
         }
         main {
           padding: 16px;
+        }
+        h1,
+        .alphabet {
+          font-size: calc(16 * var(--px));
+          line-height: calc(24 * var(--px));
+        }
+        .controls button,
+        select {
+          height: calc(16 * var(--px));
+          padding: 0 calc(4 * var(--px));
+        }
+        .border button {
+          width: calc(16 * var(--px));
+        }
+        .glyphs button {
+          width: calc(12 * var(--px));
+        }
+        textarea {
+          height: calc(48 * var(--px));
+          padding: calc(8 * var(--px));
         }
       }
     </style>
