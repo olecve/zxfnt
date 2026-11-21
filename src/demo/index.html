@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <!-- maximum-scale stops phones from zooming in when the text field gets focus. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <title>zxfnt</title>
+    <style>
+      /* FONT FACES */
+      :root {
+        --border: #0000d7;
+        --paper: #d7d7d7;
+        --ink: #000000;
+        --link: #0000d7;
+        --font: monospace;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        background: var(--border);
+        transition: background 0.2s steps(1);
+        /* Phones enlarge text that they think is too small, which blurs the pixels of the font. */
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+      }
+      body {
+        margin: 0;
+        padding: 32px 16px;
+        font-family: var(--font);
+        font-size: 16px;
+        line-height: 24px;
+        color: var(--ink);
+        /* macOS thickens glyphs by default, which blurs the pixel edges. */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      main {
+        max-width: 1024px;
+        /* Whole-pixel margins keep the pixels of the font on the screen grid. */
+        margin-left: max(0px, round(down, (100% - 1024px) / 2, 8px));
+        padding: 32px;
+        background: var(--paper);
+      }
+      header {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+        justify-content: space-between;
+      }
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        font-weight: normal;
+        font-size: inherit;
+      }
+      h1 {
+        font-size: 32px;
+        line-height: 32px;
+      }
+      h2 {
+        background: var(--ink);
+        color: var(--paper);
+        padding: 0 8px;
+        margin: 24px 0 8px;
+      }
+      h3 {
+        margin: 8px 0 0;
+      }
+      p {
+        margin: 0 0 8px;
+        overflow-wrap: anywhere;
+      }
+      a {
+        color: var(--link);
+        text-decoration-thickness: from-font;
+        text-underline-position: from-font;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .controls > span:first-child {
+        width: 9ch;
+      }
+      .controls button,
+      select {
+        font: inherit;
+        height: 32px;
+        padding: 0 8px;
+        border: 0;
+        border-radius: 0;
+        outline: 2px solid var(--ink);
+        outline-offset: -2px;
+        color: var(--ink);
+        background: var(--paper);
+        cursor: pointer;
+      }
+      select {
+        appearance: none;
+      }
+      .controls button[aria-pressed="true"] {
+        color: var(--paper);
+        background: var(--ink);
+      }
+      .border button {
+        width: 32px;
+        padding: 0;
+      }
+      .alphabet {
+        font-size: 32px;
+        line-height: 48px;
+      }
+      .glyphs {
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .glyphs button {
+        font: inherit;
+        width: 24px;
+        padding: 0;
+        border: 0;
+        color: inherit;
+        background: none;
+        cursor: pointer;
+      }
+      .glyphs button:hover,
+      .glyphs button[aria-pressed="true"] {
+        color: var(--paper);
+        background: var(--ink);
+      }
+      textarea {
+        display: block;
+        width: 100%;
+        height: 96px;
+        font: inherit;
+        color: var(--ink);
+        background: var(--paper);
+        border: 0;
+        border-radius: 0;
+        outline: 8px solid var(--ink);
+        outline-offset: -8px;
+        padding: 16px;
+        resize: vertical;
+        caret-color: var(--ink);
+      }
+      footer {
+        margin-top: 24px;
+      }
+      @media (max-width: 600px) {
+        body {
+          padding: 16px 8px;
+        }
+        main {
+          padding: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="application/json" id="fonts">
+      /* FONTS */
+    </script>
+    <script type="module" src="demo.js"></script>
+  </body>
+</html>

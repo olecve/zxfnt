@@ -7,6 +7,7 @@ import { extname, join, normalize } from "node:path";
 const PORT = Number(process.env.PORT ?? 8080);
 const TYPES: Record<string, string> = {
   ".html": "text/html; charset=utf-8",
+  ".js": "text/javascript; charset=utf-8",
   ".otf": "font/otf",
   ".woff2": "font/woff2",
 };

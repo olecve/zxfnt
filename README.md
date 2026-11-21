@@ -55,7 +55,7 @@ Needs Node 22.6 or newer. `.nvmrc` pins the version that the project is tested w
 
 ```sh
 npm install
-npm run build     # fonts/<font>/*.txt -> dist/<name>.otf, dist/<name>.woff2 and dist/index.html
+npm run build     # fonts/<font>/*.txt -> dist/<name>.otf and .woff2, and the demo page dist/index.html
 npm run serve     # demo page at http://localhost:8080
 npm test          # checks that each .otf has exactly the pixels of its glyph files, and the .woff2 the same glyphs
 npm run lint      # ESLint
