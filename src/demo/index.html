@@ -78,6 +78,11 @@
         text-decoration-thickness: from-font;
         text-underline-position: from-font;
       }
+      /* Selected text is in inverse video. */
+      ::selection {
+        color: var(--paper);
+        background: var(--ink);
+      }
       .controls {
         display: flex;
         flex-wrap: wrap;
