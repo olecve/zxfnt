@@ -178,13 +178,27 @@
         font: inherit;
         color: var(--ink);
         background: var(--paper);
-        border: 0;
+        /* A border, not an outline, so that scrolled text stays inside the frame. */
+        border: 8px solid var(--ink);
         border-radius: 0;
-        outline: 8px solid var(--ink);
-        outline-offset: -8px;
-        padding: 16px;
+        padding: 8px;
         resize: vertical;
         caret-color: var(--ink);
+      }
+      textarea::-webkit-scrollbar {
+        width: 8px;
+      }
+      textarea::-webkit-scrollbar-track {
+        background: var(--paper);
+      }
+      textarea::-webkit-scrollbar-thumb {
+        background: var(--ink);
+      }
+      @supports not selector(::-webkit-scrollbar) {
+        textarea {
+          scrollbar-color: var(--ink) var(--paper);
+          scrollbar-width: thin;
+        }
       }
       /* The status line stays in the window, so that the code of a glyph is seen while pointing at it. */
       footer {
