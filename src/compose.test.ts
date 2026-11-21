@@ -86,6 +86,16 @@ void test("compose skips a capital that has no repeated row to remove", () => {
   assert.deepEqual(result.skipped, ["U+017D Ž: no room for the mark above Z"]);
 });
 
+void test("the diaeresis fits narrow letters, and skips a letter too narrow for two dots", () => {
+  const narrow = (codePoint: number, row: string) => ({
+    codePoint,
+    rows: [0, 0, 1, 1, 1, 1, 1, 0].map((lit) => [...(lit ? row : "........")].map((c) => c === "X")),
+  });
+  const result = compose(list("U+00EF ï = ı ¨\nU+1E97 ẗ = t ¨"), [narrow(0x131, "..XXX..."), narrow(0x74, "...X....")]);
+  assert.equal(formatGlyph(result.glyphs[0]).split("\n")[1], "..X.X...");
+  assert.deepEqual(result.skipped, ["U+1E97 ẗ: no room for the mark above t"]);
+});
+
 void test("compose rejects a character that does not match its code point", () => {
   assert.throws(() => compose(list("U+00E4 ö = o ¨"), [A]), /list\.txt:1: ö is not U\+00E4/);
 });

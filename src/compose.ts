@@ -16,8 +16,14 @@ type Shape = { x: number; rows: string[]; onLetter?: boolean };
 // Each mark gives its shapes for a letter with lit columns minX..maxX, best first. A shape goes above the letter with
 // one empty row between them. A shape that is onLetter may also sit directly on the letter when the gap does not fit.
 const MARKS: Record<string, (minX: number, maxX: number) => Shape[]> = {
-  // Two dots, one pixel inside each side of the letter.
-  "¨": (minX, maxX) => [{ x: minX + 1, rows: ["X" + ".".repeat(maxX - minX - 3) + "X"] }],
+  // Two dots, one pixel inside each side of the letter. Above a letter only three pixels wide, the dots are on its
+  // sides. A narrower letter has no room for two dots.
+  "¨": (minX, maxX) => {
+    const width = maxX - minX + 1;
+    if (width >= 5) return [{ x: minX + 1, rows: ["X" + ".".repeat(width - 4) + "X"] }];
+    if (width >= 3) return [{ x: minX, rows: ["X" + ".".repeat(width - 2) + "X"] }];
+    return [];
+  },
   // A ring, or a dot in the middle when the ring does not fit: one pixel above an odd width, two above an even width.
   "˚": (minX, maxX) => {
     const odd = (minX + maxX) % 2 === 0;
