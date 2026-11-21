@@ -73,7 +73,9 @@ function draw(rows: Rows, shape: Shape, y: number): Rows {
 }
 
 // The row for the top of the shape: with an empty row above the letter, else directly on it when the shape allows it.
+// Undefined when the shape does not fit, also when it is wider than the cell on either side.
 function markRow(rows: Rows, shape: Shape): number | undefined {
+  if (shape.x < 0 || shape.x + Math.max(...shape.rows.map((r) => r.length)) > rows[0].length) return undefined;
   const top = firstLitRow(rows);
   const height = shape.rows.length;
   if (top - 1 - height >= 0) return top - 1 - height;
