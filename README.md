@@ -140,6 +140,7 @@ with accents keep their full height, and every accent has an empty row below it.
 - [ADR 0003: Characters beyond ASCII](docs/adr/0003-characters-beyond-ascii.md)
 - [ADR 0004: Taller variant for accents](docs/adr/0004-taller-variant-for-accents.md)
 - [ADR 0005: Glyph editor](docs/adr/0005-glyph-editor.md)
+- [ADR 0006: Demo page with one view at a time](docs/adr/0006-demo-page.md)
 
 ## License
 

@@ -7,6 +7,8 @@ import type { DemoFont } from "./data.ts";
 
 // An 8-bit palette, colours 0-7 at normal brightness.
 const PALETTE = ["#000000", "#0000d7", "#d70000", "#d700d7", "#00d700", "#00d7d7", "#d7d700", "#d7d7d7"];
+// Black has no bright version.
+const BRIGHT_PALETTE = ["#000000", "#0000ff", "#ff0000", "#ff00ff", "#00ff00", "#00ffff", "#ffff00", "#ffffff"];
 const COLOUR_NAMES = ["black", "blue", "red", "magenta", "green", "cyan", "yellow", "white"];
 const VIEWS = [
   ["alphabet", "Alphabet"],
@@ -43,16 +45,23 @@ function App() {
     ),
   );
   const [border, setBorder] = useState(PALETTE[1]);
+  const [bright, setBright] = useState("0");
   const [status, setStatus] = useState(READY);
+  // Typing does not use the language, so the control is dimmed in that view.
+  const languageUnused = view === "type";
   const [typed, setTyped] = useState('10 PRINT "HELLO, WORLD!"\n20 GO TO 10');
   const shown = fontName === BOTH ? fonts : fonts.filter((f) => f.name === fontName);
   const language = languages.find((l) => l.lang === lang)!;
 
   useEffect(() => history.replaceState(null, "", `#${fontName}/${lang}/${view}`), [fontName, lang, view]);
   useEffect(() => {
+    // BRIGHT changes the paper and the ink, but not the border.
+    const colours = bright === "1" ? BRIGHT_PALETTE : PALETTE;
     document.documentElement.style.setProperty("--border", border);
+    document.documentElement.style.setProperty("--paper", colours[7]);
+    document.documentElement.style.setProperty("--link", colours[1]);
     document.documentElement.style.setProperty("--font", `"${shown[0].family}", monospace`);
-  }, [border, fontName]);
+  }, [border, bright, fontName]);
 
   return (
     <main>
@@ -68,12 +77,21 @@ function App() {
         onChange={setFontName}
         options={[...fonts.map((f) => [f.name, `${f.width}×${f.height}`]), [BOTH, "Both"]]}
       />
-      <div class="controls">
+      <Toggle label="VIEW" value={view} onChange={setView} options={VIEWS} />
+      <div class={languageUnused ? "controls unused" : "controls"}>
         <span>LANGUAGE</span>
-        <select aria-label="Language" value={lang} onChange={(e) => setLang(e.currentTarget.value)}>
-          {languages.map((l) => (
-            <option value={l.lang}>{l.name}</option>
-          ))}
+        <select
+          aria-label="Language"
+          value={lang}
+          disabled={languageUnused}
+          onChange={(e) => setLang(e.currentTarget.value)}
+        >
+          {[...languages]
+            // English first, as the default.
+            .sort((a, b) => Number(b.lang === "en") - Number(a.lang === "en") || a.name.localeCompare(b.name, "en"))
+            .map((l) => (
+              <option value={l.lang}>{l.name}</option>
+            ))}
         </select>
       </div>
       <div class="controls border">
@@ -89,7 +107,15 @@ function App() {
           </button>
         ))}
       </div>
-      <Toggle label="VIEW" value={view} onChange={setView} options={VIEWS} />
+      <Toggle
+        label="BRIGHT"
+        value={bright}
+        onChange={setBright}
+        options={[
+          ["0", "0"],
+          ["1", "1"],
+        ]}
+      />
       {shown.map((font) => (
         <section style={{ fontFamily: `"${font.family}", monospace` }}>
           <h2>{font.family}</h2>
@@ -117,7 +143,7 @@ function App() {
                 {px}px: {language.sample}
               </p>
             ))}
-          {view === "glyphs" && <Glyphs font={font} onPick={setStatus} />}
+          {view === "glyphs" && <Glyphs font={font} marked={language} onPick={setStatus} />}
         </section>
       ))}
       <footer>{status}</footer>
@@ -152,8 +178,11 @@ function Alphabet({ font, language }: { font: DemoFont; language: Language }) {
 }
 
 // A glyph shows its code in the status line when it is pointed at or tapped, so that it works on touch screens too.
-function Glyphs({ font, onPick }: { font: DemoFont; onPick: (status: string) => void }) {
+type GlyphsProps = { font: DemoFont; marked: Language; onPick: (status: string) => void };
+
+function Glyphs({ font, marked, onPick }: GlyphsProps) {
   const [picked, setPicked] = useState<number | undefined>();
+  const letters = new Set([...(marked.upper + marked.lower)].map((c) => c.codePointAt(0)));
   const groups = GLYPH_GROUPS.map((): number[] => []);
   for (const cp of font.codePoints) groups[GLYPH_GROUPS.findIndex(([, matches]) => matches(cp))].push(cp);
   const show = (cp: number) => onPick(`${label(cp)} ${String.fromCodePoint(cp)}`);
@@ -167,6 +196,7 @@ function Glyphs({ font, onPick }: { font: DemoFont; onPick: (status: string) => 
               {group.map((cp) => (
                 <button
                   type="button"
+                  class={letters.has(cp) ? "letter" : undefined}
                   aria-pressed={cp === picked}
                   onMouseEnter={() => show(cp)}
                   onClick={() => {
