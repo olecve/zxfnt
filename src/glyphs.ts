@@ -43,7 +43,7 @@ const isSkipped = (line: string) => line === "" || line.startsWith("#");
 
 export function parseHeader({ path, text }: SourceFile): FontHeader {
   const fail = failer(path);
-  const header = new Map<string, string>();
+  const header = new Map<string, { value: string; line: number }>();
   text.split(/\r?\n/).forEach((raw, i) => {
     const line = raw.trim();
     if (isSkipped(line)) return;
@@ -51,26 +51,31 @@ export function parseHeader({ path, text }: SourceFile): FontHeader {
     if (!HEADER_KEYS.includes(match[1]))
       fail(i, `unknown key "${match[1]}", expected one of ${HEADER_KEYS.join(", ")}`);
     if (header.has(match[1])) fail(i, `"${match[1]}" is set twice`);
-    header.set(match[1], match[2].trim());
+    header.set(match[1], { value: match[2].trim(), line: i });
   });
 
-  const required = (key: string): string => header.get(key) ?? fail(0, `missing header "${key}"`);
-  const size = /^(\d+)x(\d+)$/.exec(required("size")) ?? fail(0, 'size must look like "8x8"');
+  const required = (key: string): string => {
+    const entry = header.get(key);
+    if (!entry) throw new Error(`${path}: missing header "${key}"`);
+    return entry.value;
+  };
+  const failAt = (key: string, message: string) => fail(header.get(key)!.line, message);
+  const size = /^(\d+)x(\d+)$/.exec(required("size")) ?? failAt("size", 'size must look like "8x8"');
   const width = Number(size[1]);
   const height = Number(size[2]);
-  if (width < 1 || height < 1) fail(0, "size must be at least 1x1");
+  if (width < 1 || height < 1) failAt("size", "size must be at least 1x1");
   const baseline = Number(required("baseline"));
   if (!Number.isInteger(baseline) || baseline < 1 || baseline > height) {
-    fail(0, `baseline must be a row number from 1 to ${height}`);
+    failAt("baseline", `baseline must be a row number from 1 to ${height}`);
   }
-  const include = (header.get("include") ?? "").split(/\s+/).filter(Boolean);
+  const include = (header.get("include")?.value ?? "").split(/\s+/).filter(Boolean);
   // The name becomes a file name and the family goes into CSS and HTML, so both are limited to safe characters.
   const name = required("name");
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(name))
-    fail(0, `name must be lowercase letters, digits and hyphens, got "${name}"`);
+    failAt("name", `name must be lowercase letters, digits and hyphens, got "${name}"`);
   const family = required("family");
-  if (/["'<>&\\]/.test(family)) fail(0, `family must not contain quotes, <, >, & or \\, got "${family}"`);
-  return { name, family, width, height, baseline, include, copyright: header.get("copyright") };
+  if (/["'<>&\\]/.test(family)) failAt("family", `family must not contain quotes, <, >, & or \\, got "${family}"`);
+  return { name, family, width, height, baseline, include, copyright: header.get("copyright")?.value };
 }
 
 export function parseGlyphs({ path, text }: SourceFile, width: number, height: number): Glyph[] {

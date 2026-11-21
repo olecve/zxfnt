@@ -17,9 +17,15 @@ describe("parseHeader", () => {
       path: "font.txt",
       text: `name: ${name}\nfamily: ${family}\nsize: 8x8\nbaseline: 7\n`,
     });
-    assert.throws(() => parseHeader(header("../x", "X")), /name must be lowercase letters/);
-    assert.throws(() => parseHeader(header("x", 'X"</style>')), /family must not contain/);
+    assert.throws(() => parseHeader(header("../x", "X")), /font\.txt:1: name must be lowercase letters/);
+    assert.throws(() => parseHeader(header("x", 'X"</style>')), /font\.txt:2: family must not contain/);
     assert.equal(parseHeader(header("zxfnt-tall", "zxfnt Tall")).name, "zxfnt-tall");
+  });
+
+  it("reports a missing key without a line number", () => {
+    assert.throws(() => parseHeader({ path: "font.txt", text: "name: t\nsize: 8x8\nbaseline: 7\n" }), {
+      message: 'font.txt: missing header "family"',
+    });
   });
 });
 
@@ -36,7 +42,7 @@ describe("parseGlyphFont", () => {
   const header = (size: string) => ({ path: "font.txt", text: `name: t\nfamily: T\nsize: ${size}\nbaseline: 7\n` });
 
   it("rejects a size of zero", () => {
-    assert.throws(() => parseGlyphFont(header("0x8"), []), /size must be at least 1x1/);
+    assert.throws(() => parseGlyphFont(header("0x8"), []), /font\.txt:3: size must be at least 1x1/);
   });
 
   it("rejects a code point that two files define", () => {
