@@ -1,7 +1,9 @@
 import { render } from "preact";
 import { useEffect, useRef, useState } from "preact/hooks";
+import { blockText } from "../blocks.ts";
 import { GLYPH_GROUPS, LANGUAGES, type Language } from "../scripts.ts";
 import type { DemoFont } from "./data.ts";
+import { PICTURE } from "./picture.ts";
 
 // An 8-bit palette, colours 0-7 at normal brightness.
 const PALETTE = ["#000000", "#0000d7", "#d70000", "#d700d7", "#00d700", "#00d7d7", "#d7d700", "#d7d7d7"];
@@ -13,6 +15,7 @@ const VIEWS = [
   ["type", "Type here"],
   ["sizes", "Sizes"],
   ["glyphs", "All glyphs"],
+  ["graphics", "Graphics"],
 ];
 const BOTH = "both";
 const READY = "OK";
@@ -74,8 +77,8 @@ function App() {
   const [border, setBorder] = useState(PALETTE[1]);
   const [bright, setBright] = useState("0");
   const [status, setStatus] = useState(READY);
-  // Typing does not use the language, so the control is dimmed in that view.
-  const languageUnused = view === "type";
+  // Typing and the picture do not use the language, so the control is dimmed in these views.
+  const languageUnused = view === "type" || view === "graphics";
   const [typed, setTyped] = useState('10 PRINT "HELLO, WORLD!"\n20 GO TO 10');
   const shown = fontName === BOTH ? fonts : fonts.filter((f) => f.name === fontName);
   const language = languages.find((l) => l.lang === lang)!;
@@ -178,6 +181,7 @@ function App() {
                 </p>
               ))}
             {view === "glyphs" && <Glyphs font={font} marked={language} onPick={setStatus} />}
+            {view === "graphics" && <Picture font={font} />}
           </section>
         ))}
         <footer>
@@ -269,6 +273,22 @@ function Glyphs({ font, marked, onPick }: GlyphsProps) {
         ),
       )}
     </>
+  );
+}
+
+const pictureLines = blockText(PICTURE.map((row) => [...row].map((p) => p !== ".")));
+
+function Picture({ font }: { font: DemoFont }) {
+  // A line exactly as tall as the cell joins the blocks of one line to the next.
+  return (
+    <p
+      class="picture"
+      role="img"
+      aria-label="A home computer, drawn with block graphics"
+      style={{ lineHeight: font.height / font.width }}
+    >
+      {pictureLines.join("\n")}
+    </p>
   );
 }
 
