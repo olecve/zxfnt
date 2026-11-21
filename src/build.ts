@@ -32,6 +32,7 @@ const SAMPLES: [lang: string, name: string, text: string][] = [
   ["ru", "Russian", "Съешь же ещё этих мягких французских булок, да выпей чаю."],
   ["uk", "Ukrainian", "Чуєш їх, доцю, га? Кумедна ж ти, прощайся без ґольфів!"],
   ["be", "Belarusian", "У Іўі худы жвавы чорт у зялёнай камізэльцы пабег пад’есці фаршу з юшкай."],
+  ["kk", "Kazakh", "Қоңыр күз келді: ағаштың жапырағы сарғайып, ұзын жол әсем көрінді."],
 ];
 
 // Start from an empty dist/, so that a renamed or removed font does not stay there and get published.
