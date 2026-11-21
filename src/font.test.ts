@@ -79,6 +79,8 @@ for (const path of await fontDirs()) {
     const shift = (source.height - source.width) / 2;
     assert.equal(font.ascender, (source.baseline - shift) * unit);
     assert.equal(font.descender, (source.baseline - source.height - shift) * unit);
+    assert.equal(font.tables.post.isFixedPitch, 1, "post table says monospace");
+    assert.deepEqual(font.tables.os2.panose, [2, 0, 0, 9, 0, 0, 0, 0, 0, 0], "PANOSE says monospace");
 
     for (const glyph of source.glyphs) {
       const otf = font.charToGlyph(String.fromCodePoint(glyph.codePoint));
