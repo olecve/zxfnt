@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>zxfnt editor</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          14px/1.4 system-ui,
+          sans-serif;
+        color: #000;
+        background: #d7d7d7;
+      }
+      header {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: 8px 16px;
+        background: #000;
+        color: #d7d7d7;
+      }
+      header h1 {
+        margin: 0;
+        font-size: 16px;
+      }
+      header input,
+      header select {
+        font: inherit;
+      }
+      .status {
+        margin-left: auto;
+      }
+      .status.error {
+        color: #ff6b6b;
+      }
+      main {
+        display: grid;
+        grid-template-columns: 280px auto 1fr;
+        gap: 16px;
+        padding: 16px;
+        align-items: start;
+      }
+      nav {
+        max-height: calc(100vh - 80px);
+        overflow: auto;
+      }
+      nav h3 {
+        margin: 8px 0 4px;
+        font-size: 12px;
+        text-transform: uppercase;
+      }
+      nav button {
+        width: 28px;
+        height: 28px;
+        margin: 1px;
+        font-size: 16px;
+        border: 1px solid #aaa;
+        background: #fff;
+        cursor: pointer;
+      }
+      nav button.included {
+        color: #0000d7;
+      }
+      nav button.generated {
+        color: #777;
+      }
+      nav button.missing {
+        color: #d70000;
+        border-style: dashed;
+        background: none;
+      }
+      nav button.current {
+        outline: 3px solid #000;
+      }
+      section h2 {
+        margin: 0 0 8px;
+        font-size: 18px;
+        font-weight: normal;
+      }
+      .grid {
+        display: block;
+        background: #fff;
+        cursor: crosshair;
+        touch-action: none;
+      }
+      .tools {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+        margin-top: 8px;
+        max-width: 420px;
+      }
+      .tools button,
+      .tools select,
+      .tools input {
+        font: inherit;
+      }
+      aside canvas,
+      .pixels {
+        display: block;
+        margin-bottom: 8px;
+        image-rendering: pixelated;
+        background: #d7d7d7;
+      }
+      aside input {
+        width: 100%;
+        font: inherit;
+        margin-bottom: 8px;
+      }
+      aside h3 {
+        margin: 12px 0 4px;
+        font-size: 12px;
+        text-transform: uppercase;
+      }
+      .others figure {
+        margin: 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .others {
+        display: flex;
+        gap: 16px;
+        align-items: flex-end;
+      }
+      .caption {
+        margin: 4px 0;
+        font-size: 12px;
+      }
+      .loading {
+        padding: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/editor.js"></script>
+  </body>
+</html>

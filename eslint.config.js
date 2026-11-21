@@ -1,6 +1,6 @@
 import js from "@eslint/js";
-import { defineConfig } from "eslint/config";
 import { createSlopConfig } from "eslint-plugin-slop";
+import { defineConfig } from "eslint/config";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
@@ -25,6 +25,8 @@ export default defineConfig(
   },
   // The default inspection compares with git history, which the shallow CI checkout does not have.
   createSlopConfig({ cwd: import.meta.dirname, inspection: "full" }),
+  // The glyph editor runs in the browser.
+  { files: ["src/editor/**"], languageOptions: { globals: globals.browser } },
   // Plain JavaScript files, such as this config, are not in tsconfig.json.
   { files: ["**/*.js"], extends: [tseslint.configs.disableTypeChecked] },
 );

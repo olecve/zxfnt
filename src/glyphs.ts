@@ -123,6 +123,27 @@ export function formatGlyph({ codePoint, rows }: Glyph): string {
 }
 
 /**
+ * The text of a glyph file with `glyph` in it. Its rows replace the rows of the glyph with the same code point, or it is
+ * added at the end. Comments and the other glyphs stay as they are.
+ */
+export function setGlyph(text: string, glyph: Glyph): string {
+  const lines = text.split("\n");
+  const rows = formatGlyph(glyph).split("\n").slice(1);
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (isSkipped(line)) continue;
+    const match = GLYPH_START.exec(line);
+    if (match && parseInt(match[1], 16) === glyph.codePoint) {
+      lines.splice(i + 1, rows.length, ...rows);
+      return lines.join("\n");
+    }
+    i += rows.length;
+  }
+  const body = text.trimEnd();
+  return `${body}${body === "" ? "" : "\n\n"}${formatGlyph(glyph)}\n`;
+}
+
+/**
  * Merges the header with the glyphs of all glyph files, sorted by code point. `included` are glyphs of other fonts,
  * already the size of this font. A glyph of the font's own files replaces an included glyph with the same code point.
  */
@@ -176,8 +197,8 @@ export async function readGlyphFont(dir: string, skip: string[] = []): Promise<G
   return parseGlyphFont(header, await Promise.all(names.map(read)), included);
 }
 
-// Reads a glyph file of another font and adds empty rows on top, so that its glyphs are as tall as `font`.
-async function readIncluded(path: string, font: FontHeader): Promise<{ path: string; glyphs: Glyph[] }> {
+/** Reads a glyph file of another font and adds empty rows on top, so that its glyphs are as tall as `font`. */
+export async function readIncluded(path: string, font: FontHeader): Promise<{ path: string; glyphs: Glyph[] }> {
   const fontFile = join(dirname(path), HEADER_FILE);
   const other = parseHeader({ path: fontFile, text: await readFile(fontFile, "utf8") });
   const extra = font.height - other.height;
