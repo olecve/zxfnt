@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Accepted, partially superseded by [ADR-0005](0005-glyph-editor.md)
 
 ## Context and Problem Statement
 
@@ -64,8 +64,10 @@ that the character is the one of the code point. An invisible character, such as
 blank line separates two glyphs. `#` starts a comment. `baseline: 7` means rows 0–6 are on or above the baseline, and
 row 7 has the descenders.
 
-The build merges all glyph files of a font and stops with an error when two files have the same code point. A future
-importer, such as one for PNG images, can then write its whole file again without touching glyphs that a person drew.
+The build merges all glyph files of a font and stops with an error when two files have the same code point. ADR-0005
+changes this for included files: a glyph of the font itself replaces an included glyph with the same code point. A
+future importer, such as one for PNG images, can then write its whole file again without touching glyphs that a person
+drew.
 
 The header can also `include` glyph files of another font, with paths relative to the font directory. When this font is
 taller, the build adds empty rows on top of the included glyphs ([ADR-0004](0004-taller-variant-for-accents.md)). An

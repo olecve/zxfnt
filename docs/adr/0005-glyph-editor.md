@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed
+Accepted
 
 ## Context and Problem Statement
 
@@ -43,13 +43,14 @@ source?
 Chosen option: "A local web app in TypeScript and Preact, with JSX bundled by esbuild", because it shares the parser and
 the writer with the build, keeps full types in the browser code, and lets each part of the page follow the editor state.
 
-`npm run edit` starts a local server, like `npm run serve`, and opens the editor page:
+`npm run edit` starts a local server on `http://localhost:8081`, like `npm run serve`, with the editor page:
 
-- The left side lists the characters of a font or a character set, each with its source: ASCII, drawn, composed, copied
-  or missing.
-- The middle has the pixel grid of the font's cell, with guide lines for the baseline, the x-height, the ascender row
-  and the descender row. A reference letter in a system font can be shown behind the grid. It is drawn only in the
-  browser and never saved.
+- The left side lists the glyphs of a font by script, each marked by its source: drawn in this font, included from
+  another font, or read-only (composed, or not from this project). The letters of the sample sentences that the font
+  does not have are listed as missing.
+- The middle has the pixel grid of the font's cell, with lines for the baseline and the x-height, and shaded rows above
+  the x-height and below the baseline. A reference letter in a system font can be shown behind the grid. It is drawn
+  only in the browser and never saved.
 - The right side shows the glyph at real size, between other letters, in a sentence, and in both fonts.
 - A save writes only that glyph into its file. Comments, the order and the other glyphs stay as they are.
 - Glyphs of `composed.txt` and of `ascii.txt` are read-only. A composed glyph can be moved into a drawn file instead.
@@ -72,10 +73,11 @@ rest.
 
 ### Confirmation
 
-- `npm run edit` opens the editor, and a saved glyph changes only its rows in its file
+- `npm run edit` serves the editor, and a saved glyph changes only its rows in its file
 - A test checks that a glyph of the font itself replaces an included glyph, and that two own files with the same code
   point are still an error
-- The Georgian letters of the tall font are drawn in the editor
+- Georgian letters are redrawn with the editor: drawn on the grid, checked in the preview, copied out for review, pasted
+  back and saved
 
 ## Pros and Cons of the Options
 
