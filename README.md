@@ -2,38 +2,74 @@
 
 [![Build](https://github.com/olecve/zxfnt/actions/workflows/build.yml/badge.svg)](https://github.com/olecve/zxfnt/actions/workflows/build.yml)
 
-Turns 8×8 pixel fonts into web fonts that you can use on any webpage with `@font-face`.
+Pixel fonts for the web. Each pixel of an 8×8 font becomes a square in a vector font, so the text stays sharp at any
+multiple of 8px.
 
-**Demo page: <https://olecve.github.io/zxfnt/>.** Each run of the
-[build workflow](https://github.com/olecve/zxfnt/actions/workflows/build.yml) also has the fonts as a downloadable
-artifact, `zxfnt-fonts`.
+**Demo: <https://olecve.github.io/zxfnt/>**
 
-Sources:
+## Fonts
 
-- a classic 8×8 ASCII font
-- fonts found as bitmap images
-- glyphs drawn by hand
+| Font                              | Cell | Characters                                                          |
+| --------------------------------- | ---- | ------------------------------------------------------------------- |
+| [`zxfnt`](fonts/zxfnt/)           | 8×8  | the 96 ASCII glyphs, plus Latin, Cyrillic and Georgian letters      |
+| [`zxfnt-tall`](fonts/zxfnt-tall/) | 8×10 | the same, with room above the letters for accents and tall Georgian |
 
-Every font can also get characters the original never had, such as letters for languages other than English and extra
-symbols. These characters are drawn by hand in this project, or composed from the font's own glyphs and marks. They are
-not copied from other fonts.
+The languages are English, Finnish, Swedish, Estonian, German, Russian, Ukrainian, Belarusian, Kazakh and Georgian.
+Typographic punctuation such as `“ ” – … €` is there too.
 
-This is a hobby project. Status: the font builds in an 8×8 and an 8×10 variant, both with accented Latin letters. See
-[Milestones](#milestones) for what comes next.
+The 96 ASCII glyphs are not from this project, and the letters copied or composed from them, such as `ä` from `a` and
+`¨`, keep their credit. Every other glyph is drawn in this project.
 
-## How it works
+## Using a font
 
+Download the fonts from the demo page, or from the `zxfnt-fonts` artifact of a
+[build](https://github.com/olecve/zxfnt/actions/workflows/build.yml), and put them next to your page:
+
+```css
+@font-face {
+  font-family: "zxfnt";
+  src:
+    url("zxfnt.woff2") format("woff2"),
+    url("zxfnt.otf") format("opentype");
+}
+
+body {
+  font-family: "zxfnt", monospace;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  text-decoration-thickness: from-font;
+  text-underline-position: from-font;
+}
 ```
- ASCII glyph file ─────┐
- PNG image ────────────┤
- hand-drawn glyphs ────┴──► text glyph files ──► build ──► .otf (+ .woff2) + demo page
-                                   ▲
-                                   │
-                 extra character sets (compose, copy, generate, draw)
+
+For sharp pixels:
+
+- Use a font size that is a multiple of 8px. On a retina screen, multiples of 4px work too.
+- Keep the `font-smoothing` lines. Without them, macOS draws the glyphs a little bolder, with grey edges.
+- `from-font` makes underlines and strikeouts one font pixel thick.
+
+Use `zxfnt-tall` ("zxfnt Tall") for text with accents or Georgian. Its letters are the same size, and its lines are 1.25
+times taller.
+
+## Development
+
+Needs Node 22.6 or newer (`nvm use` picks the version in `.nvmrc`).
+
+```sh
+npm install
+npm run build     # fonts/ -> dist/: .otf, .woff2 and the demo page
+npm run serve     # the demo page at http://localhost:8080
+npm run edit      # the glyph editor at http://localhost:8081
+npm run compose   # makes the composed letters, such as ä, from the lists in sets/
+npm run validate  # format, lint, unused code, types and tests
 ```
 
-Every source is first converted into plain text glyph files. A font is a directory: `font.txt` has the name and size,
-and each other `.txt` file has glyphs from one source. You can read and edit them in any editor:
+A font is a directory of text files. `font.txt` has its name and size, and the other files have the glyphs, one source
+each:
 
 ```
 U+0041 A
@@ -47,107 +83,21 @@ U+0041 A
 ........
 ```
 
-The builder turns each lit pixel into a square in a vector font.
+The editor draws on the same files: a pixel grid with a reference letter behind it, a live preview, and a save that
+changes only that glyph's rows.
 
-## Building
+The code is TypeScript. [opentype.js](https://github.com/opentypejs/opentype.js) writes the fonts,
+[wawoff2](https://github.com/fontello/wawoff2) compresses them, and the editor and demo page use Preact and esbuild. The
+decisions behind the project are in [docs/adr](docs/adr/).
 
-Needs Node 22.6 or newer. `.nvmrc` pins the version that the project is tested with, so `nvm use` selects it.
+## Next
 
-```sh
-npm install
-npm run build     # fonts/<font>/*.txt -> dist/<name>.otf and .woff2, and the demo page dist/index.html
-npm run serve     # demo page at http://localhost:8080
-npm test          # checks that each .otf has exactly the pixels of its glyph files, and the .woff2 the same glyphs
-npm run lint      # ESLint
-npm run check     # type check
-npm run format    # formats all files with Prettier
-npm run validate  # format check, lint, unused code check, type check and tests
-npm run compose   # character lists in sets/ -> fonts/<font>/composed.txt
-```
-
-Open the demo page through `npm run serve`. Browsers do not load fonts for pages opened as `file://` URLs.
-
-## Using a font
-
-Copy `dist/zxfnt.woff2` and `dist/zxfnt.otf` next to your page. Browsers load the `.woff2`, which is about 6 times
-smaller. The `.otf` is a fallback for old browsers, and the file to install on a computer.
-
-```css
-@font-face {
-  font-family: "zxfnt";
-  src:
-    url("zxfnt.woff2") format("woff2"),
-    url("zxfnt.otf") format("opentype");
-}
-
-body {
-  font-family: "zxfnt", monospace;
-  font-size: 16px; /* multiples of 8px keep pixels sharp */
-  /* macOS thickens glyphs by default, which blurs the pixel edges */
-  -webkit-font-smoothing: antialiased; /* Chrome, Safari, Edge */
-  -moz-osx-font-smoothing: grayscale; /* Firefox */
-}
-
-a {
-  /* a sharp underline or strikeout, one font pixel thick, from the font */
-  text-decoration-thickness: from-font;
-  text-underline-position: from-font;
-}
-```
-
-Sharp edges need all of these:
-
-- **Font smoothing off on macOS.** Without the two `font-smoothing` lines, macOS makes every glyph slightly bolder, and
-  the edges get grey pixels. These lines have no effect on other systems.
-- **A font size that is a multiple of 8px** (8, 16, 24, 32…). Then each font pixel is a whole number of screen pixels.
-  On a high-density (retina) screen, multiples of 4px are also sharp.
-- **Text that starts on a whole pixel.** On a normal-density screen, text that starts at a fractional position, for
-  example inside a centered box with an odd width, gets grey edges.
-
-For text with accents, use `zxfnt-tall.otf` ("zxfnt Tall") instead. It has the same glyphs in an 8×10 cell: capitals
-with accents keep their full height, and every accent has an empty row below it. Letters have the same size as in
-`zxfnt.otf`, and lines are 1.25 times taller.
-
-## Fonts
-
-| Font                              | Source                                         | Glyphs                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| --------------------------------- | ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`zxfnt`](fonts/zxfnt/)           | 8×8 ASCII font                                 | 96 ASCII glyphs ([`ascii.txt`](fonts/zxfnt/ascii.txt)); `ä å õ ö ü š ž Ä Å Õ Ö Ü`, Cyrillic letters that look like Latin ones, and `Ё ё й Ї Ў ў`, composed or copied ([`composed.txt`](fonts/zxfnt/composed.txt)); `^`, `` ` `` and `ß` drawn ([`extra.txt`](fonts/zxfnt/extra.txt)); `Š`, `Ž` and `Й` drawn five rows high ([`short-caps.txt`](fonts/zxfnt/short-caps.txt)); the other Cyrillic letters for Russian, Ukrainian, Belarusian and Kazakh drawn ([`cyrillic.txt`](fonts/zxfnt/cyrillic.txt)); the 33 Georgian letters drawn ([`georgian.txt`](fonts/zxfnt/georgian.txt)); punctuation and symbols for web pages, such as `“ ” – … € °` and the no-break space ([`punctuation.txt`](fonts/zxfnt/punctuation.txt)) |
-| [`zxfnt-tall`](fonts/zxfnt-tall/) | `zxfnt` in an 8×10 cell, for text with accents | includes `ascii.txt`, `extra.txt`, `punctuation.txt`, `cyrillic.txt` and `georgian.txt` of `zxfnt`; all accented letters composed at full height ([`composed.txt`](fonts/zxfnt-tall/composed.txt)); Georgian letters with ascenders drawn two rows tall ([`georgian.txt`](fonts/zxfnt-tall/georgian.txt))                                                                                                                                                                                                                                                                                                                                                                                                                     |
-
-## Milestones
-
-1. ~~Pipeline: ASCII glyph file → `.otf`, plus a demo page.~~ Done.
-2. First extra character sets for the font: ~~accented Latin letters~~, ~~Cyrillic for Russian, Ukrainian, Belarusian
-   and Kazakh~~, ~~Georgian~~.
-3. Importers: PNG images.
-4. Extras: ~~`.woff2`~~, block graphics (`▀ ▄ █`), a page with all fonts side by side.
-
-## Tooling
-
-- TypeScript on Node 22, run with `node --experimental-strip-types`.
-- Prettier formats the code. ESLint with typescript-eslint lints it, and
-  [eslint-plugin-slop](https://github.com/antfu/eslint-plugin-slop) flags patterns that AI tools often write.
-  [Knip](https://knip.dev) finds unused files, exports and dependencies. `npm run validate` runs all checks.
-- [opentype.js](https://github.com/opentypejs/opentype.js) writes the `.otf` files, and
-  [wawoff2](https://github.com/fontello/wawoff2), the WOFF2 code of Google built for WebAssembly, makes the `.woff2`
-  files.
-
-## Decisions
-
-- [ADR 0001: Build tool and language](docs/adr/0001-build-tool-and-language.md)
-- [ADR 0002: Plain text glyph format as the single source](docs/adr/0002-plain-text-glyph-format.md)
-- [ADR 0003: Characters beyond ASCII](docs/adr/0003-characters-beyond-ascii.md)
-- [ADR 0004: Taller variant for accents](docs/adr/0004-taller-variant-for-accents.md)
-- [ADR 0005: Glyph editor](docs/adr/0005-glyph-editor.md)
-- [ADR 0006: Demo page with one view at a time](docs/adr/0006-demo-page.md)
+- Import fonts from PNG images
+- Block graphics (`▀ ▄ █`)
 
 ## License
 
 The code is under the [MIT License](LICENSE). The fonts and the glyphs drawn in this project are under the
 [SIL Open Font License 1.1](OFL.txt), with the Reserved Font Name zxfnt: a modified font needs a new name in its
-`font.txt`. They are not copied from other fonts.
-
-The 96 glyphs of `ascii.txt`, and the glyphs that the lists in `sets/` copy or compose from them, are © 1982 Sinclair
-Research Ltd, now Amstrad, and are not covered by these licenses. The `copyright` of each font says which glyphs are
-whose.
+`font.txt`. The 96 glyphs of `ascii.txt`, and the glyphs that the lists in `sets/` copy or compose from them, are © 1982
+Sinclair Research Ltd, now Amstrad, and are not covered by these licenses.
