@@ -124,7 +124,7 @@ export function formatGlyph({ codePoint, rows }: Glyph): string {
 
 /**
  * Merges the header with the glyphs of all glyph files, sorted by code point. `included` are glyphs of other fonts,
- * already the size of this font.
+ * already the size of this font. A glyph of the font's own files replaces an included glyph with the same code point.
  */
 export function parseGlyphFont(
   header: SourceFile,
@@ -132,21 +132,21 @@ export function parseGlyphFont(
   included: { path: string; glyphs: Glyph[] }[] = [],
 ): GlyphFont {
   const font = parseHeader(header);
-  const seen = new Map<number, string>();
-  const glyphs: Glyph[] = [];
-  const files = [
-    ...included,
-    ...glyphFiles.map((file) => ({ path: file.path, glyphs: parseGlyphs(file, font.width, font.height) })),
-  ];
-  for (const file of files) {
-    for (const glyph of file.glyphs) {
-      const other = seen.get(glyph.codePoint);
-      if (other !== undefined) throw new Error(`${file.path}: ${codePointLabel(glyph.codePoint)} is also in ${other}`);
-      seen.set(glyph.codePoint, file.path);
-      glyphs.push(glyph);
+  const own = glyphFiles.map((file) => ({ path: file.path, glyphs: parseGlyphs(file, font.width, font.height) }));
+  const byCodePoint = new Map<number, Glyph>();
+  for (const files of [included, own]) {
+    const seen = new Map<number, string>();
+    for (const file of files) {
+      for (const glyph of file.glyphs) {
+        const other = seen.get(glyph.codePoint);
+        if (other !== undefined)
+          throw new Error(`${file.path}: ${codePointLabel(glyph.codePoint)} is also in ${other}`);
+        seen.set(glyph.codePoint, file.path);
+        byCodePoint.set(glyph.codePoint, glyph);
+      }
     }
   }
-  glyphs.sort((a, b) => a.codePoint - b.codePoint);
+  const glyphs = [...byCodePoint.values()].sort((a, b) => a.codePoint - b.codePoint);
   return { ...font, glyphs };
 }
 

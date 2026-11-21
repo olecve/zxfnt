@@ -64,6 +64,36 @@ describe("parseGlyphFont", () => {
       /b\.txt: U\+0041 is also in a\.txt/,
     );
   });
+
+  it("replaces an included glyph with a glyph of the font's own files", () => {
+    const empty = { codePoint: 0x41, rows: Array.from({ length: 8 }, () => Array<boolean>(8).fill(false)) };
+    const included = [{ path: "other/a.txt", glyphs: [empty, { ...empty, codePoint: 0x42 }] }];
+    const own = { path: "a.txt", text: "U+0041 A\n" + "XXXXXXXX\n".repeat(8) };
+    const { glyphs } = parseGlyphFont(header("8x8"), [own], included);
+    deepEqual(
+      glyphs.map((g) => [g.codePoint, g.rows[0][0]]),
+      [
+        [0x41, true],
+        [0x42, false],
+      ],
+    );
+  });
+
+  it("rejects a code point that two included files define", () => {
+    const empty = { codePoint: 0x41, rows: [] };
+    throws(
+      () =>
+        parseGlyphFont(
+          header("8x8"),
+          [],
+          [
+            { path: "x/a.txt", glyphs: [empty] },
+            { path: "y/a.txt", glyphs: [empty] },
+          ],
+        ),
+      /y\/a\.txt: U\+0041 is also in x\/a\.txt/,
+    );
+  });
 });
 
 describe("readGlyphFont", () => {
