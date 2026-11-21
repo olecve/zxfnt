@@ -74,7 +74,7 @@ export function buildFont(source: GlyphFont): Font {
     }
     glyphs.push(
       new Glyph({
-        name: `uni${glyph.codePoint.toString(16).toUpperCase().padStart(4, "0")}`,
+        name: glyphName(glyph.codePoint),
         unicode: glyph.codePoint,
         advanceWidth,
         path,
@@ -108,6 +108,12 @@ export function buildFont(source: GlyphFont): Font {
     },
     glyphs,
   });
+}
+
+// Glyph names after the Adobe Glyph List rules: uni0041 for U+0041, and u1F600 above U+FFFF.
+function glyphName(codePoint: number): string {
+  const hex = codePoint.toString(16).toUpperCase().padStart(4, "0");
+  return codePoint > 0xffff ? `u${hex}` : `uni${hex}`;
 }
 
 // Adds a rectangle from corner (x0, y0) to corner (x1, y1). With x0 < x1 and y0 < y1 the contour is

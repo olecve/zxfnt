@@ -58,6 +58,15 @@ const sources = await Promise.all(
 );
 
 describe("buildFont", () => {
+  it("names glyphs uniXXXX, and uXXXXX above U+FFFF", () => {
+    const header = { path: "font.txt", text: "name: t\nfamily: T\nsize: 8x8\nbaseline: 7\n" };
+    const glyph = (start: string) => `${start}\n` + "........\n".repeat(8);
+    const files = [{ path: "a.txt", text: [glyph("U+0041 A"), glyph("U+1F600 😀")].join("\n") }];
+    const font = parse(buildFont(parseGlyphFont(header, files)).toArrayBuffer());
+    assert.equal(font.charToGlyph("A").name, "uni0041");
+    assert.equal(font.charToGlyph("😀").name, "u1F600");
+  });
+
   it("has whole font units for every pixel edge in a font that is not 8 pixels wide", () => {
     const header = { path: "font.txt", text: "name: six\nfamily: Six\nsize: 6x8\nbaseline: 7\n" };
     const glyph = { path: "a.txt", text: "U+0041 A\n" + ".XXXX.\n".repeat(8) };
