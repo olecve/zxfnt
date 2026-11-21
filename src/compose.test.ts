@@ -46,6 +46,21 @@ void test("compose keeps glyphs that the font already has and skips glyphs witho
   assert.deepEqual(result.skipped, ["U+00D6 Ö: the font has no O"]);
 });
 
+void test("compose skips a capital that has no repeated row to remove", () => {
+  const Z = glyph(`U+005A Z
+........
+.XXXXXX.
+.....X..
+....X...
+...X....
+..X.....
+.XXXXXX.
+........`);
+  const result = compose(list("U+017D Ž = Z ˇ"), [Z]);
+  assert.deepEqual(result.glyphs, []);
+  assert.deepEqual(result.skipped, ["U+017D Ž: no room for the mark above Z"]);
+});
+
 void test("compose rejects a character that does not match its code point", () => {
   assert.throws(() => compose(list("U+00E4 ö = o ¨"), [A]), /list\.txt:1: ö is not U\+00E4/);
 });

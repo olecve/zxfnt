@@ -7,21 +7,34 @@ import { codePointLabel, formatGlyph, readGlyphFont, type Glyph, type SourceFile
 
 type Rows = boolean[][];
 
-// Marks go on row 0, with one empty row between the mark and the letter.
+// Marks use rows 0 and 1, so the letter must start on row 2. A one-row mark goes on row 0, with an empty row below.
 const MARK_ROWS = 2;
 
-// Each mark draws itself on row 0 above lit columns minX..maxX.
-const MARKS: Record<string, (row: boolean[], minX: number, maxX: number) => void> = {
+// Each mark draws itself on rows 0 and 1 above lit columns minX..maxX.
+const MARKS: Record<string, (rows: Rows, minX: number, maxX: number) => void> = {
   // Two dots, one pixel inside each side of the letter.
-  "¨": (row, minX, maxX) => {
-    row[minX + 1] = true;
-    row[maxX - 1] = true;
+  "¨": ([top], minX, maxX) => {
+    top[minX + 1] = true;
+    top[maxX - 1] = true;
   },
-  // A dot in the middle instead of a ring, because a ring does not fit in one row: one pixel above an odd width, two
-  // pixels above an even width.
-  "˚": (row, minX, maxX) => {
-    row[Math.floor((minX + maxX) / 2)] = true;
-    row[Math.ceil((minX + maxX) / 2)] = true;
+  // A dot in the middle instead of a ring, because a ring does not fit: one pixel above an odd width, two pixels above
+  // an even width.
+  "˚": ([top], minX, maxX) => {
+    top[Math.floor((minX + maxX) / 2)] = true;
+    top[Math.ceil((minX + maxX) / 2)] = true;
+  },
+  // A wave four pixels wide, on the letter.
+  "˜": ([top, bottom], minX, maxX) => {
+    const x = Math.floor((minX + maxX) / 2) - 1;
+    top[x + 1] = top[x + 3] = true;
+    bottom[x] = bottom[x + 2] = true;
+  },
+  // A small v, on the letter: three pixels wide above an odd width, four above an even width.
+  ˇ: ([top, bottom], minX, maxX) => {
+    const left = Math.floor((minX + maxX) / 2);
+    const right = Math.ceil((minX + maxX) / 2);
+    top[left - 1] = top[right + 1] = true;
+    bottom[left] = bottom[right] = true;
   },
 };
 
@@ -44,15 +57,15 @@ function makeRoom(rows: Rows, top: number): Rows | undefined {
   return result;
 }
 
-function addMark(base: Rows, mark: string): Rows | string {
+function addMark(base: Rows, mark: string): Rows | string | undefined {
   const draw = MARKS[mark];
   if (!draw) return `unknown mark "${mark}"`;
   const rows = makeRoom(base, MARK_ROWS);
-  if (!rows) return "no room for the mark above the letter";
+  if (!rows) return undefined;
   const columns = rows[0].map((_, x) => rows.some((row) => row[x]));
   const minX = columns.indexOf(true);
   const maxX = columns.lastIndexOf(true);
-  draw(rows[0], minX, maxX);
+  draw(rows, minX, maxX);
   return rows;
 }
 
@@ -79,6 +92,8 @@ export function compose(list: SourceFile, glyphs: Glyph[]): { glyphs: Glyph[]; s
     }
     const rows = mark === undefined ? base.rows.map((row) => [...row]) : addMark(base.rows, mark);
     if (typeof rows === "string") fail(`${char}: ${rows}`);
+    else if (rows === undefined)
+      skipped.push(`${codePointLabel(codePoint)} ${char}: no room for the mark above ${baseChar}`);
     else result.push({ codePoint, rows });
   });
   return { glyphs: result, skipped };

@@ -96,9 +96,9 @@ Sharp edges need all of these:
 
 ## Fonts
 
-| Font                    | Source         | Glyphs                                                                                                                                                                                        |
-| ----------------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`zxfnt`](fonts/zxfnt/) | 8×8 ASCII font | 96 ASCII glyphs ([`ascii.txt`](fonts/zxfnt/ascii.txt)); `ä å ö ü Ä Å Ö Ü` composed ([`composed.txt`](fonts/zxfnt/composed.txt)); `^` and `` ` `` drawn ([`extra.txt`](fonts/zxfnt/extra.txt)) |
+| Font                    | Source         | Glyphs                                                                                                                                                                                                               |
+| ----------------------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`zxfnt`](fonts/zxfnt/) | 8×8 ASCII font | 96 ASCII glyphs ([`ascii.txt`](fonts/zxfnt/ascii.txt)); `ä å õ ö ü š ž Ä Å Õ Ö Ü` composed ([`composed.txt`](fonts/zxfnt/composed.txt)); `^`, `` ` ``, `ß`, `Š` and `Ž` drawn ([`extra.txt`](fonts/zxfnt/extra.txt)) |
 
 ## Milestones
 

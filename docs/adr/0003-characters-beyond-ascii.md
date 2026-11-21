@@ -100,9 +100,13 @@ The font has the marks as separate glyphs, and the browser puts each mark on its
 - Milestone 2 adds the Finnish and Cyrillic lists to the ASCII font.
 - The lists are in `sets/`, and `npm run compose` writes each font's `composed.txt`. The marks are small rules in
   `src/compose.ts`, not glyph fragments, because a mark must fit the width of each letter: the dots of `ä` and `Ä` are a
-  different distance apart. A mark goes on row 0, and a capital loses its highest repeated row to make space.
+  different distance apart. Marks use rows 0 and 1, and a capital loses its highest repeated row to make space.
+- A one-row mark (`¨`, `˚`) has an empty row below it. A two-row mark (`˜`, `ˇ`) sits directly on the letter, because a
+  slanted or pointed shape needs two rows.
 - A ring does not fit in one row, so `˚` is a dot in the middle of the letter: `å` and `Å` have one dot, `ä` and `Ä`
   have two.
+- A capital without a repeated row, such as `S` or `Z`, gets no composed glyph. The 8×8 font has `Š` and `Ž` drawn by
+  hand.
 - The block graphics are made with the generate method.
 - Revisit when more than half of the composed glyphs need fixes by hand. Then draw those glyphs instead.
 - Revisit when a language with stacked accents is added. That needs mark attachment or a taller cell, decided in a new
