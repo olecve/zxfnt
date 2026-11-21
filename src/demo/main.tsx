@@ -112,7 +112,7 @@ function App() {
         />
         <Toggle label="VIEW" value={view} onChange={setView} options={VIEWS} />
         <div class={languageUnused ? "controls unused" : "controls"}>
-          <span>LANGUAGE</span>
+          <span aria-hidden="true">LANGUAGE</span>
           <select
             aria-label="Language"
             value={lang}
@@ -127,8 +127,8 @@ function App() {
               ))}
           </select>
         </div>
-        <div class="controls border">
-          <span>BORDER</span>
+        <div class="controls border" role="group" aria-label="BORDER">
+          <span aria-hidden="true">BORDER</span>
           {PALETTE.map((colour, i) => (
             <button
               type="button"
@@ -179,7 +179,9 @@ function App() {
             {view === "glyphs" && <Glyphs font={font} marked={language} onPick={setStatus} />}
           </section>
         ))}
-        <footer>{status}</footer>
+        <footer>
+          <span role="status">{status}</span>
+        </footer>
       </main>
     </>
   );
@@ -189,8 +191,8 @@ type ToggleProps = { label: string; value: string; onChange: (value: string) => 
 
 function Toggle({ label, value, onChange, options }: ToggleProps) {
   return (
-    <div class="controls">
-      <span>{label}</span>
+    <div class="controls" role="group" aria-label={label}>
+      <span aria-hidden="true">{label}</span>
       {options.map(([v, text]) => (
         <button type="button" aria-pressed={v === value} onClick={() => onChange(v)}>
           {text}
@@ -208,9 +210,15 @@ function Alphabet({ font, language, onPick }: AlphabetProps) {
     [...text].map((char) => {
       const cp = char.codePointAt(0)!;
       return (
-        <span class="pick" onMouseEnter={() => onPick(codeText(cp))} onClick={() => void copy(cp, onPick)}>
+        <button
+          type="button"
+          class="pick"
+          onMouseEnter={() => onPick(codeText(cp))}
+          onFocus={() => onPick(codeText(cp))}
+          onClick={() => void copy(cp, onPick)}
+        >
           {char}
-        </span>
+        </button>
       );
     });
   return (
@@ -246,6 +254,7 @@ function Glyphs({ font, marked, onPick }: GlyphsProps) {
                   class={letters.has(cp) ? "letter" : undefined}
                   aria-pressed={cp === picked}
                   onMouseEnter={() => show(cp)}
+                  onFocus={() => show(cp)}
                   onClick={() => {
                     setPicked(cp);
                     void copy(cp, onPick);
