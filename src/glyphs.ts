@@ -29,7 +29,8 @@ export type GlyphFont = FontHeader & { glyphs: Glyph[] };
 export type SourceFile = { path: string; text: string };
 
 const HEADER_FILE = "font.txt";
-const GLYPH_START = /^U\+([0-9A-F]{4,6})(?:\s|$)/;
+// The u flag makes \S match one character, also one above U+FFFF.
+const GLYPH_START = /^U\+([0-9A-F]{4,6})(?:\s+(\S))?$/u;
 const HEADER = /^([a-z]+):\s*(.*)$/;
 const HEADER_KEYS = ["name", "family", "size", "baseline", "include", "copyright"];
 
@@ -91,6 +92,10 @@ export function parseGlyphs({ path, text }: SourceFile, width: number, height: n
     const codePoint = parseInt(match[1], 16);
     if (codePoint > 0x10ffff || (codePoint >= 0xd800 && codePoint <= 0xdfff)) {
       fail(i, `U+${match[1]} is not a Unicode character`);
+    }
+    // Invisible characters, such as the space, have no character after the code point.
+    if (match[2] !== undefined && match[2] !== String.fromCodePoint(codePoint)) {
+      fail(i, `${match[2]} is not U+${match[1]}`);
     }
     const rows: boolean[][] = [];
     for (let y = 0; y < height; y++) {
