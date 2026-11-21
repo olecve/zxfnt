@@ -81,6 +81,10 @@ export function parseGlyphs({ path, text }: SourceFile, width: number, height: n
     const line = lines[i].trim();
     if (isSkipped(line)) continue;
     const match = GLYPH_START.exec(line) ?? fail(i, `expected a glyph such as "U+0041 A", got "${line}"`);
+    const codePoint = parseInt(match[1], 16);
+    if (codePoint > 0x10ffff || (codePoint >= 0xd800 && codePoint <= 0xdfff)) {
+      fail(i, `U+${match[1]} is not a Unicode character`);
+    }
     const rows: boolean[][] = [];
     for (let y = 0; y < height; y++) {
       const index = i + 1 + y;
@@ -90,7 +94,7 @@ export function parseGlyphs({ path, text }: SourceFile, width: number, height: n
       }
       rows.push([...text].map((c) => c === "X"));
     }
-    glyphs.push({ codePoint: parseInt(match[1], 16), rows });
+    glyphs.push({ codePoint, rows });
     i += height;
   }
   return glyphs;
