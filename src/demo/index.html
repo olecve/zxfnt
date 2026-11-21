@@ -139,7 +139,14 @@
       .controls.unused select {
         cursor: default;
       }
-      .glyphs button:hover,
+      .pick {
+        cursor: pointer;
+      }
+      /* The cell under the pointer flips its BRIGHT. A tapped glyph is in inverse video. */
+      .pick:hover,
+      .glyphs button:hover {
+        background: var(--paper-flipped);
+      }
       .glyphs button[aria-pressed="true"] {
         color: var(--paper);
         background: var(--ink);
@@ -159,8 +166,12 @@
         resize: vertical;
         caret-color: var(--ink);
       }
+      /* The status line stays in the window, so that the code of a glyph is seen while pointing at it. */
       footer {
+        position: sticky;
+        bottom: 0;
         margin-top: 24px;
+        background: var(--paper);
       }
       @media (max-width: 600px) {
         body {
