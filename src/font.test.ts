@@ -4,6 +4,7 @@
 import { deepEqual, equal, fail, match } from "node:assert/strict";
 import { describe, it } from "node:test";
 import { parse } from "opentype.js/dist/opentype.mjs";
+import { compress, decompress } from "wawoff2";
 import { buildFont, pixelRects } from "./font.ts";
 import { fontDirs, parseGlyphFont, readGlyphFont } from "./glyphs.ts";
 
@@ -81,6 +82,21 @@ describe("buildFont", () => {
   });
 
   for (const { path, source } of sources) {
+    it(`${path}: the .woff2 has the same glyphs and metrics as the .otf`, async () => {
+      const otfBytes = new Uint8Array(buildFont(source).toArrayBuffer());
+      const otf = parse(otfBytes.buffer);
+      const woff2 = parse((await decompress(await compress(otfBytes))).slice().buffer);
+      equal(woff2.unitsPerEm, otf.unitsPerEm);
+      equal(woff2.ascender, otf.ascender);
+      equal(woff2.descender, otf.descender);
+      deepEqual(woff2.tables.post, otf.tables.post);
+      deepEqual(woff2.tables.os2, otf.tables.os2);
+      for (const glyph of source.glyphs) {
+        const char = String.fromCodePoint(glyph.codePoint);
+        deepEqual(woff2.charToGlyph(char).path.commands, otf.charToGlyph(char).path.commands, char);
+      }
+    });
+
     it(`${path}: the .otf has the same pixels as the glyph files`, () => {
       const font = parse(buildFont(source).toArrayBuffer());
       const unit = font.unitsPerEm / source.width;

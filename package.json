@@ -18,7 +18,8 @@
     "opentype.js": "2.0.0",
     "prettier": "3.10.1",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.73.0"
+    "typescript-eslint": "8.73.0",
+    "wawoff2": "2.0.1"
   },
   "scripts": {
     "build": "node --experimental-strip-types src/build.ts",

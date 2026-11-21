@@ -55,13 +55,13 @@ Needs Node 22.6 or newer. `.nvmrc` pins the version that the project is tested w
 
 ```sh
 npm install
-npm run build     # fonts/<font>/*.txt -> dist/<name>.otf and dist/index.html
+npm run build     # fonts/<font>/*.txt -> dist/<name>.otf, dist/<name>.woff2 and dist/index.html
 npm run serve     # demo page at http://localhost:8080
-npm test          # checks that each .otf has exactly the pixels of its glyph files
+npm test          # checks that each .otf has exactly the pixels of its glyph files, and the .woff2 the same glyphs
 npm run lint      # ESLint
 npm run check     # type check
 npm run format    # formats all files with Prettier
-npm run validate  # format check, lint, type check and tests
+npm run validate  # format check, lint, unused code check, type check and tests
 npm run compose   # character lists in sets/ -> fonts/<font>/composed.txt
 ```
 
@@ -69,12 +69,15 @@ Open the demo page through `npm run serve`. Browsers do not load fonts for pages
 
 ## Using a font
 
-Copy `dist/zxfnt.otf` next to your page:
+Copy `dist/zxfnt.woff2` and `dist/zxfnt.otf` next to your page. Browsers load the `.woff2`, which is about 6 times
+smaller. The `.otf` is a fallback for old browsers, and the file to install on a computer.
 
 ```css
 @font-face {
   font-family: "zxfnt";
-  src: url("zxfnt.otf") format("opentype");
+  src:
+    url("zxfnt.woff2") format("woff2"),
+    url("zxfnt.otf") format("opentype");
 }
 
 body {
@@ -117,7 +120,7 @@ with accents keep their full height, and every accent has an empty row below it.
 1. ~~Pipeline: ASCII glyph file → `.otf`, plus a demo page.~~ Done.
 2. First extra character sets for the font: ~~accented Latin letters~~, ~~Russian Cyrillic~~.
 3. Importers: PNG images.
-4. Extras: `.woff2`, block graphics (`▀ ▄ █`), a page with all fonts side by side.
+4. Extras: ~~`.woff2`~~, block graphics (`▀ ▄ █`), a page with all fonts side by side.
 
 ## Tooling
 
@@ -125,7 +128,9 @@ with accents keep their full height, and every accent has an empty row below it.
 - Prettier formats the code. ESLint with typescript-eslint lints it, and
   [eslint-plugin-slop](https://github.com/antfu/eslint-plugin-slop) flags patterns that AI tools often write.
   [Knip](https://knip.dev) finds unused files, exports and dependencies. `npm run validate` runs all checks.
-- [opentype.js](https://github.com/opentypejs/opentype.js) writes the font files.
+- [opentype.js](https://github.com/opentypejs/opentype.js) writes the `.otf` files, and
+  [wawoff2](https://github.com/fontello/wawoff2), the WOFF2 code of Google built for WebAssembly, makes the `.woff2`
+  files.
 
 ## Decisions
 
