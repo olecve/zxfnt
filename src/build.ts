@@ -173,8 +173,8 @@ function demoPage(fonts: GlyphFont[]): string {
         cursor: pointer;
       }
       .border button:nth-child(n + 6) { color: ${PALETTE[0]}; }
-      .glyphs { display: flex; flex-wrap: wrap; font-size: 24px; line-height: 32px; }
-      .glyphs span { width: 32px; text-align: center; }
+      .glyphs { display: flex; flex-wrap: wrap; }
+      .glyphs span { width: 24px; text-align: center; }
       .glyphs span:hover { background: var(--ink); color: var(--paper); }
       textarea {
         display: block;
