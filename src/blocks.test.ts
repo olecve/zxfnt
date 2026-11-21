@@ -1,6 +1,6 @@
 import { deepEqual, equal } from "node:assert/strict";
 import { describe, it } from "node:test";
-import { blockGlyphs } from "./blocks.ts";
+import { blockGlyphs, blockText } from "./blocks.ts";
 import { formatGlyph } from "./glyphs.ts";
 
 describe("blockGlyphs", () => {
@@ -20,5 +20,12 @@ describe("blockGlyphs", () => {
         .filter((row) => row === "XXXX....").length,
       5,
     );
+  });
+});
+
+describe("blockText", () => {
+  it("makes one block character of each 2×2 pixels", () => {
+    const rows = ["XX.X", "X..X", "....", ".XX."].map((row) => [...row].map((c) => c === "X"));
+    deepEqual(blockText(rows), ["▛▐", "▗▖"]);
   });
 });

@@ -2,6 +2,7 @@ import { build } from "esbuild";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { compress } from "wawoff2";
+import { blockText } from "./blocks.ts";
 import type { DemoFont } from "./demo/data.ts";
 import { buildFont } from "./font.ts";
 import { fontDirs, readGlyphFont, type GlyphFont } from "./glyphs.ts";
@@ -38,11 +39,18 @@ const data: DemoFont[] = built.map((f) => ({
   height: f.height,
   codePoints: f.glyphs.map((g) => g.codePoint),
 }));
+// The title of the demo page in big letters made of block graphics, from the glyphs of the first square font.
+const square = built.find((f) => f.width === f.height) ?? built[0];
+const bannerRows = Array.from({ length: square.height }, (_, y) =>
+  [..."zxfnt"].flatMap((char) => square.glyphs.find((g) => g.codePoint === char.codePointAt(0))?.rows[y] ?? []),
+);
+const banner = { family: square.family, lines: blockText(bannerRows) };
 const template = await readFile("src/demo/index.html", "utf8");
 // "<" in the JSON could end the script element early.
 const page = template
   .replace("/* FONT FACES */", faces)
-  .replace("/* FONTS */", JSON.stringify(data).replace(/</g, "\\u003c"));
+  .replace("/* FONTS */", JSON.stringify(data).replace(/</g, "\\u003c"))
+  .replace("/* BANNER */", JSON.stringify(banner).replace(/</g, "\\u003c"));
 await writeFile(join(DIST_DIR, "index.html"), page);
 await build({
   entryPoints: ["src/demo/main.tsx"],

@@ -31,3 +31,20 @@ export function blockGlyphs(width: number, height: number): Glyph[] {
     return { codePoint, rows };
   });
 }
+
+/** Two rows and two columns of pixels make one block character, as 8-bit programs printed big titles. */
+export function blockText(rows: boolean[][]): string[] {
+  const lines: string[] = [];
+  for (let y = 0; y < rows.length; y += 2) {
+    let line = "";
+    for (let x = 0; x < rows[y].length; x += 2) {
+      const bits = [rows[y][x], rows[y][x + 1], rows[y + 1]?.[x], rows[y + 1]?.[x + 1]].reduce(
+        (sum, lit, i) => sum + (lit ? 1 << i : 0),
+        0,
+      );
+      line += bits === 0 ? " " : String.fromCodePoint(BLOCKS[bits]);
+    }
+    lines.push(line);
+  }
+  return lines;
+}

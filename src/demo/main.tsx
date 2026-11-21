@@ -18,6 +18,7 @@ const BOTH = "both";
 const READY = "OK";
 
 const fonts = JSON.parse(document.getElementById("fonts")!.textContent) as DemoFont[];
+const banner = JSON.parse(document.getElementById("banner")!.textContent) as { family: string; lines: string[] };
 const codeText = (cp: number) => `U+${cp.toString(16).toUpperCase().padStart(4, "0")} ${String.fromCodePoint(cp)}`;
 // Copies the character. Without clipboard access, the status line only shows its code.
 const copy = (cp: number, onPick: (status: string) => void) =>
@@ -95,7 +96,11 @@ function App() {
       <LoadingBorder trigger={lang} />
       <main>
         <header>
-          <h1>zxfnt</h1>
+          <h1 aria-label="zxfnt">
+            <span class="banner" aria-hidden="true" style={{ fontFamily: `"${banner.family}", monospace` }}>
+              {banner.lines.join("\n")}
+            </span>
+          </h1>
         </header>
         <p>
           Pixel fonts for the web. <a href="https://github.com/olecve/zxfnt">Source on GitHub</a>.
