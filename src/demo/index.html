@@ -35,6 +35,14 @@
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
       }
+      /* Behind the paper, so that the loading stripes show only in the border. */
+      .loading {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        width: 100%;
+        height: 100%;
+      }
       main {
         max-width: 1024px;
         /* Whole-pixel margins keep the pixels of the font on the screen grid. */
