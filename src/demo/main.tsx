@@ -231,8 +231,7 @@ function Glyphs({ font, marked, onPick }: GlyphsProps) {
   );
 }
 
-// Loading stripes, shown in the border for a moment when `trigger` changes: first wide red and cyan stripes, then thin
-// blue and yellow ones.
+// Loading stripes: wide red and cyan stripes first, then thin blue and yellow ones.
 const PILOT_MS = 250;
 const DATA_MS = 400;
 
@@ -258,7 +257,6 @@ function LoadingBorder({ trigger }: { trigger: string }) {
         return;
       }
       const pilot = t < PILOT_MS;
-      // The pilot stripes roll up the screen. The data stripes are thin and change every frame.
       let y = pilot ? -((t / 2) % 32) : 0;
       while (y < c.height) {
         const height = pilot ? 16 : 2 + Math.floor(Math.random() * 6);
