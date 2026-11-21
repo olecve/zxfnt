@@ -122,7 +122,8 @@ with accents keep their full height, and every accent has an empty row below it.
 ## Tooling
 
 - TypeScript on Node 22, run with `node --experimental-strip-types`.
-- Prettier formats the code. ESLint with typescript-eslint lints it. `npm run validate` runs all checks.
+- Prettier formats the code. ESLint with typescript-eslint lints it. [Knip](https://knip.dev) finds unused files,
+  exports and dependencies. `npm run validate` runs all checks.
 - [opentype.js](https://github.com/opentypejs/opentype.js) writes the font files.
 
 ## Decisions
