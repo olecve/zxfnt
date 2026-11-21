@@ -132,6 +132,12 @@ with accents keep their full height, and every accent has an empty row below it.
 - [ADR 0003: Characters beyond ASCII](docs/adr/0003-characters-beyond-ascii.md)
 - [ADR 0004: Taller variant for accents](docs/adr/0004-taller-variant-for-accents.md)
 
-## Copyright
+## License
 
-The 96 ASCII glyphs, and the glyphs copied or composed from them, are © 1982 Sinclair Research Ltd, now Amstrad.
+The code is under the [MIT License](LICENSE). The fonts and the glyphs drawn in this project are under the
+[SIL Open Font License 1.1](OFL.txt), with the Reserved Font Name zxfnt: a modified font needs a new name in its
+`font.txt`. They are not copied from other fonts.
+
+The 96 glyphs of `ascii.txt`, and the glyphs that the lists in `sets/` copy or compose from them, are © 1982 Sinclair
+Research Ltd, now Amstrad, and are not covered by these licenses. The `copyright` of each font says which glyphs are
+whose.
