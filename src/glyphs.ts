@@ -29,6 +29,7 @@ export type SourceFile = { path: string; text: string };
 const HEADER_FILE = "font.txt";
 const GLYPH_START = /^U\+([0-9A-F]{4,6})(?:\s|$)/;
 const HEADER = /^([a-z]+):\s*(.*)$/;
+const HEADER_KEYS = ["name", "family", "size", "baseline", "include"];
 
 const failer =
   (source: string) =>
@@ -45,6 +46,9 @@ export function parseHeader({ path, text }: SourceFile): FontHeader {
     const line = raw.trim();
     if (isSkipped(line)) return;
     const match = HEADER.exec(line) ?? fail(i, `expected "key: value", got "${line}"`);
+    if (!HEADER_KEYS.includes(match[1]))
+      fail(i, `unknown key "${match[1]}", expected one of ${HEADER_KEYS.join(", ")}`);
+    if (header.has(match[1])) fail(i, `"${match[1]}" is set twice`);
     header.set(match[1], match[2].trim());
   });
 
