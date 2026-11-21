@@ -1,0 +1,33 @@
+// Each block graphic is a 2×2 grid of quarters, lit by a 4-bit mask with one bit per quarter. They are made for the
+// cell of each font, so that the quarters fill the cell and blocks join without a gap.
+
+import type { Glyph } from "./glyphs.ts";
+
+// The Unicode block element for each set of lit quarters: bit 0 top left, 1 top right, 2 bottom left, 3 bottom right.
+// Nothing lit is the space, which every font already has.
+const BLOCKS: Record<number, number> = {
+  0b0001: 0x2598,
+  0b0010: 0x259d,
+  0b0011: 0x2580,
+  0b0100: 0x2596,
+  0b0101: 0x258c,
+  0b0110: 0x259e,
+  0b0111: 0x259b,
+  0b1000: 0x2597,
+  0b1001: 0x259a,
+  0b1010: 0x2590,
+  0b1011: 0x259c,
+  0b1100: 0x2584,
+  0b1101: 0x2599,
+  0b1110: 0x259f,
+  0b1111: 0x2588,
+};
+
+/** The quarters fill the whole cell, so that blocks of the next cell or line join them without a gap. */
+export function blockGlyphs(width: number, height: number): Glyph[] {
+  return Object.entries(BLOCKS).map(([bits, codePoint]) => {
+    const lit = (x: number, y: number) => (Number(bits) >> ((y < height / 2 ? 0 : 2) + (x < width / 2 ? 0 : 1))) & 1;
+    const rows = Array.from({ length: height }, (_, y) => Array.from({ length: width }, (_, x) => lit(x, y) === 1));
+    return { codePoint, rows };
+  });
+}

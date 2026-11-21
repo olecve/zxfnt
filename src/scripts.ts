@@ -6,6 +6,7 @@ export const GLYPH_GROUPS: [string, (codePoint: number) => boolean][] = [
   ["Latin", (c) => /\p{Script=Latin}/u.test(String.fromCodePoint(c))],
   ["Cyrillic", (c) => /\p{Script=Cyrillic}/u.test(String.fromCodePoint(c))],
   ["Georgian", (c) => /\p{Script=Georgian}/u.test(String.fromCodePoint(c))],
+  ["Block graphics", (c) => c >= 0x2580 && c <= 0x259f],
   ["Punctuation and symbols", () => true],
 ];
 

@@ -15,7 +15,8 @@ multiple of 8px.
 | [`zxfnt-tall`](fonts/zxfnt-tall/) | 8×10 | the same, with room above the letters for accents and tall Georgian |
 
 The languages are English, Finnish, Swedish, Estonian, German, Russian, Ukrainian, Belarusian, Kazakh and Georgian.
-Typographic punctuation such as `“ ” – … €` is there too.
+Typographic punctuation such as `“ ” – … €` is there too, and the 16 block graphics of 8-bit computers, such as
+`▛ ▀ ▚ █`.
 
 The 96 ASCII glyphs are not from this project, and the letters copied or composed from them, such as `ä` from `a` and
 `¨`, keep their credit. Every other glyph is drawn in this project.
@@ -93,7 +94,6 @@ decisions behind the project are in [docs/adr](docs/adr/).
 ## Next
 
 - Import fonts from PNG images
-- Block graphics (`▀ ▄ █`)
 
 ## License
 
