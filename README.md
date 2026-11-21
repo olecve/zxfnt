@@ -9,10 +9,10 @@ sharp at any multiple of 8px.
 
 ## Fonts
 
-| Font                                | Cell | Characters                                                          |
-| ----------------------------------- | ---- | ------------------------------------------------------------------- |
-| [`zx-rom`](fonts/zx-rom/)           | 8×8  | the 48K ROM font, plus Latin, Cyrillic and Georgian letters         |
-| [`zx-rom-tall`](fonts/zx-rom-tall/) | 8×10 | the same, with room above the letters for accents and tall Georgian |
+| Font                                | Cell | Characters                                                                           |
+| ----------------------------------- | ---- | ------------------------------------------------------------------------------------ |
+| [`zx-rom`](fonts/zx-rom/)           | 8×8  | the 48K ROM font, plus Latin, Cyrillic and Georgian letters, with Mtavruli capitals  |
+| [`zx-rom-tall`](fonts/zx-rom-tall/) | 8×10 | the same, with room above the letters for accents, tall Georgian and taller Mtavruli |
 
 The languages are English, Finnish, Swedish, Estonian, German, Russian, Ukrainian, Belarusian, Kazakh and Georgian.
 Typographic punctuation such as `“ ” – … €` is there too, and the 16 block graphics of the Spectrum keyboard, such as
