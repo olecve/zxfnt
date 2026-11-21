@@ -7,8 +7,8 @@ Accepted
 ## Context and Problem Statement
 
 8-bit fonts have only ASCII letters, digits and punctuation, often with a few symbols such as `£` and `©`. Each font
-must be able to get more characters that look like the rest of the font. The first sets are Finnish and Cyrillic. More
-sets can come later, so the method must not be specific to these two.
+must be able to get more characters that look like the rest of the font. Sets for more languages and scripts come over
+time, so the method must not be specific to one of them.
 
 | Group                  | Examples                                         |
 | ---------------------- | ------------------------------------------------ |
@@ -98,7 +98,6 @@ The font has the marks as separate glyphs, and the browser puts each mark on its
 
 ## More Information
 
-- Milestone 2 adds the Finnish and Cyrillic lists to the ASCII font.
 - The lists are in `sets/`, and `npm run compose` writes each font's `composed.txt`. The marks are small rules in
   `src/compose.ts`, not glyph fragments, because a mark must fit the width of each letter: the dots of `ä` and `Ä` are a
   different distance apart. Marks use rows 0 and 1, and a capital loses its highest repeated row to make space.
@@ -109,9 +108,6 @@ The font has the marks as separate glyphs, and the browser puts each mark on its
   have two.
 - A capital without a repeated row, such as `S`, `Z` or `И`, gets no composed glyph. The 8×8 font has `Š`, `Ž` and `Й`
   drawn by hand.
-- Russian has 19 capitals and 24 lowercase letters that are not a copy of a Latin letter and have no mark. These are
-  drawn for the 8×8 font. Lowercase letters such as `к`, `м` and `т` are small capitals, not copies of Latin `k`, `m`
-  and `t`.
 - The block graphics are made with the generate method.
 - Revisit when more than half of the composed glyphs need fixes by hand. Then draw those glyphs instead.
 - Revisit when a language with stacked accents is added. That needs mark attachment or a taller cell, decided in a new
