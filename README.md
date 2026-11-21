@@ -94,11 +94,16 @@ Sharp edges need all of these:
 - **Text that starts on a whole pixel.** On a normal-density screen, text that starts at a fractional position, for
   example inside a centered box with an odd width, gets grey edges.
 
+For text with accents, use `zxfnt-tall.otf` ("zxfnt Tall") instead. It has the same glyphs in an 8×10 cell: capitals
+with accents keep their full height, and every accent has an empty row below it. Letters have the same size as in
+`zxfnt.otf`, and lines are 1.25 times taller.
+
 ## Fonts
 
-| Font                    | Source         | Glyphs                                                                                                                                                                                                               |
-| ----------------------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`zxfnt`](fonts/zxfnt/) | 8×8 ASCII font | 96 ASCII glyphs ([`ascii.txt`](fonts/zxfnt/ascii.txt)); `ä å õ ö ü š ž Ä Å Õ Ö Ü` composed ([`composed.txt`](fonts/zxfnt/composed.txt)); `^`, `` ` ``, `ß`, `Š` and `Ž` drawn ([`extra.txt`](fonts/zxfnt/extra.txt)) |
+| Font                              | Source                                         | Glyphs                                                                                                                                                                                                                                                                                        |
+| --------------------------------- | ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`zxfnt`](fonts/zxfnt/)           | 8×8 ASCII font                                 | 96 ASCII glyphs ([`ascii.txt`](fonts/zxfnt/ascii.txt)); `ä å õ ö ü š ž Ä Å Õ Ö Ü` composed ([`composed.txt`](fonts/zxfnt/composed.txt)); `^`, `` ` `` and `ß` drawn ([`extra.txt`](fonts/zxfnt/extra.txt)); `Š` and `Ž` drawn five rows high ([`short-caps.txt`](fonts/zxfnt/short-caps.txt)) |
+| [`zxfnt-tall`](fonts/zxfnt-tall/) | `zxfnt` in an 8×10 cell, for text with accents | includes `ascii.txt` and `extra.txt` of `zxfnt`; all accented letters composed at full height ([`composed.txt`](fonts/zxfnt-tall/composed.txt))                                                                                                                                               |
 
 ## Milestones
 
@@ -118,6 +123,7 @@ Sharp edges need all of these:
 - [ADR 0001: Build tool and language](docs/adr/0001-build-tool-and-language.md)
 - [ADR 0002: Plain text glyph format as the single source](docs/adr/0002-plain-text-glyph-format.md)
 - [ADR 0003: Characters beyond ASCII](docs/adr/0003-characters-beyond-ascii.md)
+- [ADR 0004: Taller variant for accents](docs/adr/0004-taller-variant-for-accents.md)
 
 ## Copyright
 

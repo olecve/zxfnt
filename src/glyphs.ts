@@ -1,8 +1,9 @@
 // Parser for the plain text glyph format (docs/adr/0002-plain-text-glyph-format.md).
-// A font is a directory: font.txt has the header, and every other .txt file has glyphs.
+// A font is a directory: font.txt has the header, and every other .txt file has glyphs. The header can also include
+// glyph files of another font, which get empty rows on top when this font is taller.
 
 import { readdir, readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 
 export type Glyph = {
   codePoint: number;
@@ -17,6 +18,8 @@ export type FontHeader = {
   height: number;
   // Index of the first row below the baseline.
   baseline: number;
+  // Glyph files of other fonts, relative to the font directory.
+  include: string[];
 };
 
 export type GlyphFont = FontHeader & { glyphs: Glyph[] };
@@ -53,7 +56,8 @@ export function parseHeader({ path, text }: SourceFile): FontHeader {
   if (!Number.isInteger(baseline) || baseline < 1 || baseline > height) {
     fail(0, `baseline must be a row number from 1 to ${height}`);
   }
-  return { name: required("name"), family: required("family"), width, height, baseline };
+  const include = (header.get("include") ?? "").split(/\s+/).filter(Boolean);
+  return { name: required("name"), family: required("family"), width, height, baseline, include };
 }
 
 export function parseGlyphs({ path, text }: SourceFile, width: number, height: number): Glyph[] {
@@ -91,13 +95,22 @@ export function formatGlyph({ codePoint, rows }: Glyph): string {
   );
 }
 
-// Merges the header with the glyphs of all glyph files, sorted by code point.
-export function parseGlyphFont(header: SourceFile, glyphFiles: SourceFile[]): GlyphFont {
+// Merges the header with the glyphs of all glyph files, sorted by code point. `included` are glyphs of other fonts,
+// already the size of this font.
+export function parseGlyphFont(
+  header: SourceFile,
+  glyphFiles: SourceFile[],
+  included: { path: string; glyphs: Glyph[] }[] = [],
+): GlyphFont {
   const font = parseHeader(header);
   const seen = new Map<number, string>();
   const glyphs: Glyph[] = [];
-  for (const file of glyphFiles) {
-    for (const glyph of parseGlyphs(file, font.width, font.height)) {
+  const files = [
+    ...included,
+    ...glyphFiles.map((file) => ({ path: file.path, glyphs: parseGlyphs(file, font.width, font.height) })),
+  ];
+  for (const file of files) {
+    for (const glyph of file.glyphs) {
       const other = seen.get(glyph.codePoint);
       if (other !== undefined) throw new Error(`${file.path}: ${codePointLabel(glyph.codePoint)} is also in ${other}`);
       seen.set(glyph.codePoint, file.path);
@@ -117,5 +130,25 @@ export async function readGlyphFont(dir: string, skip: string[] = []): Promise<G
   const names = (await readdir(dir))
     .filter((name) => name.endsWith(".txt") && name !== HEADER_FILE && !skip.includes(name))
     .sort();
-  return parseGlyphFont(await read(HEADER_FILE), await Promise.all(names.map(read)));
+  const header = await read(HEADER_FILE);
+  const font = parseHeader(header);
+  const included = await Promise.all(font.include.map((path) => readIncluded(join(dir, path), font)));
+  return parseGlyphFont(header, await Promise.all(names.map(read)), included);
+}
+
+// Reads a glyph file of another font and adds empty rows on top, so that its glyphs are as tall as `font`.
+async function readIncluded(path: string, font: FontHeader): Promise<{ path: string; glyphs: Glyph[] }> {
+  const fontFile = join(dirname(path), HEADER_FILE);
+  const other = parseHeader({ path: fontFile, text: await readFile(fontFile, "utf8") });
+  const extra = font.height - other.height;
+  if (other.width !== font.width || extra < 0 || font.baseline - other.baseline !== extra) {
+    throw new Error(
+      `${path}: a ${other.width}x${other.height} font cannot be included in a ${font.width}x${font.height} font with the same baseline`,
+    );
+  }
+  const glyphs = parseGlyphs({ path, text: await readFile(path, "utf8") }, other.width, other.height).map((glyph) => ({
+    codePoint: glyph.codePoint,
+    rows: [...Array.from({ length: extra }, () => Array<boolean>(font.width).fill(false)), ...glyph.rows],
+  }));
+  return { path, glyphs };
 }

@@ -7,34 +7,37 @@ import { codePointLabel, formatGlyph, readGlyphFont, type Glyph, type SourceFile
 
 type Rows = boolean[][];
 
-// Marks use rows 0 and 1, so the letter must start on row 2. A one-row mark goes on row 0, with an empty row below.
+// A capital that starts above this row loses a repeated row, so that a mark fits above it.
 const MARK_ROWS = 2;
 
-// Each mark draws itself on rows 0 and 1 above lit columns minX..maxX.
-const MARKS: Record<string, (rows: Rows, minX: number, maxX: number) => void> = {
+// A mark shape: its rows of "X" and ".", the column of its left edge, and whether it may touch the letter.
+type Shape = { x: number; rows: string[]; onLetter?: boolean };
+
+// Each mark gives its shapes for a letter with lit columns minX..maxX, best first. A shape goes above the letter with
+// one empty row between them. A shape that is onLetter may also sit directly on the letter when the gap does not fit.
+const MARKS: Record<string, (minX: number, maxX: number) => Shape[]> = {
   // Two dots, one pixel inside each side of the letter.
-  "¨": ([top], minX, maxX) => {
-    top[minX + 1] = true;
-    top[maxX - 1] = true;
-  },
-  // A dot in the middle instead of a ring, because a ring does not fit: one pixel above an odd width, two pixels above
-  // an even width.
-  "˚": ([top], minX, maxX) => {
-    top[Math.floor((minX + maxX) / 2)] = true;
-    top[Math.ceil((minX + maxX) / 2)] = true;
-  },
-  // A wave four pixels wide, on the letter.
-  "˜": ([top, bottom], minX, maxX) => {
-    const x = Math.floor((minX + maxX) / 2) - 1;
-    top[x + 1] = top[x + 3] = true;
-    bottom[x] = bottom[x + 2] = true;
-  },
-  // A small v, on the letter: three pixels wide above an odd width, four above an even width.
-  ˇ: ([top, bottom], minX, maxX) => {
+  "¨": (minX, maxX) => [{ x: minX + 1, rows: ["X" + ".".repeat(maxX - minX - 3) + "X"] }],
+  // A ring, or a dot in the middle when the ring does not fit: one pixel above an odd width, two above an even width.
+  "˚": (minX, maxX) => {
+    const odd = (minX + maxX) % 2 === 0;
     const left = Math.floor((minX + maxX) / 2);
-    const right = Math.ceil((minX + maxX) / 2);
-    top[left - 1] = top[right + 1] = true;
-    bottom[left] = bottom[right] = true;
+    return [
+      odd ? { x: left - 1, rows: [".X.", "X.X", ".X."] } : { x: left - 1, rows: [".XX.", "X..X", ".XX."] },
+      { x: left, rows: [odd ? "X" : "XX"] },
+    ];
+  },
+  // A wave four pixels wide.
+  "˜": (minX, maxX) => [{ x: Math.floor((minX + maxX) / 2) - 1, rows: [".X.X", "X.X."], onLetter: true }],
+  // A small v: three pixels wide above an odd width, four above an even width.
+  ˇ: (minX, maxX) => {
+    const odd = (minX + maxX) % 2 === 0;
+    const left = Math.floor((minX + maxX) / 2);
+    return [
+      odd
+        ? { x: left - 1, rows: ["X.X", ".X."], onLetter: true }
+        : { x: left - 1, rows: ["X..X", ".XX."], onLetter: true },
+    ];
   },
 };
 
@@ -57,16 +60,33 @@ function makeRoom(rows: Rows, top: number): Rows | undefined {
   return result;
 }
 
+function draw(rows: Rows, shape: Shape, y: number): Rows {
+  const result = rows.map((row) => [...row]);
+  shape.rows.forEach((line, dy) => [...line].forEach((c, dx) => c === "X" && (result[y + dy][shape.x + dx] = true)));
+  return result;
+}
+
+// The row for the top of the shape: with an empty row above the letter, else directly on it when the shape allows it.
+function markRow(rows: Rows, shape: Shape): number | undefined {
+  const top = firstLitRow(rows);
+  const height = shape.rows.length;
+  if (top - 1 - height >= 0) return top - 1 - height;
+  if (shape.onLetter && top - height >= 0) return top - height;
+  return undefined;
+}
+
+// Returns the letter with the mark, or undefined when no shape of the mark fits.
 function addMark(base: Rows, mark: string): Rows | string | undefined {
-  const draw = MARKS[mark];
-  if (!draw) return `unknown mark "${mark}"`;
-  const rows = makeRoom(base, MARK_ROWS);
-  if (!rows) return undefined;
-  const columns = rows[0].map((_, x) => rows.some((row) => row[x]));
-  const minX = columns.indexOf(true);
-  const maxX = columns.lastIndexOf(true);
-  draw(rows, minX, maxX);
-  return rows;
+  const shapes = MARKS[mark];
+  if (!shapes) return `unknown mark "${mark}"`;
+  const columns = base[0].map((_, x) => base.some((row) => row[x]));
+  for (const shape of shapes(columns.indexOf(true), columns.lastIndexOf(true))) {
+    for (const rows of [base, makeRoom(base, MARK_ROWS)]) {
+      const y = rows && markRow(rows, shape);
+      if (rows && y !== undefined) return draw(rows, shape, y);
+    }
+  }
+  return undefined;
 }
 
 // Composes each glyph of the list that the font does not have yet. Glyphs whose base letter is missing are skipped.

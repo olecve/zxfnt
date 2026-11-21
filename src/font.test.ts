@@ -61,9 +61,10 @@ for (const dir of await readdir(fontsDir)) {
 
   void test(`${path}: the .otf has the same pixels as the glyph files`, () => {
     const font = parse(buildFont(source).toArrayBuffer());
-    const unit = font.unitsPerEm / source.height;
-    assert.equal(font.ascender, source.baseline * unit);
-    assert.equal(font.descender, (source.baseline - source.height) * unit);
+    const unit = font.unitsPerEm / source.width;
+    const shift = (source.height - source.width) / 2;
+    assert.equal(font.ascender, (source.baseline - shift) * unit);
+    assert.equal(font.descender, (source.baseline - source.height - shift) * unit);
 
     for (const glyph of source.glyphs) {
       const otf = font.charToGlyph(String.fromCodePoint(glyph.codePoint));

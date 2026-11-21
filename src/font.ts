@@ -3,7 +3,8 @@
 import { Font, Glyph, Path } from "opentype.js/dist/opentype.mjs";
 import type { GlyphFont } from "./glyphs.ts";
 
-// 128 units for each pixel of an 8-pixel-high font.
+// A pixel is 1/width of the em: 128 units in an 8-pixel-wide font. A taller font, such as 8×10, then has the same
+// pixel size, so the same font sizes stay sharp, and its extra rows only add line height.
 const UNITS_PER_EM = 1024;
 
 type Rect = { x0: number; x1: number; y0: number; y1: number };
@@ -36,10 +37,14 @@ export function pixelRects(rows: boolean[][]): Rect[] {
 }
 
 export function buildFont(source: GlyphFont): Font {
-  const unit = UNITS_PER_EM / source.height;
+  const unit = UNITS_PER_EM / source.width;
   const advanceWidth = source.width * unit;
   // Pixel rows count down from the top. Font units count up from the baseline.
   const fontY = (row: number) => (source.baseline - row) * unit;
+  // A font taller than it is wide has empty rows on top for accents. The line box moves down by half of these rows, so
+  // that text sits in a line box where the square font puts it. The accents then use the empty bottom rows of the line
+  // above.
+  const lineShift = (source.height - source.width) / 2;
 
   const notdef = new Path();
   // A hollow box, the usual shape for a missing character.
@@ -66,8 +71,8 @@ export function buildFont(source: GlyphFont): Font {
     familyName: source.family,
     styleName: "Regular",
     unitsPerEm: UNITS_PER_EM,
-    ascender: fontY(0),
-    descender: fontY(source.height),
+    ascender: fontY(lineShift),
+    descender: fontY(source.height + lineShift),
     weightClass: 400,
     glyphs,
   });

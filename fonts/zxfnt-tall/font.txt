@@ -1,0 +1,7 @@
+# The font in an 8×10 cell: two empty rows on top give accents room above full-height capitals.
+# A pixel is still 1/8 of the font size, so lines are 1.25 times taller than in the 8×8 font.
+name: zxfnt-tall
+family: zxfnt Tall
+size: 8x10
+baseline: 9
+include: ../zxfnt/ascii.txt ../zxfnt/extra.txt
