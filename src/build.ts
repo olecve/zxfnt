@@ -11,6 +11,25 @@ const DIST_DIR = "dist";
 const PALETTE = ["#000000", "#0000d7", "#d70000", "#d700d7", "#00d700", "#00d7d7", "#d7d700", "#d7d7d7"];
 const COLOUR_NAMES = ["black", "blue", "red", "magenta", "green", "cyan", "yellow", "white"];
 
+// The glyph table shows these groups, in this order. A glyph goes into the first group that matches it.
+const GLYPH_GROUPS: [string, (codePoint: number) => boolean][] = [
+  ["ASCII", (c) => c <= 0x7e],
+  ["Latin", (c) => /\p{Script=Latin}/u.test(String.fromCodePoint(c))],
+  ["Cyrillic", (c) => /\p{Script=Cyrillic}/u.test(String.fromCodePoint(c))],
+  ["Punctuation and symbols", () => true],
+];
+
+// Pangrams and other sentences that use the special letters of a language. A font shows the ones it has all
+// characters for.
+const SAMPLES: [lang: string, name: string, text: string][] = [
+  ["en", "English", "The quick brown fox jumps over the lazy dog."],
+  ["fi", "Finnish", "Törkylempijävongahdus."],
+  ["sv", "Swedish", "Flygande bäckasiner söka hwila på mjuka tuvor."],
+  ["et", "Estonian", "Põdur Zagrebi tšellomängija-följetonist Ciqo külmetas kehvas garaažis."],
+  ["de", "German", "Falsches Üben von Xylophonmusik quält jeden größeren Zwerg."],
+  ["ru", "Russian", "Съешь же ещё этих мягких французских булок, да выпей чаю."],
+];
+
 // Start from an empty dist/, so that a renamed or removed font does not stay there and get published.
 await rm(DIST_DIR, { recursive: true, force: true });
 await mkdir(DIST_DIR);
@@ -47,27 +66,38 @@ function demoPage(fonts: GlyphFont[]): string {
       const sizes = [8, 16, 24, 32]
         .map((px) => `<p style="font-size: ${px}px">${px}px: The quick brown fox jumps over the lazy dog.</p>`)
         .join("\n          ");
-      const beyondAscii = f.glyphs
-        .filter((g) => g.codePoint > 0x7f)
-        .map((g) => String.fromCodePoint(g.codePoint))
-        .join("");
-      const cells = f.glyphs
-        .map((g) => {
-          const char = String.fromCodePoint(g.codePoint);
-          const code = `U+${g.codePoint.toString(16).toUpperCase().padStart(4, "0")}`;
-          return `<span title="${code} ${escape(char)}">${escape(char)}</span>`;
-        })
-        .join("");
+      const cell = (codePoint: number) => {
+        const char = String.fromCodePoint(codePoint);
+        const code = `U+${codePoint.toString(16).toUpperCase().padStart(4, "0")}`;
+        return `<span title="${code} ${escape(char)}">${escape(char)}</span>`;
+      };
+      const groups = new Map<string, number[]>(GLYPH_GROUPS.map(([name]) => [name, []]));
+      for (const { codePoint } of f.glyphs) {
+        groups.get(GLYPH_GROUPS.find(([, matches]) => matches(codePoint))![0])!.push(codePoint);
+      }
+      const glyphs = [...groups]
+        .filter(([, codePoints]) => codePoints.length > 0)
+        .map(
+          ([name, codePoints]) =>
+            `<h4>${name}</h4>\n          <div class="glyphs">${codePoints.map(cell).join("")}</div>`,
+        )
+        .join("\n          ");
+      const has = new Set(f.glyphs.map((g) => String.fromCodePoint(g.codePoint)));
+      const samples = SAMPLES.filter(([, , text]) => [...text].every((c) => has.has(c)))
+        .map(([lang, name, text]) => `<p>${name}: <span lang="${lang}">${escape(text)}</span></p>`)
+        .join("\n          ");
       return `
         <section data-name="${f.name}" data-family="${escape(f.family)}"${i === 0 ? "" : " hidden"}>
           <h2>${escape(f.family)}</h2>
           <p><a href="${f.name}.otf" download>${f.name}.otf</a> ${f.width}×${f.height} cell, ${f.glyphs.length} glyphs</p>
-          ${sizes}
-          <p style="font-size: 32px">${escape(beyondAscii)}</p>
-          <h3>All glyphs</h3>
-          <div class="glyphs">${cells}</div>
           <h3>Type here</h3>
           <textarea spellcheck="false">10 PRINT "HELLO, WORLD!"\n20 GO TO 10</textarea>
+          <h3>Sizes</h3>
+          ${sizes}
+          <h3>All glyphs</h3>
+          ${glyphs}
+          <h3>Languages</h3>
+          ${samples}
         </section>`;
     })
     .join("\n");
@@ -112,6 +142,7 @@ function demoPage(fonts: GlyphFont[]): string {
       h1 { font-size: 32px; line-height: 32px; }
       h2, h3 { background: var(--ink); color: var(--paper); padding: 0 8px; margin: 32px 0 16px; }
       h3 { display: inline-block; margin: 24px 0 8px; }
+      h4 { margin: 8px 0 0; font-weight: normal; font-size: inherit; }
       p { margin: 0 0 8px; overflow-wrap: anywhere; }
       p[style] { line-height: 1.5; }
       a { color: var(--link); text-decoration-thickness: from-font; text-underline-position: from-font; }
@@ -142,8 +173,8 @@ function demoPage(fonts: GlyphFont[]): string {
         cursor: pointer;
       }
       .border button:nth-child(n + 6) { color: ${PALETTE[0]}; }
-      .glyphs { display: flex; flex-wrap: wrap; font-size: 32px; line-height: 48px; }
-      .glyphs span { width: 48px; text-align: center; }
+      .glyphs { display: flex; flex-wrap: wrap; font-size: 24px; line-height: 32px; }
+      .glyphs span { width: 32px; text-align: center; }
       .glyphs span:hover { background: var(--ink); color: var(--paper); }
       textarea {
         display: block;
