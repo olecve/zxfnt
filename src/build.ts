@@ -114,7 +114,7 @@ function demoPage(fonts: GlyphFont[]): string {
       h3 { display: inline-block; margin: 24px 0 8px; }
       p { margin: 0 0 8px; overflow-wrap: anywhere; }
       p[style] { line-height: 1.5; }
-      a { color: var(--link); }
+      a { color: var(--link); text-decoration-thickness: from-font; text-underline-position: from-font; }
       .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
       .controls span { width: 7ch; }
       .controls button {
