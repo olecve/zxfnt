@@ -71,12 +71,6 @@ export const LANGUAGES: Language[] = [
     "АӘБВГҒДЕЁЖЗИЙКҚЛМНҢОӨПРСТУҰҮФХҺЦЧШЩЪЫІЬЭЮЯ",
     "Қоңыр күз келді: ағаштың жапырағы сарғайып, ұзын жол әсем көрінді.",
   ),
-  // Georgian has no capitals in everyday text, so it lists only the small letters.
-  {
-    lang: "ka",
-    name: "Georgian",
-    upper: "",
-    lower: "აბგდევზთიკლმნოპჟრსტუფქღყშჩცძწჭხჯჰ",
-    sample: "ეს არის ქართული ანბანის ნიმუში.",
-  },
+  // The capitals are Mtavruli, which Georgian uses for all-caps headings and signs, never at the start of a sentence.
+  cased("ka", "Georgian", "ᲐᲑᲒᲓᲔᲕᲖᲗᲘᲙᲚᲛᲜᲝᲞᲟᲠᲡᲢᲣᲤᲥᲦᲧᲨᲩᲪᲫᲬᲭᲮᲯᲰ", "ეს არის ქართული ანბანის ნიმუში."),
 ];

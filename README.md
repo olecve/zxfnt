@@ -9,10 +9,10 @@ multiple of 8px.
 
 ## Fonts
 
-| Font                              | Cell | Characters                                                          |
-| --------------------------------- | ---- | ------------------------------------------------------------------- |
-| [`zxfnt`](fonts/zxfnt/)           | 8×8  | the 96 ASCII glyphs, plus Latin, Cyrillic and Georgian letters      |
-| [`zxfnt-tall`](fonts/zxfnt-tall/) | 8×10 | the same, with room above the letters for accents and tall Georgian |
+| Font                              | Cell | Characters                                                                             |
+| --------------------------------- | ---- | -------------------------------------------------------------------------------------- |
+| [`zxfnt`](fonts/zxfnt/)           | 8×8  | the 96 ASCII glyphs, plus Latin, Cyrillic and Georgian letters, with Mtavruli capitals |
+| [`zxfnt-tall`](fonts/zxfnt-tall/) | 8×10 | the same, with room above the letters for accents, tall Georgian and taller Mtavruli   |
 
 The languages are English, Finnish, Swedish, Estonian, German, Russian, Ukrainian, Belarusian, Kazakh and Georgian.
 Typographic punctuation such as `“ ” – … €` is there too, and the 16 block graphics of 8-bit computers, such as
