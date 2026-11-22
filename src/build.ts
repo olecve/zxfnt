@@ -5,8 +5,9 @@ import { compress } from "wawoff2";
 import { blockText } from "./blocks.ts";
 import { boldFont } from "./bold.ts";
 import type { DemoFont } from "./demo/data.ts";
-import { buildFont } from "./font.ts";
+import { buildFont, type Style } from "./font.ts";
 import { fontDirs, readGlyphFont, type GlyphFont } from "./glyphs.ts";
+import { italicFont } from "./italic.ts";
 
 const DIST_DIR = "dist";
 
@@ -18,11 +19,17 @@ const built: GlyphFont[] = [];
 const faces: string[] = [];
 for (const path of await fontDirs()) {
   const source = await readGlyphFont(path);
-  for (const [font, weight] of [
-    [source, 400],
-    [boldFont(source), 700],
-  ] as const) {
-    const otf = new Uint8Array(buildFont(font, weight).toArrayBuffer());
+  const styles: [GlyphFont, Style][] = [
+    [source, {}],
+    [boldFont(source), { bold: true }],
+    [italicFont(source), { italic: true }],
+    [
+      { ...boldFont(italicFont(source), source), name: `${source.name}-bold-italic` },
+      { bold: true, italic: true },
+    ],
+  ];
+  for (const [font, style] of styles) {
+    const otf = new Uint8Array(buildFont(font, style).toArrayBuffer());
     const woff2 = await compress(otf);
     await writeFile(join(DIST_DIR, `${font.name}.otf`), otf);
     await writeFile(join(DIST_DIR, `${font.name}.woff2`), woff2);
@@ -30,7 +37,7 @@ for (const path of await fontDirs()) {
       `${path} -> ${DIST_DIR}/${font.name}.otf and .woff2 (${font.glyphs.length} glyphs, ${otf.length} and ${woff2.length} bytes)`,
     );
     faces.push(
-      `@font-face { font-family: "${font.family}"; font-weight: ${weight}; src: url("${font.name}.woff2") format("woff2"), url("${font.name}.otf") format("opentype"); }`,
+      `@font-face { font-family: "${font.family}"; font-weight: ${style.bold ? 700 : 400}; font-style: ${style.italic ? "italic" : "normal"}; src: url("${font.name}.woff2") format("woff2"), url("${font.name}.otf") format("opentype"); }`,
     );
   }
   built.push(source);

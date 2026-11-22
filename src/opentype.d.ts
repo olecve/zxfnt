@@ -31,6 +31,7 @@ declare module "opentype.js/dist/opentype.mjs" {
       ascender: number;
       descender: number;
       weightClass?: number;
+      italicAngle?: number;
       panose?: number[];
       tables?: { post?: Record<string, number>; os2?: Record<string, number> };
       glyphs: Glyph[];

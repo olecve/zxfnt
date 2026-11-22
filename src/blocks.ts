@@ -23,6 +23,8 @@ const BLOCKS: Record<number, number> = {
   0b1111: 0x2588,
 };
 
+export const isBlock = (codePoint: number) => codePoint >= 0x2580 && codePoint <= 0x259f;
+
 /** The quarters fill the whole cell, so that blocks of the next cell or line join them without a gap. */
 export function blockGlyphs(width: number, height: number): { codePoint: number; rows: boolean[][] }[] {
   return Object.entries(BLOCKS).map(([bits, codePoint]) => {

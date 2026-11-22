@@ -18,8 +18,8 @@ The languages are English, Finnish, Swedish, Estonian, German, Russian, Ukrainia
 Typographic punctuation such as `“ ” – … €` is there too, and the 16 block graphics of 8-bit computers, such as
 `▛ ▀ ▚ █`.
 
-Each font also comes in bold, made the way 8-bit programs made bold text: each letter printed again one pixel to the
-right.
+Each font also comes in bold, italic and bold italic, made the way 8-bit programs made them: bold prints each letter
+again one pixel to the right, and italic moves the upper half of each letter one pixel to the right.
 
 The 96 ASCII glyphs are not from this project, and the letters copied or composed from them, such as `ä` from `a` and
 `¨`, keep their credit. Every other glyph is drawn in this project.
@@ -63,7 +63,8 @@ For sharp pixels:
 - Use a font size that is a multiple of 8px. On a retina screen, multiples of 4px work too.
 - Keep the `font-smoothing` lines. Without them, macOS draws the glyphs a little bolder, with grey edges.
 - `from-font` makes underlines and strikeouts one font pixel thick.
-- Keep the bold `@font-face`. Without it, the browser makes bold text itself, and its edges are blurred.
+- Keep the bold `@font-face`. Without it, the browser makes bold text itself, and its edges are blurred. The italic
+  files, `zxfnt-italic` and `zxfnt-bold-italic`, work the same way, with `font-style: italic`.
 
 Use `zxfnt-tall` ("zxfnt Tall") for text with accents or Georgian. Its letters are the same size, and its lines are 1.25
 times taller.

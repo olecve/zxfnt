@@ -77,6 +77,7 @@ function App() {
   const [border, setBorder] = useState(PALETTE[1]);
   const [bright, setBright] = useState("0");
   const [bold, setBold] = useState("0");
+  const [italic, setItalic] = useState("0");
   const [status, setStatus] = useState(READY);
   // Typing and the picture do not use the language, so the control is dimmed in these views.
   const languageUnused = view === "type" || view === "graphics";
@@ -154,19 +155,36 @@ function App() {
             ["1", "1"],
           ]}
         />
-        <Toggle
-          label="BOLD"
-          value={bold}
-          onChange={setBold}
-          options={[
-            ["0", "0"],
-            ["1", "1"],
-          ]}
-        />
+        <div class="styles">
+          <Toggle
+            label="BOLD"
+            value={bold}
+            onChange={setBold}
+            options={[
+              ["0", "0"],
+              ["1", "1"],
+            ]}
+          />
+          <Toggle
+            label="ITALIC"
+            value={italic}
+            onChange={setItalic}
+            options={[
+              ["0", "0"],
+              ["1", "1"],
+            ]}
+          />
+        </div>
         {shown.map((font) => {
-          const file = bold === "1" ? `${font.name}-bold` : font.name;
+          const file = font.name + (bold === "1" ? "-bold" : "") + (italic === "1" ? "-italic" : "");
           return (
-            <section style={{ fontFamily: `"${font.family}", monospace`, fontWeight: bold === "1" ? 700 : 400 }}>
+            <section
+              style={{
+                fontFamily: `"${font.family}", monospace`,
+                fontWeight: bold === "1" ? 700 : 400,
+                fontStyle: italic === "1" ? "italic" : "normal",
+              }}
+            >
               <h2>{font.family}</h2>
               <p>
                 <a href={`${file}.woff2`} download>

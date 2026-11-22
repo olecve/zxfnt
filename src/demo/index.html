@@ -62,6 +62,7 @@
       h3 {
         margin: 0;
         font-weight: normal;
+        font-style: normal;
         font-size: inherit;
       }
       /* Block graphics fill their whole cell, so a line height of 1 joins them into solid letters. */
@@ -106,6 +107,14 @@
       }
       .controls > span:first-child {
         width: 9ch;
+      }
+      .styles {
+        display: flex;
+        flex-wrap: wrap;
+        column-gap: 24px;
+      }
+      .styles .controls + .controls > span:first-child {
+        width: auto;
       }
       .controls button,
       select {

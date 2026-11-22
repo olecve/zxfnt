@@ -15,6 +15,7 @@ const LICENSE =
 const LICENSE_URL = `${PROJECT_URL}/blob/main/OFL.txt`;
 
 // fsSelection bits of the OS/2 table.
+const ITALIC = 1 << 0;
 const BOLD = 1 << 5;
 const REGULAR = 1 << 6;
 const USE_TYPO_METRICS = 1 << 7;
@@ -47,7 +48,9 @@ export function pixelRects(rows: boolean[][]): Rect[] {
   return [...done, ...open.values()];
 }
 
-export function buildFont(source: GlyphFont, weight: 400 | 700 = 400): Font {
+export type Style = { bold?: boolean; italic?: boolean };
+
+export function buildFont(source: GlyphFont, { bold = false, italic = false }: Style = {}): Font {
   const unit = PIXEL_UNITS;
   const advanceWidth = source.width * unit;
   // Pixel rows count down from the top. Font units count up from the baseline.
@@ -84,7 +87,7 @@ export function buildFont(source: GlyphFont, weight: 400 | 700 = 400): Font {
 
   return new Font({
     familyName: source.family,
-    styleName: weight === 700 ? "Bold" : "Regular",
+    styleName: [bold && "Bold", italic && "Italic"].filter(Boolean).join(" ") || "Regular",
     version: `Version ${version}`,
     copyright: source.copyright,
     description: `An ${source.width}×${source.height} bitmap font, made into outlines by zxfnt: each pixel is a square.`,
@@ -95,7 +98,9 @@ export function buildFont(source: GlyphFont, weight: 400 | 700 = 400): Font {
     unitsPerEm: source.width * PIXEL_UNITS,
     ascender: fontY(lineShift),
     descender: fontY(source.height + lineShift),
-    weightClass: weight,
+    weightClass: bold ? 700 : 400,
+    // The slant of one pixel over the six rows of a capital, for the caret of text editors.
+    italicAngle: italic ? -Math.round((Math.atan(1 / 6) * 180) / Math.PI) : 0,
     // Every glyph has the same width. PANOSE says the same: Latin text (2), monospaced (9).
     panose: [2, 0, 0, 9, 0, 0, 0, 0, 0, 0],
     tables: {
@@ -106,7 +111,7 @@ export function buildFont(source: GlyphFont, weight: 400 | 700 = 400): Font {
       // values as macOS, not from usWinAscent and usWinDescent, which only say where glyphs get clipped.
       os2: {
         version: 4,
-        fsSelection: (weight === 700 ? BOLD : REGULAR) | USE_TYPO_METRICS,
+        fsSelection: (italic ? ITALIC : 0) | (bold ? BOLD : 0) | (bold || italic ? 0 : REGULAR) | USE_TYPO_METRICS,
         yStrikeoutSize: unit,
         // The position is the top of the stroke.
         yStrikeoutPosition: fontY(strikeoutRow),

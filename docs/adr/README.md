@@ -14,6 +14,7 @@ format.
 | [0005](0005-glyph-editor.md)               | Glyph Editor                                 | Accepted                               | 2026-11-20 |
 | [0006](0006-demo-page.md)                  | Demo Page With One View At A Time            | Accepted                               | 2026-11-20 |
 | [0007](0007-generated-bold.md)             | Generated Bold Style                         | Accepted                               | 2026-11-21 |
+| [0008](0008-generated-italic.md)           | Generated Italic Style                       | Accepted                               | 2026-11-21 |
 
 ## Creating a New ADR
 

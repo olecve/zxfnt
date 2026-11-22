@@ -29,7 +29,7 @@ describe("boldFont", () => {
 
   it("is a bold face of the same family", () => {
     const source = font("U+0041 A\nX...\n....");
-    const otf = parse(buildFont(boldFont(source), 700).toArrayBuffer());
+    const otf = parse(buildFont(boldFont(source), { bold: true }).toArrayBuffer());
     equal(boldFont(source).name, "t-bold");
     equal(otf.names.windows.fontFamily.en, "T");
     equal(otf.names.windows.fontSubfamily.en, "Bold");
