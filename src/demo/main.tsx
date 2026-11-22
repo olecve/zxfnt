@@ -76,6 +76,7 @@ function App() {
   );
   const [border, setBorder] = useState(PALETTE[1]);
   const [bright, setBright] = useState("0");
+  const [bold, setBold] = useState("0");
   const [status, setStatus] = useState(READY);
   // Typing and the picture do not use the language, so the control is dimmed in these views.
   const languageUnused = view === "type" || view === "graphics";
@@ -153,37 +154,49 @@ function App() {
             ["1", "1"],
           ]}
         />
-        {shown.map((font) => (
-          <section style={{ fontFamily: `"${font.family}", monospace` }}>
-            <h2>{font.family}</h2>
-            <p>
-              <a href={`${font.name}.woff2`} download>
-                {font.name}.woff2
-              </a>{" "}
-              <a href={`${font.name}.otf`} download>
-                {font.name}.otf
-              </a>{" "}
-              {font.width}×{font.height} cell, {font.codePoints.length} glyphs
-            </p>
-            {view === "alphabet" && <Alphabet font={font} language={language} onPick={setStatus} />}
-            {view === "type" && (
-              <textarea
-                spellcheck={false}
-                aria-label="Type here"
-                value={typed}
-                onInput={(e) => setTyped(e.currentTarget.value)}
-              />
-            )}
-            {view === "sizes" &&
-              [8, 16, 24, 32].map((px) => (
-                <p lang={lang} style={{ fontSize: `${px}px`, lineHeight: `${px * 1.5}px` }}>
-                  {px}px: {language.sample}
-                </p>
-              ))}
-            {view === "glyphs" && <Glyphs font={font} marked={language} onPick={setStatus} />}
-            {view === "graphics" && <Picture font={font} />}
-          </section>
-        ))}
+        <Toggle
+          label="BOLD"
+          value={bold}
+          onChange={setBold}
+          options={[
+            ["0", "0"],
+            ["1", "1"],
+          ]}
+        />
+        {shown.map((font) => {
+          const file = bold === "1" ? `${font.name}-bold` : font.name;
+          return (
+            <section style={{ fontFamily: `"${font.family}", monospace`, fontWeight: bold === "1" ? 700 : 400 }}>
+              <h2>{font.family}</h2>
+              <p>
+                <a href={`${file}.woff2`} download>
+                  {file}.woff2
+                </a>{" "}
+                <a href={`${file}.otf`} download>
+                  {file}.otf
+                </a>{" "}
+                {font.width}×{font.height} cell, {font.codePoints.length} glyphs
+              </p>
+              {view === "alphabet" && <Alphabet font={font} language={language} onPick={setStatus} />}
+              {view === "type" && (
+                <textarea
+                  spellcheck={false}
+                  aria-label="Type here"
+                  value={typed}
+                  onInput={(e) => setTyped(e.currentTarget.value)}
+                />
+              )}
+              {view === "sizes" &&
+                [8, 16, 24, 32].map((px) => (
+                  <p lang={lang} style={{ fontSize: `${px}px`, lineHeight: `${px * 1.5}px` }}>
+                    {px}px: {language.sample}
+                  </p>
+                ))}
+              {view === "glyphs" && <Glyphs font={font} marked={language} onPick={setStatus} />}
+              {view === "graphics" && <Picture font={font} />}
+            </section>
+          );
+        })}
         <footer>
           <span role="status">{status}</span>
         </footer>
