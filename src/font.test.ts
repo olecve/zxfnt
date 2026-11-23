@@ -103,6 +103,7 @@ describe("buildFont", () => {
       const names = font.names.windows;
       equal(names.fontFamily.en, source.family);
       equal(names.copyright.en, source.copyright ?? " ");
+      equal(names.designer.en, "Oleg Tsvetkov");
       match(names.license.en, /^This Font Software is licensed under the SIL Open Font License/);
       match(names.licenseURL.en, /\/OFL\.txt$/);
       match(names.version.en, /^Version \d+\.\d+\.\d+$/);

@@ -110,7 +110,7 @@ decisions behind the project are in [docs/adr](docs/adr/).
 
 ## License
 
-The code is under the [MIT License](LICENSE). The fonts and the glyphs drawn in this project are under the
-[SIL Open Font License 1.1](OFL.txt), with the Reserved Font Name zxfnt: a modified font needs a new name in its
-`font.txt`. The 96 glyphs of `ascii.txt`, and the glyphs that the lists in `sets/` copy or compose from them, are © 1982
-Sinclair Research Ltd, now Amstrad, and are not covered by these licenses.
+The code and the glyphs drawn in this project are © 2026 Oleg Tsvetkov. The code is under the [MIT License](LICENSE),
+and the fonts are under the [SIL Open Font License 1.1](OFL.txt), with the Reserved Font Name zxfnt: a modified font
+needs a new name in its `font.txt`. The 96 glyphs of `ascii.txt`, and the glyphs that the lists in `sets/` copy or
+compose from them, are © 1982 Sinclair Research Ltd, now Amstrad, and are not covered by these licenses.

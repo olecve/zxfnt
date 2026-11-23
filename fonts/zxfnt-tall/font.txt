@@ -5,4 +5,4 @@ family: zxfnt Tall
 size: 8x10
 baseline: 9
 include: ../zxfnt/ascii.txt ../zxfnt/extra.txt ../zxfnt/punctuation.txt ../zxfnt/cyrillic.txt ../zxfnt/georgian.txt
-copyright: The 96 glyphs of the ASCII range (with £, ↑ and ©) and the letters copied or composed from them: © 1982 Sinclair Research Ltd, now Amstrad. Other glyphs made for zxfnt.
+copyright: © 2026 Oleg Tsvetkov, except the 96 glyphs of the ASCII range (with £, ↑ and ©) and the letters copied or composed from them: © 1982 Sinclair Research Ltd, now Amstrad. Reserved Font Name zxfnt.

@@ -1,4 +1,4 @@
-Copyright (c) 2026 zxfnt contributors (https://github.com/olecve/zxfnt), with Reserved Font Name "zxfnt".
+Copyright (c) 2026 Oleg Tsvetkov (https://github.com/olecve/zxfnt), with Reserved Font Name "zxfnt".
 
 The 96 glyphs of fonts/zxfnt/ascii.txt, and the glyphs that the lists in sets/ copy or compose from them,
 are © 1982 Sinclair Research Ltd, now Amstrad, and are not covered by this license.

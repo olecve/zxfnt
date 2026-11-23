@@ -10,6 +10,8 @@ const { version } = JSON.parse(readFileSync(new URL("../package.json", import.me
   version: string;
 };
 const PROJECT_URL = "https://github.com/olecve/zxfnt";
+const DESIGNER = "Oleg Tsvetkov";
+const DESIGNER_URL = "https://github.com/olecve";
 const LICENSE =
   "This Font Software is licensed under the SIL Open Font License, Version 1.1. Glyphs that are not from this project keep the rights of their owners, see the copyright.";
 const LICENSE_URL = `${PROJECT_URL}/blob/main/OFL.txt`;
@@ -93,6 +95,8 @@ export function buildFont(source: GlyphFont, { bold = false, italic = false }: S
     description: `An ${source.width}×${source.height} bitmap font, made into outlines by zxfnt: each pixel is a square.`,
     manufacturer: "zxfnt",
     manufacturerURL: PROJECT_URL,
+    designer: DESIGNER,
+    designerURL: DESIGNER_URL,
     license: LICENSE,
     licenseURL: LICENSE_URL,
     unitsPerEm: source.width * PIXEL_UNITS,

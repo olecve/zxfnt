@@ -25,6 +25,8 @@ declare module "opentype.js/dist/opentype.mjs" {
       description?: string;
       manufacturer?: string;
       manufacturerURL?: string;
+      designer?: string;
+      designerURL?: string;
       license?: string;
       licenseURL?: string;
       unitsPerEm: number;
