@@ -27,7 +27,7 @@ The 96 ASCII glyphs are not from this project, and the letters copied or compose
 ## Using a font
 
 Download the fonts from the demo page, or from the `zxfnt-fonts` artifact of a
-[build](https://github.com/olecve/zxfnt/actions/workflows/build.yml), and put them next to your page:
+[build](https://github.com/olecve/zxfnt/actions/workflows/build.yml), and put them next to your page, with `OFL.txt`:
 
 ```css
 @font-face {

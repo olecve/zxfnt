@@ -1,5 +1,5 @@
 import { build } from "esbuild";
-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { compress } from "wawoff2";
 import { blockText } from "./blocks.ts";
@@ -14,6 +14,8 @@ const DIST_DIR = "dist";
 // Start from an empty dist/, so that a renamed or removed font does not stay there and get published.
 await rm(DIST_DIR, { recursive: true, force: true });
 await mkdir(DIST_DIR);
+// The OFL asks that each copy of the fonts comes with the license.
+await copyFile("OFL.txt", join(DIST_DIR, "OFL.txt"));
 
 const built: GlyphFont[] = [];
 const faces: string[] = [];
