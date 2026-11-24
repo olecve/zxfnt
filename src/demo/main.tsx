@@ -106,6 +106,11 @@ function App() {
               {banner.lines.join("\n")}
             </span>
           </h1>
+          <div class="stripes" aria-hidden="true">
+            {[2, 6, 4, 5].map((i) => (
+              <i style={{ background: PALETTE[i] }} />
+            ))}
+          </div>
         </header>
         <p>
           Pixel fonts for the web. <a href="https://github.com/olecve/zxfnt">Source on GitHub</a>.

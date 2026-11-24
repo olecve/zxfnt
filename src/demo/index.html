@@ -98,6 +98,14 @@
         color: var(--paper);
         background: var(--ink);
       }
+      .stripes {
+        display: flex;
+        height: 32px;
+      }
+      .stripes i {
+        width: 16px;
+        transform: skewX(-30deg);
+      }
       .controls {
         display: flex;
         flex-wrap: wrap;
@@ -256,6 +264,12 @@
         .alphabet {
           font-size: calc(16 * var(--px));
           line-height: calc(24 * var(--px));
+        }
+        .stripes {
+          height: calc(16 * var(--px));
+        }
+        .stripes i {
+          width: calc(8 * var(--px));
         }
         .controls button,
         select {
